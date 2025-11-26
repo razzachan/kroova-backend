@@ -1,0 +1,321 @@
+{
+  "metadata": {
+    "generatedAt": "2025-11-24T22:27:01.258Z",
+    "totalSimulations": 3,
+    "boostersPerSimulation": 500,
+    "totalCardsSimulated": 7500
+  },
+  "config": {
+    "name": "ED01 - Colapso da Interface",
+    "boosterPrice": 0.5,
+    "cardsPerBooster": 5,
+    "rtpTotal": 0.18,
+    "rtpRecycleNormal": 0.7,
+    "rtpJackpots": 0.3,
+    "rarityDistribution": {
+      "trash": 70.85,
+      "meme": 20,
+      "viral": 8,
+      "legendary": 1,
+      "godmode": 0.15
+    },
+    "modeDistribution": {
+      "default": 60,
+      "neon": 20,
+      "glow": 10,
+      "glitch": 5,
+      "ghost": 3,
+      "holo": 1.5,
+      "dark": 0.5
+    },
+    "modeMultipliers": {
+      "default": 1,
+      "neon": 2,
+      "glow": 3,
+      "glitch": 4,
+      "ghost": 6,
+      "holo": 8,
+      "dark": 12
+    },
+    "godmodePrizeWeights": {
+      "5": 50,
+      "10": 25,
+      "20": 12.5,
+      "50": 6.25,
+      "100": 3.125,
+      "200": 1.5625,
+      "500": 0.78125,
+      "1000": 0.39063
+    },
+    "costs": {
+      "payment_gateway": 0.04,
+      "server_per_booster": 0.001,
+      "support_per_user": 0.05,
+      "marketing_cac": 2
+    }
+  },
+  "statistics": {
+    "avgProfit": 185.5241999999988,
+    "stdDevProfit": 10.560477626825168,
+    "minProfit": 175.65859999999822,
+    "maxProfit": 200.1671999999993,
+    "avgMargin": 74.20967999999952,
+    "stdDevMargin": 4.224191050730062,
+    "minMargin": 70.26343999999929,
+    "maxMargin": 80.06687999999971,
+    "avgRecycle": 53.97580000000119,
+    "stdDevRecycle": 10.560477626825165,
+    "avgJackpots": 25,
+    "stdDevJackpots": 10.801234497346433
+  },
+  "results": [
+    {
+      "runId": "batch_1764023221232_1",
+      "timestamp": "2025-11-24T22:27:01.237Z",
+      "config": {
+        "name": "ED01 - Colapso da Interface",
+        "boosterPrice": 0.5,
+        "cardsPerBooster": 5,
+        "rtpTotal": 0.18,
+        "rtpRecycleNormal": 0.7,
+        "rtpJackpots": 0.3,
+        "rarityDistribution": {
+          "trash": 70.85,
+          "meme": 20,
+          "viral": 8,
+          "legendary": 1,
+          "godmode": 0.15
+        },
+        "modeDistribution": {
+          "default": 60,
+          "neon": 20,
+          "glow": 10,
+          "glitch": 5,
+          "ghost": 3,
+          "holo": 1.5,
+          "dark": 0.5
+        },
+        "modeMultipliers": {
+          "default": 1,
+          "neon": 2,
+          "glow": 3,
+          "glitch": 4,
+          "ghost": 6,
+          "holo": 8,
+          "dark": 12
+        },
+        "godmodePrizeWeights": {
+          "5": 50,
+          "10": 25,
+          "20": 12.5,
+          "50": 6.25,
+          "100": 3.125,
+          "200": 1.5625,
+          "500": 0.78125,
+          "1000": 0.39063
+        },
+        "costs": {
+          "payment_gateway": 0.04,
+          "server_per_booster": 0.001,
+          "support_per_user": 0.05,
+          "marketing_cac": 2
+        }
+      },
+      "totalBoosters": 500,
+      "totalCards": 2500,
+      "totalRevenue": 250,
+      "totalRecycleValue": 58.75320000000109,
+      "totalJackpots": 30,
+      "operationalCosts": 10.5,
+      "netProfit": 180.74679999999893,
+      "profitMargin": 72.29871999999958,
+      "rarityCount": {
+        "meme": 513,
+        "trash": 1749,
+        "viral": 205,
+        "legendary": 33
+      },
+      "modeCount": {
+        "glitch": 133,
+        "default": 1507,
+        "neon": 491,
+        "dark": 13,
+        "glow": 264,
+        "holo": 26,
+        "ghost": 66
+      },
+      "godmodeCount": 4,
+      "godmodePrizeBreakdown": {
+        "5": 2,
+        "10": 2
+      },
+      "avgRecyclePerCard": 0.023501280000000433,
+      "avgRecyclePerBooster": 0.11750640000000218
+    },
+    {
+      "runId": "batch_1764023221237_2",
+      "timestamp": "2025-11-24T22:27:01.240Z",
+      "config": {
+        "name": "ED01 - Colapso da Interface",
+        "boosterPrice": 0.5,
+        "cardsPerBooster": 5,
+        "rtpTotal": 0.18,
+        "rtpRecycleNormal": 0.7,
+        "rtpJackpots": 0.3,
+        "rarityDistribution": {
+          "trash": 70.85,
+          "meme": 20,
+          "viral": 8,
+          "legendary": 1,
+          "godmode": 0.15
+        },
+        "modeDistribution": {
+          "default": 60,
+          "neon": 20,
+          "glow": 10,
+          "glitch": 5,
+          "ghost": 3,
+          "holo": 1.5,
+          "dark": 0.5
+        },
+        "modeMultipliers": {
+          "default": 1,
+          "neon": 2,
+          "glow": 3,
+          "glitch": 4,
+          "ghost": 6,
+          "holo": 8,
+          "dark": 12
+        },
+        "godmodePrizeWeights": {
+          "5": 50,
+          "10": 25,
+          "20": 12.5,
+          "50": 6.25,
+          "100": 3.125,
+          "200": 1.5625,
+          "500": 0.78125,
+          "1000": 0.39063
+        },
+        "costs": {
+          "payment_gateway": 0.04,
+          "server_per_booster": 0.001,
+          "support_per_user": 0.05,
+          "marketing_cac": 2
+        }
+      },
+      "totalBoosters": 500,
+      "totalCards": 2500,
+      "totalRevenue": 250,
+      "totalRecycleValue": 39.33280000000071,
+      "totalJackpots": 10,
+      "operationalCosts": 10.5,
+      "netProfit": 200.1671999999993,
+      "profitMargin": 80.06687999999971,
+      "rarityCount": {
+        "trash": 1774,
+        "meme": 492,
+        "viral": 202,
+        "legendary": 32
+      },
+      "modeCount": {
+        "default": 1482,
+        "neon": 527,
+        "holo": 38,
+        "glow": 249,
+        "glitch": 122,
+        "dark": 15,
+        "ghost": 67
+      },
+      "godmodeCount": 1,
+      "godmodePrizeBreakdown": {
+        "10": 1
+      },
+      "avgRecyclePerCard": 0.015733120000000284,
+      "avgRecyclePerBooster": 0.07866560000000142
+    },
+    {
+      "runId": "batch_1764023221240_3",
+      "timestamp": "2025-11-24T22:27:01.243Z",
+      "config": {
+        "name": "ED01 - Colapso da Interface",
+        "boosterPrice": 0.5,
+        "cardsPerBooster": 5,
+        "rtpTotal": 0.18,
+        "rtpRecycleNormal": 0.7,
+        "rtpJackpots": 0.3,
+        "rarityDistribution": {
+          "trash": 70.85,
+          "meme": 20,
+          "viral": 8,
+          "legendary": 1,
+          "godmode": 0.15
+        },
+        "modeDistribution": {
+          "default": 60,
+          "neon": 20,
+          "glow": 10,
+          "glitch": 5,
+          "ghost": 3,
+          "holo": 1.5,
+          "dark": 0.5
+        },
+        "modeMultipliers": {
+          "default": 1,
+          "neon": 2,
+          "glow": 3,
+          "glitch": 4,
+          "ghost": 6,
+          "holo": 8,
+          "dark": 12
+        },
+        "godmodePrizeWeights": {
+          "5": 50,
+          "10": 25,
+          "20": 12.5,
+          "50": 6.25,
+          "100": 3.125,
+          "200": 1.5625,
+          "500": 0.78125,
+          "1000": 0.39063
+        },
+        "costs": {
+          "payment_gateway": 0.04,
+          "server_per_booster": 0.001,
+          "support_per_user": 0.05,
+          "marketing_cac": 2
+        }
+      },
+      "totalBoosters": 500,
+      "totalCards": 2500,
+      "totalRevenue": 250,
+      "totalRecycleValue": 63.84140000000178,
+      "totalJackpots": 35,
+      "operationalCosts": 10.5,
+      "netProfit": 175.65859999999822,
+      "profitMargin": 70.26343999999929,
+      "rarityCount": {
+        "trash": 1793,
+        "viral": 195,
+        "meme": 487,
+        "legendary": 25
+      },
+      "modeCount": {
+        "default": 1503,
+        "glow": 254,
+        "neon": 511,
+        "glitch": 109,
+        "ghost": 77,
+        "holo": 38,
+        "dark": 8
+      },
+      "godmodeCount": 4,
+      "godmodePrizeBreakdown": {
+        "5": 3,
+        "20": 1
+      },
+      "avgRecyclePerCard": 0.02553656000000071,
+      "avgRecyclePerBooster": 0.12768280000000357
+    }
+  ]
+}

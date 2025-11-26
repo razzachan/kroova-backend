@@ -1,0 +1,6 @@
+# Resultados de simulação (git tracked para histórico)
+# Mas ignoramos arquivos temporários
+
+*.tmp
+*.log
+.DS_Store

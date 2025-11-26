@@ -1,0 +1,4 @@
+# Relatórios Markdown (git tracked para histórico)
+
+*.tmp
+.DS_Store

@@ -1,0 +1,58 @@
+{
+  "icon_style": {
+    "medium": "graphite_pencil_sketch",
+    "perspective": "semi-realistic_heroic_composition",
+    "geometry": {
+      "proportions": "serious_and_anatomically_inspired_with_romanticized_exaggeration",
+      "element_arrangement": "centralized_focus_as_if_for_a_trading_card",
+      "motion_behavior": "can_show_energy_distortion_or_temporal_glitches"
+    },
+    "composition": {
+      "element_count": "single_primary_subject_or_energy_event",
+      "spatial_depth": "strong_sense_of_shadow_and_layering",
+      "scale_consistency": "consistent_but_can_break_for_glitch_effects",
+      "scene_density": "medium_density_balanced_between_empty_space_and_detail"
+    },
+    "lighting": {
+      "type": "dramatic_contrasted_shading",
+      "light_source": "single_high_intensity_directional_light",
+      "shadow": "deep_graphite_shadow_hatching",
+      "highlighting": "controlled_contrast_using_paper_white"
+    },
+    "textures": {
+      "material_finish": "high_detail_graphite_with_visible_stroke_direction",
+      "surface_treatment": "rendered_edges_with_occasional_glitch_interruptions",
+      "texture_realism": "medium_to_high_realism_for_faces_objects_and_events"
+    },
+    "render_quality": {
+      "resolution": "high_resolution_scan_aesthetic",
+      "edge_definition": "clean_but_can_distort_or_fragment_when_glitch_applies",
+      "visual_clarity": "epic_serious_clear_intent_with_smart_satirical_elements"
+    },
+    "color_palette": {
+      "tone": "gray_black_white",
+      "range": "no_color_only_graphite_gradients",
+      "usage": "use_paper_white_for_highlights_and_energy_effects"
+    },
+    "background": {
+      "color": "paper_white",
+      "style": "traditional_sketch_with_texture_and_shade_fallback",
+      "texture": "visible_paper_fibers_and_subtle_smudging"
+    },
+    "stylistic_tone": "serious_epic_satire_with_implicit_humor_based_on_social_behavior_not_infantilization",
+    "satire_behavior": {
+      "humor_delivery": "micro_details_hidden_in_plain_sight",
+      "theme_alignment": "must_reflect_social_collective_behaviors_and_internet_addictions",
+      "avoid": [
+        "literal_infantilization",
+        "cartoon_faces_without_purpose",
+        "explicit_text_labels_as_jokes"
+      ]
+    },
+    "icon_behavior": {
+      "branding_alignment": "highly_collectible_handcrafted_style",
+      "scalability": "excellent_for_print_and_zoom",
+      "interchangeability": "supports_creatures_events_and_conditions_equally"
+    }
+  }
+}

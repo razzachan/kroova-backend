@@ -1,0 +1,48 @@
+﻿
+­ƒöì Validando deployment em: http://127.0.0.1:3333
+
+
+--- rootPing ---
+Ôä╣´©Å  Verificando root / ...
+ÔØî Root ping falhou: connect ECONNREFUSED 127.0.0.1:3333
+
+--- healthCheck ---
+Ôä╣´©Å  Verificando health endpoint...
+ÔØî Health check falhou: connect ECONNREFUSED 127.0.0.1:3333
+
+--- listBoosters ---
+Ôä╣´©Å  Verificando endpoint de boosters...
+ÔØî Erro ao listar boosters: connect ECONNREFUSED 127.0.0.1:3333
+
+--- auditDashboard ---
+Ôä╣´©Å  Verificando audit dashboard...
+ÔØî Erro ao acessar audit dashboard: connect ECONNREFUSED 127.0.0.1:3333
+
+--- economicSeries ---
+Ôä╣´©Å  Verificando economic series...
+ÔØî Erro ao acessar economic series: connect ECONNREFUSED 127.0.0.1:3333
+
+--- cardsSeed ---
+Ôä╣´©Å  Verificando seed de cartas ED01...
+ÔÜá´©Å  N├úo foi poss├¡vel validar seed: connect ECONNREFUSED 127.0.0.1:3333
+
+--- responseTime ---
+Ôä╣´©Å  Medindo response time...
+ÔØî Erro ao medir response time: connect ECONNREFUSED 127.0.0.1:3333
+
+--- securityHeaders ---
+Ôä╣´©Å  Verificando security headers...
+ÔÜá´©Å  N├úo foi poss├¡vel verificar security headers: connect ECONNREFUSED 127.0.0.1:3333
+
+==================================================
+­ƒôè RESUMO DA VALIDA├ç├âO
+==================================================
+Total de testes: 8
+Ô£à Passou: 0
+ÔØî Falhou: 8
+ÔÜá´©Å  Avisos: 0
+
+Taxa de sucesso: 0.0%
+
+ÔØî DEPLOY COM PROBLEMAS CR├ìTICOS - Considerar rollback
+

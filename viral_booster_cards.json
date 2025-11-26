@@ -1,0 +1,159 @@
+{
+  "project": "Kroova ED01 - Viral Booster Opening",
+  "format": "TikTok/YouTube Shorts (9:16, 30s max)",
+  "hook_strategy": "Suspense crescente com reveal dramático de raridade ascendente",
+  
+  "visual_config": {
+    "base_style": "cinematic_semi_realistic",
+    "atmosphere": "post_cyberpunk_with_spiritual_glitch",
+    "palette": {
+      "primary": "#FF006D",
+      "secondary": "#00F0FF",
+      "legendary_accent": "#9D4EDD",
+      "godmode_gold": "#FFD700"
+    },
+    "lighting": {
+      "keylight": "neon_magenta_from_top_right",
+      "fill": "cyan_tech_glow_left",
+      "rim": "amber_value_highlight",
+      "bloom": "medium_for_rare_cards"
+    },
+    "effects": {
+      "glitch": "1-3px_temporal_offset",
+      "holographic": "diagonal_spectrum_shift",
+      "energy_aura": "organic_pulse_waves"
+    }
+  },
+
+  "cards": [
+    {
+      "sequence": 1,
+      "name": "Bug Fantasma 404",
+      "rarity": "trash",
+      "timing": "0-6s",
+      "hook": "O erro que caça usuários",
+      "description": "Carta comum que representa falhas sutis da web: aparece e desaparece causando micro travamentos. Humor identificável.",
+      "narrative_beat": "Primeira carta revela comum → reação levemente decepcionada mas cômica",
+      "prompt": "translucent glitch ghost made of 404 error code fragments, pixel noise aura dissolving at edges, teal and magenta cyberpunk color scheme, floating in digital void, semi-realistic rendering with soft bloom, cinematic three-quarter view, shallow depth of field, neon rim light, additive glitch layer, subtle chromatic aberration, 1-2% film grain",
+      "visual_priority": "humor + identificação",
+      "video_notes": "Zoom rápido + efeito sonoro de erro. Legenda: 'Claro que começa assim 😅'"
+    },
+    {
+      "sequence": 2,
+      "name": "Gato Buffering Infinito",
+      "rarity": "meme",
+      "timing": "6-12s",
+      "hook": "O loop eterno virou poder",
+      "description": "Meme vivo: gato holográfico estilo loading spinner que canaliza a impaciência da rede em vantagem.",
+      "narrative_beat": "Segunda carta meme → reação positiva começando a animar",
+      "prompt": "holographic cat hybrid with infinite loading spinner integrated into body, iridescent fur with digital shimmer, playful neon ring orbit, vibrant cyan and magenta palette, semi-realistic face with exaggerated cute features, cinematic lighting with soft key from right, shallow DOF with glowing background particles, additive glow effects, prismatic reflections on surfaces, energy field distortion, 35mm lens feel",
+      "visual_priority": "viralidade meme + fofo tech",
+      "video_notes": "Animação do spinner girando. Legenda: 'Agora sim! 🐱⚡'"
+    },
+    {
+      "sequence": 3,
+      "name": "Explosão de Latência Zero",
+      "rarity": "viral",
+      "timing": "12-18s",
+      "hook": "Quando tudo responde instantaneamente",
+      "description": "Campo temporal que zera latência por segundos, criando momento acelerado épico. Alta energia visual.",
+      "narrative_beat": "Terceira carta VIRAL → reação crescendo, suspense aumentando",
+      "prompt": "temporal distortion energy vortex collapsing into sharp crystalline core, motion blur streaks radiating outward, pure white center with electric blue outer rings, dynamic radial composition, volumetric light rays, cinematic depth with foreground particle blur, semi-realistic crystal facets, high-speed energy blast aesthetic, neon magenta rim highlights, soft bloom on core, additive glow layers, shallow DOF focusing on center, 1px glitch offset on edges",
+      "visual_priority": "impacto + velocidade",
+      "video_notes": "Transição explosiva com shake de câmera. Legenda: 'TÁ FICANDO BOM 🔥'"
+    },
+    {
+      "sequence": 4,
+      "name": "Oráculo do Algoritmo Oculto",
+      "rarity": "legendary",
+      "timing": "18-24s",
+      "hook": "Prevê a tendência antes de nascer",
+      "description": "Entidade híbrida: pergaminho arcano fundido com rede neural. Místico + tech. Visual enigmático e premium.",
+      "narrative_beat": "Quarta carta LEGENDARY → reação surpresa genuína, hype máximo começando",
+      "prompt": "ancient mystical oracle figure fused with glowing neural network circuitry, indigo and deep purple robes with golden circuit traces, luminous runic sigils floating around head, semi-realistic wise face with ethereal eyes, cinematic three-quarter portrait, soft key light from upper right with golden accent, cyan fill light revealing tech details, smoky depth background with digital particle mist, holographic data streams weaving through composition, shallow DOF with bokeh, medium bloom on glowing elements, organic glitch waves distorting edges, premium legendary presence",
+      "visual_priority": "misticismo + raridade premium",
+      "video_notes": "Slow motion reveal com áudio épico crescendo. Legenda: 'NÃO ACREDITO!! 😱💜'"
+    },
+    {
+      "sequence": 5,
+      "name": "Kernel Primordial",
+      "rarity": "godmode",
+      "timing": "24-30s",
+      "hook": "Reescreve as regras ao vivo",
+      "description": "Núcleo cósmico supremo que injeta patch divino no sistema. Clímax absoluto. Visual transcendente.",
+      "narrative_beat": "Quinta carta GODMODE → explosão de reação, grito, câmera shake, zoom dramático",
+      "prompt": "cosmic luminous kernel sphere core, fractal golden glyphs and runes orbiting in perfect geometry, radiant white-gold center emitting volumetric light rays, nebula haze surrounding with magenta and cyan accents, divine god-tier presence, semi-realistic render with spiritual energy, cinematic wide shot narrowing to close, shallow depth of field with maximum bloom on core, prismatic holographic reflections, organic energy waves pulsing outward, additive glow layers stacking, soft chromatic aberration on bright areas, filmic grain texture, ultimate legendary aura, transcendent mystical tech fusion, rules-breaking visual intensity",
+      "visual_priority": "clímax divino + máximo impacto",
+      "video_notes": "Tela branca flash → reveal lento com zoom in → reação exagerada. Música épica. Legenda: '🚨 KERNEL PRIMORDIAL!!! ISSO É REAL??? 👑✨'"
+    }
+  ],
+
+  "narration_script": {
+    "0-3s": {
+      "visual": "Tela escura → booster fechado aparece com brilho",
+      "audio": "Som de suspense crescendo",
+      "text_overlay": "ABRI UM BOOSTER...",
+      "direction": "Construir tensão desde o início"
+    },
+    "3-6s": {
+      "visual": "Primeira carta reveal: Bug Fantasma 404",
+      "audio": "Som de erro digital",
+      "narration": "Começou bem... um bug fantasma",
+      "text_overlay": "404 😅",
+      "direction": "Tom levemente decepcionado mas engraçado"
+    },
+    "6-12s": {
+      "visual": "Segunda carta: Gato Buffering",
+      "audio": "Som de loading + miado glitch",
+      "narration": "Opa! Agora um MEME",
+      "text_overlay": "LOADING CAT 🐱⚡",
+      "direction": "Energia começando a subir"
+    },
+    "12-18s": {
+      "visual": "Terceira carta: Explosão Latência Zero (com efeito de explosão)",
+      "audio": "Whoosh + impacto sonoro",
+      "narration": "Peraí... ISSO É VIRAL!",
+      "text_overlay": "VIRAL!! 🔥",
+      "direction": "Surpresa genuína, velocidade aumentando"
+    },
+    "18-24s": {
+      "visual": "Quarta carta: Oráculo (slow motion parcial)",
+      "audio": "Som épico crescendo",
+      "narration": "NÃO... NÃO PODE SER...",
+      "text_overlay": "LEGENDARY??? 😱💜",
+      "direction": "Hype máximo, quase gritando"
+    },
+    "24-30s": {
+      "visual": "Quinta carta: Kernel Primordial (flash branco → reveal dramático)",
+      "audio": "Explosão sonora + música épica peak",
+      "narration": "GENTE... KERNEL PRIMORDIAL!!!",
+      "text_overlay": "👑 GODMODE 👑",
+      "cta": "SEGUE PRA VER MAIS GODMODE",
+      "direction": "Reação máxima: grito, zoom, shake de câmera, corte para rosto chocado"
+    }
+  },
+
+  "production_notes": {
+    "aspect_ratio": "9:16 (1080x1920)",
+    "fps": "30 or 60fps",
+    "transitions": "Cortes rápidos entre cards 1-3, slow motion em card 4, dramatic flash em card 5",
+    "sound_design": "Suspense crescente + impactos em cada reveal + música épica no final",
+    "text_overlays": "Fonte bold, contorno neon, animação de entrada por carta",
+    "thumbnails": "Usar frame do Kernel Primordial com boca aberta de reação",
+    "hashtags": "#kroova #tcg #boosteropening #godmode #nft #cardgame #viral #shorts",
+    "retention_hooks": [
+      "Suspense logo nos primeiros 2s",
+      "Progressão de raridade = dopamina crescente",
+      "Godmode no final = loop/reshare garantido",
+      "CTA forte para seguir"
+    ]
+  },
+
+  "image_generation_order": [
+    "Gerar Kernel Primordial primeiro (thumbnail priority)",
+    "Oráculo segundo (legendary appeal)",
+    "Explosão Latência (impacto visual médio)",
+    "Gato Buffering (meme retention)",
+    "Bug Fantasma por último (comum mas necessário para narrativa)"
+  ]
+}

@@ -1,0 +1,170 @@
+{
+  "production_rules": {
+    "pipeline": "industrial_hybrid_generation",
+    "interaction": {
+      "user_input_required": false,
+      "next_command": "gere a próxima",
+      "explanation": "O usuário nunca toma decisões artísticas por carta após o padrão inicial aprovado."
+    },
+    "naming": {
+      "pattern": "ED01_###_CardName.png",
+      "example": "ED01_001_Ghostfluenc.png",
+      "indexing": "starts_from_001_and_follows_the_card_list"
+    },
+    "output_types": {
+      "full_art": true,
+      "mockup": true,
+      "bordered_card_asset": true,
+      "cropped_no_border": true,
+      "json_metadata": true
+    },
+    "aspect_ratio": "3:4",
+    "resolution": "1144x1656",
+    "no_borders_inside_art": true
+  },
+
+  "narrative_rules": {
+    "core_lore_alignment": "Each card reflects human collective behaviors, addictions, and digital culture distortions.",
+    "never_literal_humor": true,
+    "satire_type": "critical_subtle_and_symbolic",
+    "must_avoid": [
+      "infantilization",
+      "meme_literal_text",
+      "emoji_humor",
+      "explicit_insult",
+      "pure_nerd_reference_without_social_meaning"
+    ],
+    "creature_representation": {
+      "rule": "creatures represent behaviors or archetypes, not just animals or tech elements.",
+      "example": "A rat is not 'street animal' but 'predatory rumor trader'."
+    },
+    "event_representation": {
+      "rule": "events must portray collective psychological responses, not literal tech mechanics.",
+      "example": "Latency explosion = impatience collapse, not loading bar."
+    },
+    "condition_or_item_representation": {
+      "rule": "items represent systemic or symbolic tools reinforcing social digital patterns."
+    }
+  },
+
+  "visual_style": {
+    "type": "cinematic_semi_realistic",
+    "atmosphere": "post_cyberpunk_with_spiritual_glitch",
+    "tone": "premium, mystical, energetic, narrative_driven",
+    "keywords": [
+      "neon_magenta",
+      "cyan_tech_glow",
+      "amber_value_energy",
+      "glitch_organic",
+      "digital_aura",
+      "semi_realistic_faces",
+      "cinematic_depth",
+      "soft_bloom",
+      "energy_fields"
+    ]
+  },
+
+  "composition": {
+    "camera": {
+      "perspective": "cinematic_three_quarter",
+      "lens": "35mm_or_50mm_equivalent",
+      "depth_of_field": "shallow_dof_with_soft_bokeh",
+      "focus": "primary_subject_with_glitch_halo"
+    },
+    "framing": {
+      "rule_of_thirds": true,
+      "foreground_elements": "optional_glitch_particles",
+      "midground": "main_subject",
+      "background": "soft_hazy_neon_environment"
+    },
+    "motion": {
+      "glitch_shift": "1-3px_temporal_offset",
+      "light_streaks": "subtle",
+      "energy_distortion": "organic_waves"
+    }
+  },
+
+  "lighting": {
+    "primary_light": "neon_magenta_keylight_from_top_right",
+    "secondary_light": "cyan_fill_from_left",
+    "rim_light": "amber_value_rim_highlight",
+    "global_illumination": "soft_diffused_cyberpunk_haze",
+    "post": {
+      "bloom": "mild",
+      "chromatic_aberration": "subtle",
+      "grain": "1-2% filmic"
+    }
+  },
+
+  "textures": {
+    "finish": "semi_matte_with_soft_speculars",
+    "surfaces": "slightly_rough_fabric_metal_or_hybrid",
+    "glitch_layer": "additive_overlay",
+    "holographic": {
+      "enabled": true,
+      "pattern": "diagonal_spectrum_shift"
+    }
+  },
+
+  "color_palette": {
+    "primary": "#FF006D",
+    "secondary": "#00F0FF",
+    "value": "#FFC700",
+    "ambient": "#111113",
+    "effects": {
+      "glow": "soft_neon",
+      "ghost": "desaturated_aura",
+      "glitch": "cyan_magenta_offset",
+      "holo": "prismatic_reflection"
+    }
+  },
+
+  "render_quality": {
+    "engine": "high_resolution_cinematic_illustration",
+    "detail_level": "semi_realistic",
+    "edges": "soft_with_sharp_highlights",
+    "shadows": "realistic_soft_core",
+    "clarity": "high_focus_without_hyper_real_noise"
+  },
+
+  "background": {
+    "environment": "soft_hazy_post_cyberpunk_city_or_digital_void",
+    "style": "cinematic_gradient_with_energy_field",
+    "texture": "mist_light_particles",
+    "contrast": "medium_low_to_keep_focus_on_subject"
+  },
+
+  "stylistic_tone": {
+    "identity": "myth_digital",
+    "vibe": "mystical_tech",
+    "intensity": "vibrant_and_spiritual",
+    "narrative_feel": "iconic_legendary_presence"
+  },
+
+  "icon_behavior": {
+    "usage": "concept_art, cinematic_keyart, card_art",
+    "scalability": "optimized_for_card_print, ui_and_wallpapers",
+    "consistency": "glow_magenta_primary_and_cyan_secondary_must_be_visible"
+  },
+
+  "physical_render": {
+    "camera": {
+      "sensor": "full_frame_35mm",
+      "aperture": "f1.4",
+      "focus_depth": "shallow",
+      "distance": "medium_shot"
+    },
+    "materials": {
+      "subsurface_scattering": true,
+      "micro_specular": "sharp",
+      "roughness": "soft_reptile_skin_or_fabric",
+      "global_illumination": true
+    },
+    "post_processing": {
+      "film_grain": "1.5%",
+      "aberration": "subtle_rgb_split",
+      "tone_mapping": "hdr_cinematic",
+      "contrast": "strong_luma_depth"
+    }
+  }
+}

@@ -39,6 +39,7 @@
     "cards:figma": "node scripts/export_figma.js",
     "cards:verify": "node scripts/cards_verify.js",
     "nft:worker": "tsx src/modules/nft/nft.queue.ts"
+    ,"get:token:akroma": "tsx scripts/get-akroma-access-token.ts"
   },
   "dependencies": {
     "@fastify/cors": "^8.5.0",

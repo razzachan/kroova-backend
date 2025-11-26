@@ -58,7 +58,7 @@ export default function MarketplacePage() {
   const loadListings = async () => {
     try {
       const response = await api.get('/market/listings');
-      setListings(response.data.listings || []);
+      setListings(response.data.data?.listings || []);
     } catch (error) {
       console.error('Erro ao carregar marketplace:', error);
     } finally {

@@ -36,7 +36,7 @@ export default function BoostersPage() {
   const loadBoosters = async () => {
     try {
       const response = await api.get('/boosters/types');
-      setBoosters(response.data.boosterTypes || []);
+      setBoosters(response.data.data?.boosterTypes || []);
     } catch (error) {
       console.error('Erro ao carregar boosters:', error);
     } finally {
@@ -50,7 +50,7 @@ export default function BoostersPage() {
     setOpening(true);
     try {
       const response = await api.post('/boosters/buy', { booster_type_id: boosterId });
-      const cards = response.data.cards || [];
+      const cards = response.data.data?.cards || [];
       setOpenedCards(cards);
       
       setTimeout(() => {

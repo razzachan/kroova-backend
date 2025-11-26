@@ -27,15 +27,23 @@ if (useStub) {
       limit(n: number) { const arr = mem[table] || (mem[table] = []); const filtered = applyFilters(arr).slice(0, n); return Promise.resolve({ data: filtered, error: null }); }
     } as any;
   }
-  supabase = { from };
-  supabaseAdmin = { from };
+  const authStub = {
+    getUser: (_token: string) => Promise.resolve({ data: { user: { id: 'test-user-id', email: 'test@test.com', role: 'authenticated' } }, error: null })
+  };
+  supabase = { from, auth: authStub };
+  supabaseAdmin = { from, auth: authStub };
   console.log('[supabase] Using in-memory stub (SUPABASE_STUB_ENABLED=true)');
 } else {
   if (!env.supabaseUrl || !env.supabaseAnonKey || !env.supabaseServiceKey) {
     throw new Error('Missing Supabase credentials: set SUPABASE_URL / SUPABASE_ANON_KEY / SUPABASE_SERVICE_KEY');
   }
   supabase = createClient(env.supabaseUrl, env.supabaseAnonKey);
-  supabaseAdmin = createClient(env.supabaseUrl, env.supabaseServiceKey);
+  supabaseAdmin = createClient(env.supabaseUrl, env.supabaseServiceKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  });
 }
 
 export { supabase, supabaseAdmin };

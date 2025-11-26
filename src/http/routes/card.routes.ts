@@ -5,43 +5,10 @@ import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { mintNftSchema } from "../validators/card.schema.js";
 import { CardService } from "../../modules/card/card.service.js";
-import { supabase } from "../../config/supabase.js";
 
 const cardService = new CardService();
 
 export async function cardRoutes(app: FastifyInstance) {
-  /**
-   * GET /inventory
-   * Lista cartas do usuário logado
-   */
-  app.get(
-    "/inventory",
-    { preHandler: authMiddleware },
-    async (request: FastifyRequest, reply: FastifyReply) => {
-      try {
-        if (!request.user) {
-          return reply.code(401).send(fail("UNAUTHORIZED"));
-        }
-
-        const { data, error } = await supabase
-          .from("cards_instances")
-          .select(`
-            *,
-            cards_base (*)
-          `)
-          .eq("owner_id", request.user.sub)
-          .order("minted_at", { ascending: false });
-
-        if (error) {
-          return reply.code(500).send(fail("QUERY_ERROR", error.message));
-        }
-
-        return reply.send(ok({ inventory: data || [] }));
-      } catch (error) {
-        return reply.code(500).send(fail("INTERNAL_ERROR"));
-      }
-    },
-  );
 
   /**
    * GET /cards/ed01

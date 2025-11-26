@@ -1,0 +1,168 @@
+'use client';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { api } from '@/lib/api';
+
+interface CardBase {
+  id: string;
+  name: string;
+  rarity: string;
+  card_type: string;
+  energy_cost: number;
+  attack: number | null;
+  defense: number | null;
+  ability_text: string;
+  flavor_text: string;
+  artist: string;
+}
+
+interface CardInstance {
+  id: string;
+  card_base_id: string;
+  mint_number: number;
+  total_minted: number;
+  condition: string;
+  card_base?: CardBase;
+}
+
+interface MarketListing {
+  id: string;
+  card_instance_id: string;
+  seller_id: string;
+  price: number;
+  status: string;
+  created_at: string;
+  card_instance?: CardInstance;
+}
+
+export default function MarketplacePage() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+  const [listings, setListings] = useState<MarketListing[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (user) {
+      loadListings();
+    }
+  }, [user]);
+
+  const loadListings = async () => {
+    try {
+      const response = await api.get('/market/listings');
+      setListings(response.data.listings || []);
+    } catch (error) {
+      console.error('Erro ao carregar marketplace:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBuy = async (listingId: string, price: number) => {
+    if (!confirm(`Comprar esta carta por R$ ${price}?`)) return;
+    
+    try {
+      await api.post(`/market/listings/${listingId}/buy`);
+      alert('Carta comprada com sucesso! 🎉');
+      loadListings();
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Erro ao comprar carta. Verifique seu saldo.');
+    }
+  };
+
+  if (authLoading || !user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
+        <div className="text-white text-xl">Carregando...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+      <nav className="bg-gray-800 border-b border-gray-700">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <a href="/dashboard" className="text-2xl font-bold text-white">🃏 Krouva</a>
+          <div className="flex items-center gap-4">
+            <a href="/dashboard" className="text-gray-300 hover:text-white">Dashboard</a>
+            <a href="/marketplace" className="text-blue-400 font-semibold">Marketplace</a>
+            <a href="/boosters" className="text-gray-300 hover:text-white">Boosters</a>
+            <a href="/wallet" className="text-gray-300 hover:text-white">Wallet</a>
+          </div>
+        </div>
+      </nav>
+
+      <main className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold text-white mb-6">🛒 Marketplace</h1>
+
+        {loading ? (
+          <div className="text-center text-gray-400 py-12">Carregando cartas...</div>
+        ) : listings.length === 0 ? (
+          <div className="bg-gray-800 rounded-lg p-12 text-center">
+            <p className="text-gray-400 text-lg mb-4">Nenhuma carta disponível no momento</p>
+            <p className="text-gray-500">Seja o primeiro a listar uma carta!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {listings.map((listing) => {
+              const card = listing.card_instance?.card_base;
+              const rarityColors: Record<string, string> = {
+                common: 'text-gray-400',
+                rare: 'text-blue-400',
+                epic: 'text-purple-400',
+                legendary: 'text-yellow-400'
+              };
+              
+              return (
+                <div key={listing.id} className="bg-gray-800 rounded-lg p-4 hover:bg-gray-700 transition">
+                  <div className="aspect-square bg-gradient-to-br from-gray-700 to-gray-900 rounded-lg mb-4 flex flex-col items-center justify-center p-4 relative">
+                    <span className="text-6xl mb-2">🃏</span>
+                    {card && (
+                      <>
+                        <div className="absolute top-2 right-2 bg-gray-900/80 px-2 py-1 rounded text-xs text-yellow-400">
+                          ⚡{card.energy_cost}
+                        </div>
+                        {card.attack !== null && card.defense !== null && (
+                          <div className="absolute bottom-2 left-2 right-2 flex justify-between text-xs">
+                            <span className="bg-red-900/80 px-2 py-1 rounded text-white">⚔️ {card.attack}</span>
+                            <span className="bg-blue-900/80 px-2 py-1 rounded text-white">🛡️ {card.defense}</span>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-white font-bold truncate">{card?.name || 'Carta Desconhecida'}</h3>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className={`font-semibold capitalize ${rarityColors[card?.rarity || 'common']}`}>
+                        {card?.rarity || 'common'}
+                      </span>
+                      <span className="text-gray-500">
+                        #{listing.card_instance?.mint_number}/{listing.card_instance?.total_minted}
+                      </span>
+                    </div>
+                    <p className="text-2xl font-bold text-green-400">R$ {listing.price}</p>
+                    <button 
+                      onClick={() => handleBuy(listing.id, listing.price)}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition font-semibold"
+                    >
+                      Comprar
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}

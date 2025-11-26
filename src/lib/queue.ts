@@ -1,8 +1,11 @@
 let BullQueue: any, BullWorker: any, Redis: any;
-function lazyLoad() {
+async function lazyLoad() {
   if (!BullQueue) {
-    ({ Queue: BullQueue, Worker: BullWorker } = require('bullmq'));
-    Redis = require('ioredis');
+    const bullmq = await import('bullmq');
+    BullQueue = bullmq.Queue;
+    BullWorker = bullmq.Worker;
+    const ioredis = await import('ioredis');
+    Redis = ioredis.default;
   }
 }
 
@@ -31,10 +34,17 @@ class InMemoryQueue {
 
 class BullQueueWrapper {
   private q: any;
-  constructor(name: string) {
-    lazyLoad();
-    this.q = new BullQueue(name, { connection: this.conn() });
+  private initialized = false;
+  
+  constructor(private name: string) {}
+  
+  private async init() {
+    if (this.initialized) return;
+    await lazyLoad();
+    this.q = new BullQueue(this.name, { connection: this.conn() });
+    this.initialized = true;
   }
+  
   private _conn: any;
   private conn() {
     if (this._conn) return this._conn;
@@ -46,6 +56,7 @@ class BullQueueWrapper {
     return this._conn;
   }
   async add(type: QueueJobType, data: InternalJobData) {
+    await this.init();
     const job = await this.q.add(type, data, {
       attempts: 3,
       backoff: { type: 'exponential', delay: 3000 },
@@ -55,6 +66,7 @@ class BullQueueWrapper {
     return job.id as string;
   }
   async getStatus(id: string) {
+    await this.init();
     const job = await this.q.getJob(id);
     if (!job) return 'failed';
     if (await job.isCompleted()) return 'completed';
@@ -62,8 +74,8 @@ class BullQueueWrapper {
     if (await job.isActive()) return 'processing';
     return 'pending';
   }
-  startMintWorker(processor: (data: any) => Promise<any>) {
-    lazyLoad();
+  async startMintWorker(processor: (data: any) => Promise<any>) {
+    await lazyLoad();
     return new BullWorker(this.q.name, async (job: any) => processor(job.data), { connection: this.conn() });
   }
 }

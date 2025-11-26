@@ -28,10 +28,12 @@ export async function routes(app: FastifyInstance) {
     done();
   });
   // Health check
-  app.get("/", async () => {
+  app.get("/", async (req, reply) => {
+    console.log('[route /] hit');
     return { ok: true, message: ROOT_MESSAGE };
   });
-  app.get("/health", async () => {
+  app.get("/health", async (req, reply) => {
+    console.log('[route /health] hit');
     return { ok: true };
   });
 

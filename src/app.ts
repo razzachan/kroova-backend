@@ -17,7 +17,8 @@ export async function buildApp() {
   // Correlation: attach request id and basic metadata for each request
   app.addHook("onRequest", (req, _res, done) => {
     // Fastify's logger already binds req id; we enrich with method/path
-    req.log = req.log.child({ route: req.routerPath, method: req.method });
+    // Note: routerPath not available yet in onRequest, use url instead
+    req.log = req.log.child({ url: req.url, method: req.method });
     done();
   });
 

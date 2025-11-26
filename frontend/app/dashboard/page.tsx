@@ -33,8 +33,8 @@ export default function DashboardPage() {
         api.get('/inventory')
       ]);
       setStats({
-        balance: walletRes.data.wallet?.balance_brl || 0,
-        cardsCount: inventoryRes.data.inventory?.length || 0,
+        balance: walletRes.data.data?.wallet?.balance_brl || 0,
+        cardsCount: inventoryRes.data.data?.inventory?.length || 0,
         listingsCount: 0
       });
     } catch (error) {

@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { unwrap } from '@/lib/unwrap';
 
 interface Wallet {
   balance_brl: number;
@@ -42,8 +43,10 @@ export default function WalletPage() {
         api.get('/wallet'),
         api.get('/wallet/transactions')
       ]);
-      setWallet(walletRes.data.wallet);
-      setTransactions(transactionsRes.data.transactions || []);
+      const wallet = unwrap<Wallet>(walletRes);
+      const txData = unwrap<{ transactions?: Transaction[] }>(transactionsRes);
+      setWallet(wallet || null);
+      setTransactions(txData.transactions || []);
     } catch (error) {
       console.error('Erro ao carregar wallet:', error);
     } finally {

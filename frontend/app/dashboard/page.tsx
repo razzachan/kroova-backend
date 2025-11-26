@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { unwrap } from '@/lib/unwrap';
 
 export default function DashboardPage() {
   const { user, loading, signOut } = useAuth();
@@ -32,9 +33,12 @@ export default function DashboardPage() {
         api.get('/wallet'),
         api.get('/inventory')
       ]);
+      const wallet = unwrap<{ balance_brl: number }>(walletRes);
+      const inv = unwrap<{ cards?: any[]; inventory?: any[] }>(inventoryRes);
+      const cardsArr = (inv.cards ?? inv.inventory) || [];
       setStats({
-        balance: walletRes.data.data?.wallet?.balance_brl || 0,
-        cardsCount: inventoryRes.data.data?.inventory?.length || 0,
+        balance: (wallet as any)?.balance_brl || 0,
+        cardsCount: cardsArr.length || 0,
         listingsCount: 0
       });
     } catch (error) {

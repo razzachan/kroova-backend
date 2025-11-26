@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { unwrap } from '@/lib/unwrap';
 
 interface BoosterType {
   id: string;
@@ -35,8 +36,9 @@ export default function BoostersPage() {
 
   const loadBoosters = async () => {
     try {
-      const response = await api.get('/boosters/types');
-      setBoosters(response.data.data?.boosterTypes || []);
+      const response = await api.get('/boosters');
+      const list = unwrap<BoosterType[]>(response) || [];
+      setBoosters(list);
     } catch (error) {
       console.error('Erro ao carregar boosters:', error);
     } finally {
@@ -49,8 +51,16 @@ export default function BoostersPage() {
     
     setOpening(true);
     try {
-      const response = await api.post('/boosters/buy', { booster_type_id: boosterId });
-      const cards = response.data.data?.cards || [];
+      // 1) Purchase one booster (BRL)
+      const purchaseRes = await api.post('/boosters/purchase', { booster_type_id: boosterId, quantity: 1, currency: 'brl' });
+      const purchase = unwrap<{ boosters: { id: string }[] }>(purchaseRes);
+      const openingId = purchase?.boosters?.[0]?.id;
+      if (!openingId) throw new Error('Falha na compra do booster');
+
+      // 2) Open booster
+      const openRes = await api.post('/boosters/open', { booster_opening_id: openingId });
+      const openData = unwrap<{ cards: any[] }>(openRes);
+      const cards = openData?.cards || [];
       setOpenedCards(cards);
       
       setTimeout(() => {

@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { unwrap } from '@/lib/unwrap';
 
 interface CardBase {
   id: string;
@@ -31,10 +32,12 @@ interface MarketListing {
   id: string;
   card_instance_id: string;
   seller_id: string;
-  price: number;
+  price?: number;
+  price_brl?: number;
   status: string;
   created_at: string;
   card_instance?: CardInstance;
+  cards_instances?: CardInstance;
 }
 
 export default function MarketplacePage() {
@@ -58,7 +61,8 @@ export default function MarketplacePage() {
   const loadListings = async () => {
     try {
       const response = await api.get('/market/listings');
-      setListings(response.data.data?.listings || []);
+      const data = unwrap<{ listings: MarketListing[] }>(response);
+      setListings(data?.listings || []);
     } catch (error) {
       console.error('Erro ao carregar marketplace:', error);
     } finally {
@@ -113,7 +117,8 @@ export default function MarketplacePage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {listings.map((listing) => {
-              const card = listing.card_instance?.card_base;
+              const ci = listing.card_instance || listing.cards_instances;
+              const card = ci?.card_base;
               const rarityColors: Record<string, string> = {
                 common: 'text-gray-400',
                 rare: 'text-blue-400',
@@ -146,12 +151,12 @@ export default function MarketplacePage() {
                         {card?.rarity || 'common'}
                       </span>
                       <span className="text-gray-500">
-                        #{listing.card_instance?.mint_number}/{listing.card_instance?.total_minted}
+                        #{ci?.mint_number}/{ci?.total_minted}
                       </span>
                     </div>
-                    <p className="text-2xl font-bold text-green-400">R$ {listing.price}</p>
+                    <p className="text-2xl font-bold text-green-400">R$ {listing.price_brl || listing.price}</p>
                     <button 
-                      onClick={() => handleBuy(listing.id, listing.price)}
+                      onClick={() => handleBuy(listing.id, listing.price_brl || listing.price || 0)}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition font-semibold"
                     >
                       Comprar

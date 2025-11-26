@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { unwrap } from '@/lib/unwrap';
 
 interface CardBase {
   id: string;
@@ -30,6 +31,7 @@ interface InventoryItem {
   card_instance_id: string;
   acquired_at: string;
   card_instance?: CardInstance;
+  cards_instances?: CardInstance;
 }
 
 export default function InventoryPage() {
@@ -55,7 +57,8 @@ export default function InventoryPage() {
   const loadInventory = async () => {
     try {
       const response = await api.get('/inventory');
-      setInventory(response.data.inventory || []);
+      const data = unwrap<{ cards?: InventoryItem[]; inventory?: InventoryItem[] }>(response);
+      setInventory(data.cards || data.inventory || []);
     } catch (error) {
       console.error('Erro ao carregar inventário:', error);
     } finally {
@@ -73,7 +76,7 @@ export default function InventoryPage() {
     try {
       await api.post('/market/listings', {
         card_instance_id: cardInstanceId,
-        price: price
+        price_brl: price
       });
       alert('Carta listada no marketplace! 🎉');
       setSellingCard(null);
@@ -123,8 +126,8 @@ export default function InventoryPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {inventory.map((item) => {
-              const card = item.card_instance?.card_base;
-              const instance = item.card_instance;
+              const instance = item.card_instance || item.cards_instances;
+              const card = instance?.card_base;
               const rarityColors: Record<string, string> = {
                 common: 'text-gray-400',
                 rare: 'text-blue-400',

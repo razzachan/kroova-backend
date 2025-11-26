@@ -51,8 +51,8 @@ async function start() {
     process.on('unhandledRejection', (reason) => {
       console.error('unhandledRejection', reason);
     });
-    await app.listen({ port: Number(env.port), host: String((env as any).bindHost || '0.0.0.0') });
-    app.log.info({ port: env.port, env: env.nodeEnv }, "backend started");
+    await app.listen({ port: Number(env.port), host: env.bindHost });
+    app.log.info({ port: env.port, host: env.bindHost, env: env.nodeEnv }, "backend started");
     logActiveHandles('post-listen');
     app.server.on('close', () => {
       console.log('[diag] server close event');

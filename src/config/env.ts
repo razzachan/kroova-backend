@@ -5,7 +5,7 @@ dotenv.config();
 export const env = {
   port: process.env.PORT || 3333,
   nodeEnv: process.env.NODE_ENV || "development",
-  bindHost: process.env.BIND_HOST || "127.0.0.1",
+  bindHost: process.env.BIND_HOST || "0.0.0.0",
 
   // Encryption
   encryptionKey: process.env.ENCRYPTION_KEY || (process.env.NODE_ENV === 'test' ? 'encryption-test-key-32-bytes-----' : undefined)!,

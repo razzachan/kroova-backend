@@ -7,7 +7,7 @@
  * - Public Client: For unauthenticated public queries
  */
 
-import { supabase, supabaseAdmin } from '../config/supabase';
+import { supabase, supabaseAdmin } from '../config/supabase.js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export class SupabaseHybridService {

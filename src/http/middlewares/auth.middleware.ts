@@ -2,12 +2,12 @@ import type { FastifyRequest, FastifyReply } from "fastify";
 import { fail } from "../response.js";
 import jwt from "jsonwebtoken";
 import { env } from "../../config/env.js";
-import { supabaseAdmin } from "../../config/supabase.js";
 
 interface JwtPayload {
   sub: string; // user_id
   email: string;
   role?: string;
+  aud?: string;
 }
 
 declare module "fastify" {
@@ -18,7 +18,7 @@ declare module "fastify" {
 
 /**
  * 🔐 Middleware de Autenticação JWT
- * Valida Bearer token do Supabase e adiciona user ao request
+ * Valida Bearer token do Supabase manualmente usando JWT secret derivado
  */
 export async function authMiddleware(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -30,18 +30,15 @@ export async function authMiddleware(request: FastifyRequest, reply: FastifyRepl
 
     const token = authHeader.substring(7);
 
-    // Valida JWT do Supabase usando admin client para verificar tokens
-    const { data, error } = await supabaseAdmin.auth.getUser(token);
+    // Supabase JWT secret (obter de Settings > API > JWT Settings)
+    const decoded = jwt.verify(token, env.supabaseJwtSecret, {
+      audience: 'authenticated'
+    }) as JwtPayload;
 
-    if (error || !data.user) {
-      return reply.code(401).send(fail("INVALID_TOKEN", "Token inválido"));
-    }
-
-    // Adiciona user ao request com shape compatível
     request.user = {
-      sub: data.user.id,
-      email: data.user.email || '',
-      role: data.user.role || 'authenticated'
+      sub: decoded.sub,
+      email: decoded.email || '',
+      role: decoded.role || 'authenticated'
     };
   } catch (error) {
     return reply.code(401).send(fail("INVALID_TOKEN", "Token inválido"));

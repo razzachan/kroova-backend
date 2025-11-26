@@ -14,6 +14,7 @@ export const env = {
   supabaseUrl: process.env.SUPABASE_URL || (process.env.NODE_ENV === 'test' ? 'http://localhost:54321' : undefined)!,
   supabaseAnonKey: process.env.SUPABASE_ANON_KEY || (process.env.NODE_ENV === 'test' ? 'anon-test-key' : undefined)!,
   supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY || (process.env.NODE_ENV === 'test' ? 'service-test-key' : undefined)!,
+  supabaseJwtSecret: process.env.SUPABASE_JWT_SECRET || process.env.SUPABASE_SERVICE_KEY || (process.env.NODE_ENV === 'test' ? 'jwt-secret-test' : undefined)!,
 
   // JWT
   jwtSecret: process.env.JWT_SECRET || (process.env.NODE_ENV === 'test' ? 'jwt-test-secret' : undefined)!,

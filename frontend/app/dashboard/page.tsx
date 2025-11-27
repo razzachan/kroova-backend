@@ -14,6 +14,8 @@ export default function DashboardPage() {
     cardsCount: 0,
     listingsCount: 0
   });
+  const [jackpots, setJackpots] = useState<{ amount_brl: number; created_at: string; user_mask: string }[]>([]);
+  const [jackpotsLoading, setJackpotsLoading] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -24,6 +26,7 @@ export default function DashboardPage() {
   useEffect(() => {
     if (user) {
       loadStats();
+      loadJackpots();
     }
   }, [user]);
 
@@ -47,6 +50,20 @@ export default function DashboardPage() {
       });
     } catch (error) {
       console.error('Erro ao carregar estatísticas:', error);
+    }
+  };
+
+  const loadJackpots = async () => {
+    try {
+      setJackpotsLoading(true);
+      const res = await api.get('/jackpots/recent?limit=10');
+      const data = unwrap<{ items: { amount_brl: number; created_at: string; user_mask: string }[] }>(res);
+      setJackpots(data?.items || []);
+    } catch (error) {
+      console.error('Erro ao carregar jackpots:', error);
+      setJackpots([]);
+    } finally {
+      setJackpotsLoading(false);
     }
   };
 
@@ -115,6 +132,36 @@ export default function DashboardPage() {
             <li>Abrir boosters e colecionar cartas raras</li>
             <li>Gerenciar sua wallet e transações</li>
             <li>Competir com outros jogadores</li>
+          </ul>
+        </div>
+
+        <div className="mt-8 bg-gray-800 rounded-lg p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-white">Jackpots Recentes</h2>
+            <button
+              onClick={loadJackpots}
+              className="text-sm bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded"
+              disabled={jackpotsLoading}
+            >
+              {jackpotsLoading ? 'Atualizando...' : 'Atualizar'}
+            </button>
+          </div>
+          {jackpots.length === 0 && !jackpotsLoading && (
+            <p className="text-gray-400">Nenhum jackpot registrado ainda. Boa sorte!</p>
+          )}
+          <ul className="divide-y divide-gray-700">
+            {jackpots.map((j, idx) => (
+              <li key={`${j.created_at}-${idx}`} className="py-3 flex items-center justify-between">
+                <div className="text-gray-300">
+                  <span className="font-mono text-gray-400 mr-2">{j.user_mask}</span>
+                  ganhou
+                </div>
+                <div className="text-right">
+                  <div className="text-green-400 font-semibold">R$ {j.amount_brl.toFixed(2)}</div>
+                  <div className="text-xs text-gray-500">{new Date(j.created_at).toLocaleString()}</div>
+                </div>
+              </li>
+            ))}
           </ul>
         </div>
       </main>

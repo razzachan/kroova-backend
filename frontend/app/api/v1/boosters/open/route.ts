@@ -52,11 +52,16 @@ function selectSkin(skinMultipliers: any): string {
   return 'default';
 }
 
-// Layer 3: Verificar GODMODE STATUS (1% probability)
-function shouldBeGodmode(canAwardGodmode: boolean, forcedGodmode: boolean = false): boolean {
+// Layer 3: Verificar GODMODE STATUS por booster (1% probability, máx. 1 por abertura)
+function decideBoosterGodmode(
+  canAwardGodmode: boolean,
+  forcedGodmode: boolean = false,
+  probability: number = 0.01
+): boolean {
   if (forcedGodmode) return true;
   if (!canAwardGodmode) return false;
-  return Math.random() < 0.01; // 1%
+  const p = Math.max(0, Math.min(1, probability || 0.01));
+  return Math.random() < p;
 }
 
 // Calcular liquidez final: base × skin × price × godmode
@@ -72,6 +77,33 @@ function calculateLiquidity(
     liquidity *= godmodeMultiplier;
   }
   return Math.round(liquidity * 100) / 100; // 2 decimals
+}
+
+// Decide jackpot payout (scratch-like). At most one jackpot per booster.
+function decideJackpotPayout(
+  boosterName: string,
+  boosterPriceBrl: number,
+  jackpotTiers: any
+): number {
+  try {
+    if (!jackpotTiers || typeof jackpotTiers !== 'object') return 0;
+    const tiers = jackpotTiers[boosterName];
+    if (!Array.isArray(tiers) || tiers.length === 0) return 0;
+    // Check from highest to lowest by conventional order grand > major > minor
+    const order = { grand: 3, major: 2, minor: 1 } as Record<string, number>;
+    const sorted = [...tiers].sort((a, b) => (order[b?.name] || 0) - (order[a?.name] || 0));
+    for (const t of sorted) {
+      const prob = Math.max(0, Math.min(1, Number(t?.probability || 0)));
+      const mult = Number(t?.multiplier || 0);
+      if (prob > 0 && mult > 0 && Math.random() < prob) {
+        const payout = boosterPriceBrl * mult;
+        return Math.round(payout * 100) / 100;
+      }
+    }
+    return 0;
+  } catch {
+    return 0;
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -138,7 +170,7 @@ export async function POST(request: NextRequest) {
 
     const { data: editionConfig, error: editionError } = await supabaseAdmin
       .from('edition_configs')
-      .select('base_liquidity, skin_multipliers, godmode_multiplier, godmode_probability')
+      .select('base_liquidity, skin_multipliers, godmode_multiplier, godmode_probability, jackpot_tiers')
       .eq('id', editionId)
       .single();
 
@@ -176,8 +208,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Pity system: 100 boosters = forçar godmode
-    if (pityCounter >= 100) {
+    // Pity system: 180 boosters = force godmode (reduces effective godmode frequency)
+    if (pityCounter >= 180) {
       forcedGodmode = true;
       // Reset counter
       await supabaseAdmin.rpc('reset_pity_counter', {
@@ -212,13 +244,20 @@ export async function POST(request: NextRequest) {
     selectedRarities.sort(() => Math.random() - 0.5);
 
     // Gerar instâncias
+    // Decidir uma vez se este booster terá godmode
+    const boosterHasGodmode = decideBoosterGodmode(
+      canAwardGodmode,
+      forcedGodmode,
+      editionConfig.godmode_probability ?? 0.01
+    );
     let godmodeAwarded = false;
+    let firstInstanceId: string | null = null;
     for (let i = 0; i < selectedRarities.length; i++) {
       const rarity = selectedRarities[i];
       const skin = selectSkin(skinMultipliers);
 
-      // Decidir se é godmode (apenas 1 por booster)
-      const isGodmode = !godmodeAwarded && shouldBeGodmode(canAwardGodmode, forcedGodmode && i === 0);
+      // Aplicar godmode apenas em uma carta (por booster)
+      const isGodmode = boosterHasGodmode && !godmodeAwarded && i === 0;
       if (isGodmode) godmodeAwarded = true;
 
       // Buscar card aleatória dessa raridade
@@ -256,29 +295,76 @@ export async function POST(request: NextRequest) {
           is_godmode: isGodmode,
           liquidity_brl: liquidityBrl
         })
-        .select('id, base_id, skin, is_godmode, liquidity_brl, cards_base!inner(name, rarity, image_url, display_id)')
+        .select()
         .single();
 
-      if (!instanceError && cardInstance) {
+      if (instanceError) {
+        console.error('[OPEN] Error creating card instance:', instanceError);
+        continue; // Skip this card and continue
+      }
+
+      if (cardInstance) {
+        if (!firstInstanceId) firstInstanceId = cardInstance.id;
         generatedCards.push({
           id: cardInstance.id,
           base_id: cardInstance.base_id,
           skin: cardInstance.skin,
           is_godmode: cardInstance.is_godmode,
           liquidity_brl: cardInstance.liquidity_brl,
-          card: cardInstance.cards_base
+          card: {
+            name: randomCard.name,
+            rarity: randomCard.rarity,
+            image_url: randomCard.image_url,
+            display_id: randomCard.display_id
+          }
         });
       }
     }
 
+    console.log('[OPEN] Generated', generatedCards.length, 'cards');
+
+    // Optionally apply jackpot payout (scratch-like): add payout to first card liquidity
+    if (generatedCards.length > 0) {
+      const jackpotPayout = decideJackpotPayout(
+        boosterType.name,
+        boosterType.price_brl || 0,
+        editionConfig.jackpot_tiers
+      );
+      if (jackpotPayout > 0 && firstInstanceId) {
+        const first = generatedCards[0];
+        const newLiquidity = Math.round(((first.liquidity_brl || 0) + jackpotPayout) * 100) / 100;
+        await supabaseAdmin
+          .from('cards_instances')
+          .update({ liquidity_brl: newLiquidity })
+          .eq('id', firstInstanceId);
+        first.liquidity_brl = newLiquidity;
+      }
+    }
+
+    // Verificar se gerou pelo menos 1 carta
+    if (generatedCards.length === 0) {
+      return NextResponse.json(
+        { ok: false, error: { code: 'NO_CARDS_GENERATED', message: 'Nenhuma carta foi gerada (verifique cards_base para essa edição)' } },
+        { status: 500 }
+      );
+    }
+
     // 8. Atualizar opening com cartas geradas
-    await supabaseAdmin
+    const { error: updateError } = await supabaseAdmin
       .from('booster_openings')
       .update({
-        cards_received: generatedCards.map(c => c.id),
+        cards_obtained: generatedCards.map(c => c.id),
         opened_at: new Date().toISOString()
       })
       .eq('id', opening_id);
+
+    if (updateError) {
+      console.error('[OPEN] Error updating opening:', updateError);
+      return NextResponse.json(
+        { ok: false, error: { code: 'UPDATE_ERROR', message: updateError.message } },
+        { status: 500 }
+      );
+    }
 
     // 9. Atualizar edition metrics (jackpot payout se teve godmode)
     if (godmodeAwarded) {

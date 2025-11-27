@@ -25,8 +25,9 @@ export async function walletRoutes(app: FastifyInstance) {
         const wallet = await walletService.getWallet(request.user.sub);
 
         return reply.send(ok(wallet));
-      } catch (error) {
-        return reply.code(500).send(fail("INTERNAL_ERROR"));
+      } catch (error: any) {
+        console.error('[wallet] GET /wallet error:', error?.message || error);
+        return reply.code(500).send(fail("INTERNAL_ERROR", error?.message));
       }
     },
   );

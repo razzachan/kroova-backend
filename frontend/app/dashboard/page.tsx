@@ -33,8 +33,12 @@ export default function DashboardPage() {
         api.get('/wallet'),
         api.get('/inventory')
       ]);
+      console.log('walletRes:', walletRes);
+      console.log('inventoryRes:', inventoryRes);
       const wallet = unwrap<{ balance_brl: number }>(walletRes);
       const inv = unwrap<{ cards?: any[]; inventory?: any[] }>(inventoryRes);
+      console.log('wallet unwrapped:', wallet);
+      console.log('inv unwrapped:', inv);
       const cardsArr = (inv.cards ?? inv.inventory) || [];
       setStats({
         balance: (wallet as any)?.balance_brl || 0,

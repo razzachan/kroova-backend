@@ -31,11 +31,16 @@ export class WalletService {
   async getWallet(userId: string) {
     const { data: wallet, error } = await supabaseHybrid.getAdminClient()
       .from("wallets")
-      .select("*")
+      .select("id, user_id, balance_brl, balance_crypto, created_at")
       .eq("user_id", userId)
       .single();
 
-    if (error || !wallet) {
+    if (error) {
+      console.error('[wallet.service] getWallet error:', error);
+      throw new Error(`Carteira não encontrada: ${error.message}`);
+    }
+
+    if (!wallet) {
       throw new Error("Carteira não encontrada");
     }
 

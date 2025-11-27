@@ -28,16 +28,16 @@ export class WalletService {
    * Consulta saldos BRL/Cripto
    */
   async getWallet(userId: string) {
-    const { data, error } = await supabaseHybrid.getAdminClient()
+    const { data, error } = await supabaseAdmin
       .from("wallets")
       .select("*")
       .eq("user_id", userId)
-      .limit(1);
+      .single();
 
     if (error) throw new Error(error.message);
-    if (!data || data.length === 0) throw new Error("Wallet not found");
+    if (!data) throw new Error("Wallet not found");
 
-    return data[0];
+    return data;
   }
 
   /**
@@ -49,7 +49,7 @@ export class WalletService {
     const limit = query.limit || 20;
     const offset = (page - 1) * limit;
 
-    let queryBuilder = supabaseHybrid.getAdminClient()
+    let queryBuilder = supabaseAdmin
       .from("transactions")
       .select("*", { count: "exact" })
       .eq("user_id", userId)

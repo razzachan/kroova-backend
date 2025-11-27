@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const serviceKey = process.env.SUPABASE_SERVICE_KEY!;
+const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-console.log('DEBUG open-test: serviceKey exists?', !!serviceKey, 'length:', serviceKey?.length || 0);
+// Usando anon key pois service key não está funcionando no Vercel
+console.log('DEBUG open-test: using anon key');
 
 // ENDPOINT DE TESTE - NÃO USAR EM PRODUÇÃO
 // Permite abrir booster sem auth, apenas com user_id + booster_id
@@ -42,7 +43,7 @@ function selectSkin(): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient(supabaseUrl, serviceKey);
+    const supabase = createClient(supabaseUrl, anonKey);
     
     let body;
     try {

@@ -1,151 +1,222 @@
 'use client';
 
-import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { api } from '@/lib/api';
+import { useRouter } from 'next/navigation';
+import api from '@/lib/api';
 import { unwrap } from '@/lib/unwrap';
 
 interface BoosterType {
   id: string;
   name: string;
   price_brl: number;
-  card_count: number;
-  description: string;
+  rarity_distribution: Record<string, number>;
+  cards_per_booster: number;
+  edition_id: string;
+}
+
+interface Card {
+  id: string;
+  base_id: string;
+  skin: string;
+  card: {
+    name: string;
+    rarity: string;
+    image_url: string;
+    display_id: string;
+  };
 }
 
 export default function BoostersPage() {
-  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [boosters, setBoosters] = useState<BoosterType[]>([]);
+  const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [opening, setOpening] = useState(false);
-  const [openedCards, setOpenedCards] = useState<any[]>([]);
+  const [purchasing, setPurchasing] = useState<string | null>(null);
+  const [opening, setOpening] = useState<string | null>(null);
+  const [revealedCards, setRevealedCards] = useState<Card[]>([]);
+  const [showCards, setShowCards] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, authLoading, router]);
+    loadData();
+  }, []);
 
-  useEffect(() => {
-    if (user) {
-      loadBoosters();
-    }
-  }, [user]);
-
-  const loadBoosters = async () => {
+  async function loadData() {
     try {
-      const response = await api.get('/boosters');
-      const list = unwrap<BoosterType[]>(response) || [];
-      setBoosters(list);
+      const [boostersRes, walletRes] = await Promise.all([
+        api.get('/boosters'),
+        api.get('/wallet')
+      ]);
+
+      setBoosters(unwrap(boostersRes.data));
+      setBalance(unwrap(walletRes.data).balance_brl);
     } catch (error) {
-      console.error('Erro ao carregar boosters:', error);
+      console.error('Erro ao carregar dados:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  const handleBuy = async (boosterId: string, price: number) => {
-    if (!confirm(`Comprar booster por R$ ${price}?`)) return;
-    
-    setOpening(true);
+  async function handlePurchase(boosterId: string) {
+    setPurchasing(boosterId);
     try {
-      // 1) Purchase one booster (BRL)
-      const purchaseRes = await api.post('/boosters/purchase', { booster_type_id: boosterId, quantity: 1, currency: 'brl' });
-      const purchase = unwrap<{ boosters: { id: string }[] }>(purchaseRes);
-      const openingId = purchase?.boosters?.[0]?.id;
-      if (!openingId) throw new Error('Falha na compra do booster');
+      const res = await api.post('/boosters/purchase', {
+        booster_type_id: boosterId
+      });
 
-      // 2) Open booster
-      const openRes = await api.post('/boosters/open', { booster_opening_id: openingId });
-      const openData = unwrap<{ cards: any[] }>(openRes);
-      const cards = openData?.cards || [];
-      setOpenedCards(cards);
-      
-      setTimeout(() => {
-        alert(`Parabéns! Você recebeu ${cards.length} cartas! 🎉\nVerifique seu inventário.`);
-        setOpening(false);
-        setOpenedCards([]);
-      }, 3000);
+      const data = unwrap(res.data);
+      setBalance(data.new_balance);
+
+      // Abre automaticamente
+      await handleOpen(data.opening_id);
     } catch (error: any) {
-      setOpening(false);
-      alert(error.response?.data?.message || 'Erro ao comprar booster. Verifique seu saldo.');
+      const errorMsg = error.response?.data?.error?.message || 'Erro ao comprar booster';
+      alert(errorMsg);
+    } finally {
+      setPurchasing(null);
     }
-  };
+  }
 
-  if (authLoading || !user) {
+  async function handleOpen(openingId: string) {
+    setOpening(openingId);
+    setShowCards(false);
+
+    try {
+      const res = await api.post('/boosters/open', { opening_id: openingId });
+      const data = unwrap(res.data);
+
+      // Animação: espera 2s antes de revelar
+      setTimeout(() => {
+        setRevealedCards(data.cards);
+        setShowCards(true);
+        setOpening(null);
+      }, 2000);
+    } catch (error) {
+      console.error('Erro ao abrir booster:', error);
+      setOpening(null);
+    }
+  }
+
+  function getRarityColor(rarity: string) {
+    const colors: Record<string, string> = {
+      trash: 'text-gray-400',
+      meme: 'text-blue-400',
+      viral: 'text-purple-400',
+      legendary: 'text-yellow-400',
+      godmode: 'text-red-400'
+    };
+    return colors[rarity] || 'text-gray-400';
+  }
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
-        <div className="text-white text-xl">Carregando...</div>
+      <div className="min-h-screen bg-gray-900 text-white p-8">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-4xl font-bold mb-8">Boosters</h1>
+          <p>Carregando...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
-      <nav className="bg-gray-800 border-b border-gray-700">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <a href="/dashboard" className="text-2xl font-bold text-white">🃏 Krouva</a>
-          <div className="flex items-center gap-4">
-            <a href="/dashboard" className="text-gray-300 hover:text-white">Dashboard</a>
-            <a href="/marketplace" className="text-gray-300 hover:text-white">Marketplace</a>
-            <a href="/boosters" className="text-blue-400 font-semibold">Boosters</a>
-            <a href="/wallet" className="text-gray-300 hover:text-white">Wallet</a>
+    <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold">Boosters</h1>
+          <div className="text-2xl">
+            💰 <span className="text-green-400">R$ {balance.toFixed(2)}</span>
           </div>
         </div>
-      </nav>
 
-      <main className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-white mb-6">📦 Boosters</h1>
+        {/* Grid de Boosters */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {boosters.map((booster) => (
+            <div
+              key={booster.id}
+              className="bg-gray-800 rounded-lg p-6 border-2 border-gray-700 hover:border-blue-500 transition"
+            >
+              <h3 className="text-2xl font-bold mb-2">{booster.name}</h3>
+              <p className="text-gray-400 mb-4">
+                {booster.cards_per_booster} cartas • {booster.edition_id}
+              </p>
 
-        {opening && (
-          <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-8xl mb-4 animate-bounce">📦</div>
-              <h2 className="text-3xl font-bold text-white mb-2">Abrindo Booster...</h2>
-              <p className="text-gray-400">Suas cartas estão chegando!</p>
-              {openedCards.length > 0 && (
-                <div className="mt-8 flex gap-4 justify-center">
-                  {openedCards.map((card: any, i: number) => (
-                    <div key={i} className="animate-pulse">
-                      <div className="text-6xl">🃏</div>
-                      <p className="text-white text-sm mt-2">{card.rarity}</p>
+              <div className="mb-4">
+                <p className="text-sm text-gray-400 mb-2">Distribuição de Raridades:</p>
+                <div className="space-y-1 text-sm">
+                  {Object.entries(booster.rarity_distribution).map(([rarity, percent]) => (
+                    <div key={rarity} className="flex justify-between">
+                      <span className={getRarityColor(rarity)}>{rarity}</span>
+                      <span>{percent}%</span>
                     </div>
                   ))}
                 </div>
-              )}
+              </div>
+
+              <button
+                onClick={() => handlePurchase(booster.id)}
+                disabled={purchasing === booster.id || opening !== null || balance < booster.price_brl}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded transition"
+              >
+                {purchasing === booster.id
+                  ? 'Comprando...'
+                  : balance < booster.price_brl
+                  ? 'Saldo Insuficiente'
+                  : `Comprar - R$ ${booster.price_brl.toFixed(2)}`}
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Animação de Abertura */}
+        {opening && (
+          <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+            <div className="text-center">
+              <div className="text-6xl mb-4 animate-bounce">📦</div>
+              <p className="text-2xl">Abrindo booster...</p>
             </div>
           </div>
         )}
 
-        {loading ? (
-          <div className="text-center text-gray-400 py-12">Carregando boosters...</div>
-        ) : boosters.length === 0 ? (
-          <div className="bg-gray-800 rounded-lg p-12 text-center">
-            <p className="text-gray-400 text-lg">Nenhum booster disponível no momento</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {boosters.map((booster) => (
-              <div key={booster.id} className="bg-gray-800 rounded-lg p-6">
-                <div className="text-6xl mb-4 text-center">📦</div>
-                <h3 className="text-xl font-bold text-white mb-2">{booster.name}</h3>
-                <p className="text-gray-400 mb-4">{booster.description || `${booster.card_count} cartas aleatórias`}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-green-400">R$ {booster.price_brl}</span>
-                  <button
-                    onClick={() => handleBuy(booster.id, booster.price_brl)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition"
+        {/* Cartas Reveladas */}
+        {showCards && revealedCards.length > 0 && (
+          <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-8">
+            <div className="max-w-6xl w-full">
+              <h2 className="text-3xl font-bold text-center mb-8">✨ Suas Novas Cartas! ✨</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+                {revealedCards.map((card) => (
+                  <div
+                    key={card.id}
+                    className="bg-gray-800 rounded-lg p-4 border-2 border-gray-700 hover:scale-105 transition"
                   >
-                    Comprar
-                  </button>
-                </div>
+                    <div className="aspect-[2/3] bg-gray-700 rounded mb-2 flex items-center justify-center">
+                      <span className="text-4xl">🎴</span>
+                    </div>
+                    <h4 className={`font-bold ${getRarityColor(card.card.rarity)}`}>
+                      {card.card.name}
+                    </h4>
+                    <p className="text-xs text-gray-400">{card.skin}</p>
+                    <p className="text-xs text-gray-500">{card.card.display_id}</p>
+                  </div>
+                ))}
               </div>
-            ))}
+              <div className="text-center space-x-4">
+                <button
+                  onClick={() => setShowCards(false)}
+                  className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded"
+                >
+                  Fechar
+                </button>
+                <button
+                  onClick={() => router.push('/inventory')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded"
+                >
+                  Ver Inventário
+                </button>
+              </div>
+            </div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

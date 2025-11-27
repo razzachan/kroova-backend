@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
       const { data: cardBase } = await supabase
         .from('cards_base')
         .select('*')
-        .eq('raridade', raridade)
+        .eq('rarity', raridade)
         .eq('edition_id', booster.edition_id);
 
       if (!cardBase || cardBase.length === 0) continue;

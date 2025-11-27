@@ -62,15 +62,29 @@ export async function POST(request: NextRequest) {
     }
     
     // 2. Buscar booster
-    const { data: booster } = await supabase
+    const { data: booster, error: boosterError } = await supabase
       .from('booster_types')
-      .select('*, edition:edition_configs!edition_id(*)')
+      .select('*')
       .eq('id', booster_id)
       .single();
 
-    if (!booster) {
+    if (boosterError || !booster) {
       return NextResponse.json(
-        { ok: false, error: { code: 'NOT_FOUND', message: 'Booster not found' } },
+        { ok: false, error: { code: 'NOT_FOUND', message: `Booster not found: ${boosterError?.message}` } },
+        { status: 404 }
+      );
+    }
+
+    // 3. Buscar edition
+    const { data: edition, error: editionError } = await supabase
+      .from('edition_configs')
+      .select('*')
+      .eq('id', booster.edition_id)
+      .single();
+
+    if (editionError || !edition) {
+      return NextResponse.json(
+        { ok: false, error: { code: 'NOT_FOUND', message: `Edition not found: ${editionError?.message}` } },
         { status: 404 }
       );
     }
@@ -82,7 +96,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Buscar pity counter
+    // 4. Buscar pity counter
     const { data: pityData } = await supabase
       .from('user_pity_counter')
       .select('counter')
@@ -93,16 +107,16 @@ export async function POST(request: NextRequest) {
     const pityCounter = pityData?.counter || 0;
     const forceGodmode = pityCounter >= 100;
 
-    // 4. Verificar hard cap
+    // 5. Verificar hard cap
     let canAwardGodmode = true;
-    if (forceGodmode || Math.random() < (booster.edition.godmode_probability || 0.01)) {
+    if (forceGodmode || Math.random() < (edition.godmode_probability || 0.01)) {
       const { data: capCheck } = await supabase.rpc('check_edition_hard_cap', {
         p_edition_id: booster.edition_id
       });
       canAwardGodmode = capCheck;
     }
 
-    // 5. Gerar cards
+    // 6. Gerar cards
     const cards = [];
     let totalLiquidity = 0;
 
@@ -110,7 +124,7 @@ export async function POST(request: NextRequest) {
       const raridade = selectRarity(booster.rarity_distribution);
       const skin = selectSkin();
       const isGodmode = (i === 0 && forceGodmode && canAwardGodmode) || 
-                        (!forceGodmode && canAwardGodmode && Math.random() < (booster.edition.godmode_probability || 0.01));
+                        (!forceGodmode && canAwardGodmode && Math.random() < (edition.godmode_probability || 0.01));
 
       // Buscar card base aleatório dessa raridade
       const { data: cardBase } = await supabase
@@ -124,10 +138,10 @@ export async function POST(request: NextRequest) {
       const randomCard = cardBase[Math.floor(Math.random() * cardBase.length)];
 
       // Calcular liquidez: base × skin × price × godmode
-      const baseLiquidity = booster.edition.base_liquidity[raridade] || 0.01;
-      const skinMultiplier = booster.edition.skin_multipliers[skin] || 1.0;
+      const baseLiquidity = edition.base_liquidity[raridade] || 0.01;
+      const skinMultiplier = edition.skin_multipliers[skin] || 1.0;
       const priceMultiplier = booster.price_multiplier || 1.0;
-      const godmodeMultiplier = isGodmode ? (booster.edition.godmode_multiplier || 10) : 1;
+      const godmodeMultiplier = isGodmode ? (edition.godmode_multiplier || 10) : 1;
 
       const liquidity_brl = baseLiquidity * skinMultiplier * priceMultiplier * godmodeMultiplier;
       totalLiquidity += liquidity_brl;
@@ -142,14 +156,14 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 6. Atualizar pity
+    // 7. Atualizar pity
     if (cards.some(c => c.is_godmode)) {
       await supabase.rpc('reset_pity_counter', { p_user_id: user_id, p_edition_id: booster.edition_id });
     } else {
       await supabase.rpc('increment_pity_counter', { p_user_id: user_id, p_edition_id: booster.edition_id });
     }
 
-    // 7. Debitar saldo
+    // 8. Debitar saldo
     await supabase
       .from('users')
       .update({ balance_brl: user.balance_brl - booster.price_brl })

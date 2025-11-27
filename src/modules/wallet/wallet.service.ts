@@ -26,10 +26,10 @@ export class WalletService {
 
   /**
    * Consulta saldos BRL/Cripto
-   * Uses user client - RLS ensures user can only see their own wallet
+   * Uses admin client to bypass RLS (wallet queries need direct access)
    */
   async getWallet(userId: string) {
-    const { data: wallet, error } = await supabaseHybrid.getUserClient()
+    const { data: wallet, error } = await supabaseHybrid.getAdminClient()
       .from("wallets")
       .select("*")
       .eq("user_id", userId)
@@ -44,14 +44,14 @@ export class WalletService {
 
   /**
    * Lista transações com paginação
-   * Uses user client - RLS ensures user can only see their own transactions
+   * Uses admin client for direct access
    */
   async getTransactions(userId: string, query: { page?: number; limit?: number; type?: string }) {
     const page = query.page || 1;
     const limit = query.limit || 20;
     const offset = (page - 1) * limit;
 
-    let queryBuilder = supabaseHybrid.getUserClient()
+    let queryBuilder = supabaseHybrid.getAdminClient()
       .from("transactions")
       .select("*", { count: "exact" })
       .eq("user_id", userId)

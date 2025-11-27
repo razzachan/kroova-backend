@@ -22,15 +22,21 @@ export async function GET() {
     }
 
     // 2. Buscar edition configs
-    const { data: editionConfigs } = await supabase
+    const { data: editionConfigs, error: edError } = await supabase
       .from('edition_configs')
       .select('id, base_liquidity, skin_multipliers, godmode_multiplier, rtp_target, jackpot_hard_cap');
+
+    console.log('🔍 edition_configs:', editionConfigs?.length || 0);
+    console.log('🔍 first booster edition_id:', boosters?.[0]?.edition_id);
+    console.log('🔍 editions ids:', editionConfigs?.map(e => e.id));
+    if (edError) console.error('🔍 edition error:', edError);
 
     const editionsMap = new Map(editionConfigs?.map(e => [e.id, e]) || []);
 
     // 3. Calcular resgate_maximo para cada booster
     const boostersWithMaxResgate = boosters?.map(booster => {
       const edition = editionsMap.get(booster.edition_id);
+      console.log(`🔍 ${booster.name}: edition_id=${booster.edition_id}, found=${!!edition}`);
       if (!edition) return booster;
 
       // Épica × Dark × Godmode × Price Multiplier

@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { supabase } from './supabase';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
 
 export const api = axios.create({
-  baseURL: `${apiUrl}/api/v1`,
+  baseURL: apiUrl ? `${apiUrl}/api/v1` : '/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },

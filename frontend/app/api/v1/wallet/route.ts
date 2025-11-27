@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY!;
+const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-if (!supabaseUrl || !supabaseKey) {
+if (!supabaseUrl || !anonKey) {
   console.error('Missing Supabase config');
 }
 
@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
 
     const token = authHeader.substring(7);
     
-    // Usa o token do usuário para criar um cliente autenticado
-    const supabase = createClient(supabaseUrl, supabaseKey, {
+    // Usa anon key + user token -> RLS valida automaticamente
+    const supabase = createClient(supabaseUrl, anonKey, {
       global: {
         headers: {
           Authorization: `Bearer ${token}`

@@ -1,46 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import jwt from 'jsonwebtoken';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_KEY!;
-const jwtSecret = process.env.SUPABASE_JWT_SECRET!;
 
-// Validação de env vars
-if (!supabaseUrl || !supabaseKey || !jwtSecret) {
-  console.error('Missing env vars:', { 
-    hasUrl: !!supabaseUrl, 
-    hasKey: !!supabaseKey, 
-    hasSecret: !!jwtSecret 
-  });
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-function getUserFromToken(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new Error('No token provided');
-  }
-
-  const token = authHeader.substring(7);
-  const decoded = jwt.verify(token, jwtSecret, { audience: 'authenticated' }) as any;
-  
-  return {
-    sub: decoded.sub,
-    email: decoded.email,
-    role: decoded.role,
-  };
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing Supabase config');
 }
 
 export async function GET(request: NextRequest) {
   try {
-    const user = getUserFromToken(request);
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { ok: false, error: { code: 'UNAUTHORIZED', message: 'No token provided' } },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.substring(7);
+    
+    // Usa o token do usuário para criar um cliente autenticado
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      global: {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    });
 
     const { data, error } = await supabase
       .from('wallets')
       .select('*')
-      .eq('user_id', user.sub)
       .single();
 
     if (error) {
@@ -62,15 +53,8 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Wallet API error:', error);
     
-    if (error.message === 'No token provided') {
-      return NextResponse.json(
-        { ok: false, error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
-        { status: 401 }
-      );
-    }
-
     return NextResponse.json(
-      { ok: false, error: { code: 'INTERNAL_ERROR', message: error.message, stack: error.stack } },
+      { ok: false, error: { code: 'INTERNAL_ERROR', message: error.message } },
       { status: 500 }
     );
   }

@@ -37,9 +37,9 @@ export class MarketService {
       .select(
         `
         *,
-        cards_instances (
+        card_instance:cards_instances (
           *,
-          cards_base (*)
+          card_base:cards_base (*)
         ),
         seller:users!seller_id (id, display_id, name)
       `,

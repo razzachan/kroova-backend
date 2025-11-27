@@ -10,6 +10,26 @@ const walletService = new WalletService();
 
 export async function walletRoutes(app: FastifyInstance) {
   /**
+   * GET /wallet/health
+   * Health check with user info (debug)
+   */
+  app.get(
+    "/wallet/health",
+    { preHandler: authMiddleware },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      return reply.send(ok({
+        authenticated: true,
+        user_id: request.user?.sub,
+        email: request.user?.email,
+        env: {
+          hasJwtSecret: !!env.supabaseJwtSecret,
+          nodeEnv: env.nodeEnv
+        }
+      }));
+    }
+  );
+
+  /**
    * GET /wallet
    * Consulta saldos BRL/Cripto
    * Auth: Bearer token required

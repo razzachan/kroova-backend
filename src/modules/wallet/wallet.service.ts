@@ -29,25 +29,30 @@ export class WalletService {
    * Uses admin client to bypass RLS (wallet queries need direct access)
    */
   async getWallet(userId: string) {
-    console.log('[wallet.service] getWallet userId:', userId);
-    
-    const { data: wallets, error, count } = await supabaseHybrid.getAdminClient()
-      .from("wallets")
-      .select("id, user_id, balance_brl, balance_crypto, created_at", { count: 'exact' })
-      .eq("user_id", userId);
+    try {
+      console.log('[wallet.service] getWallet userId:', userId);
+      
+      const { data: wallets, error, count } = await supabaseHybrid.getAdminClient()
+        .from("wallets")
+        .select("id, user_id, balance_brl, balance_crypto, created_at", { count: 'exact' })
+        .eq("user_id", userId);
 
-    console.log('[wallet.service] query result:', { wallets, error, count });
+      console.log('[wallet.service] query result:', { wallets, error, count });
 
-    if (error) {
-      console.error('[wallet.service] getWallet error:', error);
-      throw new Error(`Carteira não encontrada: ${error.message}`);
+      if (error) {
+        console.error('[wallet.service] getWallet error:', error);
+        throw new Error(`Carteira não encontrada: ${error.message}`);
+      }
+
+      if (!wallets || wallets.length === 0) {
+        throw new Error("Carteira não encontrada para user_id: " + userId);
+      }
+
+      return wallets[0];
+    } catch (err) {
+      console.error('[wallet.service] getWallet exception:', err);
+      throw err;
     }
-
-    if (!wallets || wallets.length === 0) {
-      throw new Error("Carteira não encontrada para user_id: " + userId);
-    }
-
-    return wallets[0];
   }
 
   /**

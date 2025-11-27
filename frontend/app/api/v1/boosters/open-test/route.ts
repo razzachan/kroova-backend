@@ -62,11 +62,11 @@ export async function POST(request: NextRequest) {
     }
 
     // 1. Verificar saldo
-    const { data: user } = await supabase.from('users').select('balance_brl').eq('id', user_id).single();
+    const { data: user, error: userError } = await supabase.from('users').select('balance_brl').eq('id', user_id).single();
     
-    if (!user) {
+    if (userError || !user) {
       return NextResponse.json(
-        { ok: false, error: { code: 'USER_NOT_FOUND', message: 'User not found' } },
+        { ok: false, error: { code: 'USER_NOT_FOUND', message: `User not found: ${userError?.message || 'no data'}` } },
         { status: 404 }
       );
     }

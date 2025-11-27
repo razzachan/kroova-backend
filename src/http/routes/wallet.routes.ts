@@ -43,15 +43,10 @@ export async function walletRoutes(app: FastifyInstance) {
           return reply.code(401).send(fail("UNAUTHORIZED"));
         }
 
-        console.log('[wallet route] user.sub:', request.user.sub);
         const wallet = await walletService.getWallet(request.user.sub);
-        console.log('[wallet route] wallet retrieved:', wallet?.id);
-
         return reply.send(ok(wallet));
       } catch (error: any) {
-        console.error('[wallet route] error:', error?.message || error);
-        // Return error message in response for debugging
-        return reply.code(500).send(fail("INTERNAL_ERROR", `Debug: ${error?.message || JSON.stringify(error)}`));
+        return reply.code(500).send(fail("INTERNAL_ERROR", error?.message || "Unknown error"));
       }
     },
   );

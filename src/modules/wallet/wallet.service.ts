@@ -26,33 +26,18 @@ export class WalletService {
 
   /**
    * Consulta saldos BRL/Cripto
-   * Uses admin client to bypass RLS (wallet queries need direct access)
    */
   async getWallet(userId: string) {
-    try {
-      console.log('[wallet.service] getWallet userId:', userId);
-      
-      const { data: wallets, error, count } = await supabaseHybrid.getAdminClient()
-        .from("wallets")
-        .select("id, user_id, balance_brl, balance_crypto, created_at", { count: 'exact' })
-        .eq("user_id", userId);
+    const { data, error } = await supabaseHybrid.getAdminClient()
+      .from("wallets")
+      .select("*")
+      .eq("user_id", userId)
+      .limit(1);
 
-      console.log('[wallet.service] query result:', { wallets, error, count });
+    if (error) throw new Error(error.message);
+    if (!data || data.length === 0) throw new Error("Wallet not found");
 
-      if (error) {
-        console.error('[wallet.service] getWallet error:', error);
-        throw new Error(`Carteira não encontrada: ${error.message}`);
-      }
-
-      if (!wallets || wallets.length === 0) {
-        throw new Error("Carteira não encontrada para user_id: " + userId);
-      }
-
-      return wallets[0];
-    } catch (err) {
-      console.error('[wallet.service] getWallet exception:', err);
-      throw err;
-    }
+    return data[0];
   }
 
   /**

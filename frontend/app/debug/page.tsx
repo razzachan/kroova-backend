@@ -21,7 +21,18 @@ export default function DebugPage() {
       const data = unwrap(res);
       setResults((prev: any) => ({ ...prev, wallet: { success: true, data } }));
     } catch (error: any) {
-      setResults((prev: any) => ({ ...prev, wallet: { success: false, error: error.message } }));
+      setResults((prev: any) => ({ 
+        ...prev, 
+        wallet: { 
+          success: false, 
+          error: error.message,
+          config: error.config ? {
+            baseURL: error.config.baseURL,
+            url: error.config.url,
+            fullURL: error.config.baseURL + error.config.url
+          } : null
+        } 
+      }));
     }
   };
 
@@ -67,9 +78,11 @@ export default function DebugPage() {
 
       <div className="mt-8 p-4 bg-slate-800 rounded-lg">
         <h2 className="text-xl font-bold mb-4">Environment</h2>
-        <pre className="text-sm">
-          API_URL: {process.env.NEXT_PUBLIC_API_URL}
-          SUPABASE_URL: {process.env.NEXT_PUBLIC_SUPABASE_URL}
+        <pre className="text-sm whitespace-pre-wrap">
+          API_URL: {process.env.NEXT_PUBLIC_API_URL}{'\n'}
+          SUPABASE_URL: {process.env.NEXT_PUBLIC_SUPABASE_URL}{'\n'}
+          {'\n'}
+          Axios baseURL: {`${process.env.NEXT_PUBLIC_API_URL}/api/v1`}
         </pre>
       </div>
     </div>

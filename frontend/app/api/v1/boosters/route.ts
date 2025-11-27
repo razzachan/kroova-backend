@@ -8,19 +8,10 @@ export async function GET() {
   try {
     const supabase = createClient(supabaseUrl, anonKey);
 
-    // Buscar boosters com edition config
+    // 1. Buscar boosters
     const { data: boosters, error } = await supabase
       .from('booster_types')
-      .select(`
-        *,
-        edition:edition_configs!inner(
-          base_liquidity,
-          skin_multipliers,
-          godmode_multiplier,
-          rtp_target,
-          jackpot_hard_cap
-        )
-      `)
+      .select('*')
       .order('price_brl', { ascending: true });
 
     if (error) {
@@ -30,9 +21,16 @@ export async function GET() {
       );
     }
 
-    // Calcular resgate_maximo para cada booster
+    // 2. Buscar edition configs
+    const { data: editionConfigs } = await supabase
+      .from('edition_configs')
+      .select('id, base_liquidity, skin_multipliers, godmode_multiplier, rtp_target, jackpot_hard_cap');
+
+    const editionsMap = new Map(editionConfigs?.map(e => [e.id, e]) || []);
+
+    // 3. Calcular resgate_maximo para cada booster
     const boostersWithMaxResgate = boosters?.map(booster => {
-      const edition = booster.edition;
+      const edition = editionsMap.get(booster.edition_id);
       if (!edition) return booster;
 
       // Épica × Dark × Godmode × Price Multiplier

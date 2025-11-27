@@ -1,31 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import jwt from 'jsonwebtoken';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY!;
-const jwtSecret = process.env.SUPABASE_JWT_SECRET!;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-function getUserFromToken(request: NextRequest) {
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw new Error('No token provided');
-  }
-
-  const token = authHeader.substring(7);
-  const decoded = jwt.verify(token, jwtSecret, { audience: 'authenticated' }) as any;
-  
-  return {
-    sub: decoded.sub,
-    email: decoded.email,
-    role: decoded.role,
-  };
-}
+const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export async function GET(request: NextRequest) {
   try {
-    const user = getUserFromToken(request);
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { ok: false, error: { code: 'UNAUTHORIZED', message: 'No token provided' } },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.substring(7);
+    const supabase = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: `Bearer ${token}` } }
+    });
+
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
@@ -39,7 +32,6 @@ export async function GET(request: NextRequest) {
       `,
         { count: 'exact' }
       )
-      .eq('owner_id', user.sub)
       .order('minted_at', { ascending: false })
       .range((page - 1) * limit, page * limit - 1);
 

@@ -65,7 +65,10 @@ export async function POST(request: NextRequest) {
     }
 
     // 1. Verificar saldo
-    const { data: user, error: userError } = await supabase.from('users').select('balance_brl').eq('id', user_id).single();
+    const { data: users, error: userError } = await supabase.from('users').select('balance_brl').eq('id', user_id);
+    
+    const user = users?.[0];
+    console.log('DEBUG user query:', { user_id, found: !!user, count: users?.length, error: userError?.message });
     
     if (userError || !user) {
       return NextResponse.json(

@@ -4,6 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const serviceKey = process.env.SUPABASE_SERVICE_KEY!;
 
+console.log('DEBUG open-test: serviceKey exists?', !!serviceKey, 'length:', serviceKey?.length || 0);
+
 // ENDPOINT DE TESTE - NÃO USAR EM PRODUÇÃO
 // Permite abrir booster sem auth, apenas com user_id + booster_id
 

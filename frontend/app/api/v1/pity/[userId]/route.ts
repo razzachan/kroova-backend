@@ -6,7 +6,7 @@ const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -31,8 +31,11 @@ export async function GET(
       );
     }
 
+    // Await params (Next.js 16)
+    const { userId } = await params;
+
     // Apenas o próprio user pode ver seu pity counter
-    if (user.id !== params.userId) {
+    if (user.id !== userId) {
       return NextResponse.json(
         { ok: false, error: { code: 'FORBIDDEN', message: 'Cannot view other user pity counter' } },
         { status: 403 }
@@ -45,7 +48,7 @@ export async function GET(
     const { data: pityData, error: pityError } = await supabase
       .from('user_pity_counter')
       .select('counter, last_reset_at, updated_at')
-      .eq('user_id', params.userId)
+      .eq('user_id', userId)
       .eq('edition_id', editionId)
       .single();
 
@@ -54,7 +57,7 @@ export async function GET(
       return NextResponse.json({
         ok: true,
         data: {
-          user_id: params.userId,
+          user_id: userId,
           edition_id: editionId,
           counter: 0,
           last_reset_at: null,
@@ -66,7 +69,7 @@ export async function GET(
     return NextResponse.json({
       ok: true,
       data: {
-        user_id: params.userId,
+        user_id: userId,
         edition_id: editionId,
         counter: pityData.counter,
         last_reset_at: pityData.last_reset_at,

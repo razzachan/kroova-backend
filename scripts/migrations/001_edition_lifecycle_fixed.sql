@@ -289,7 +289,6 @@ INSERT INTO booster_types (
     'ED01',
     0.50,
     1.0,
-    5,
     '{"trash":60,"meme":25,"viral":10,"legendary":4,"epica":1}'::jsonb,
     '[]'::jsonb,
     '🎴',
@@ -304,8 +303,6 @@ INSERT INTO booster_types (
     'ED01',
     1.00,
     2.0,
-    5,
-    1,
     '{"trash":60,"meme":25,"viral":10,"legendary":4,"epica":1}'::jsonb,
     '[]'::jsonb,
     '💎',
@@ -320,8 +317,6 @@ INSERT INTO booster_types (
     'ED01',
     2.00,
     4.0,
-    5,
-    1,
     '{"trash":60,"meme":25,"viral":10,"legendary":4,"epica":1}'::jsonb,
     '[]'::jsonb,
     '⚡',
@@ -336,8 +331,6 @@ INSERT INTO booster_types (
     'ED01',
     5.00,
     10.0,
-    5,
-    1,
     '{"trash":55,"meme":28,"viral":12,"legendary":4,"epica":1}'::jsonb,
     '[{"rarity":"meme","count":1}]'::jsonb,
     '👑',
@@ -352,8 +345,6 @@ INSERT INTO booster_types (
     'ED01',
     10.00,
     20.0,
-    5,
-    1,
     '{"trash":50,"meme":30,"viral":14,"legendary":5,"epica":1}'::jsonb,
     '[{"rarity":"viral","count":1}]'::jsonb,
     '🔥',
@@ -369,7 +360,6 @@ INSERT INTO booster_types (
     2.25,
     1.0,
     5,
-    5,
     '{"trash":55,"meme":28,"viral":12,"legendary":4,"epica":1}'::jsonb,
     '[{"rarity":"meme","count":1}]'::jsonb,
     '💎',
@@ -384,7 +374,6 @@ INSERT INTO booster_types (
     4.00,
     1.0,
     5,
-    10,
     '{"trash":50,"meme":30,"viral":14,"legendary":5,"epica":1}'::jsonb,
     '[{"rarity":"viral","count":1}]'::jsonb,
     '⚡',
@@ -399,7 +388,6 @@ INSERT INTO booster_types (
     9.00,
     1.0,
     5,
-    25,
     '{"trash":45,"meme":30,"viral":16,"legendary":7,"epica":2}'::jsonb,
     '[{"rarity":"legendary","count":1}]'::jsonb,
     '👑',
@@ -414,7 +402,6 @@ INSERT INTO booster_types (
     16.00,
     1.0,
     5,
-    50,
     '{"trash":40,"meme":30,"viral":18,"legendary":9,"epica":3}'::jsonb,
     '[{"rarity":"legendary","count":2},{"rarity":"epica","count":1,"force_godmode":true}]'::jsonb,
     '🔥',
@@ -456,3 +443,9 @@ COMMENT ON COLUMN cards_instances.liquidity_brl IS 'Valor final: base_liquidity 
 
 -- Verificar se pode dar godmode
 -- SELECT check_edition_hard_cap('ED01');
+
+
+
+
+
+

@@ -3,7 +3,7 @@
 -- Sprint 1: Backend Foundation
 -- =====================================================
 
--- 1. Tabela principal de edições
+-- 1. Tabela principal de edies
 CREATE TABLE IF NOT EXISTS edition_configs (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS edition_configs (
   -- Status
   status TEXT NOT NULL CHECK (status IN ('design', 'pre-launch', 'active', 'winding-down', 'legacy')) DEFAULT 'active',
   
-  -- Economia (IMUTÁVEL após launch)
+  -- Economia (IMUTVEL aps launch)
   base_liquidity JSONB NOT NULL,
   skin_multipliers JSONB NOT NULL,
   godmode_multiplier DECIMAL NOT NULL DEFAULT 10,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS edition_configs (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 2. Métricas diárias por edição
+-- 2. Mtricas dirias por edio
 CREATE TABLE IF NOT EXISTS edition_metrics (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   edition_id TEXT NOT NULL REFERENCES edition_configs(id),
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS edition_metrics (
   marketplace_volume DECIMAL DEFAULT 0,
   recycle_volume DECIMAL DEFAULT 0,
   
-  -- Distribuição
+  -- Distribuio
   cards_generated JSONB,
   skins_generated JSONB,
   godmodes_awarded INTEGER DEFAULT 0,
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS edition_metrics (
 
 CREATE INDEX IF NOT EXISTS idx_edition_metrics_edition_date ON edition_metrics(edition_id, date DESC);
 
--- 3. Eventos de edição
+-- 3. Eventos de edio
 CREATE TABLE IF NOT EXISTS edition_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   edition_id TEXT NOT NULL REFERENCES edition_configs(id),
@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS user_pity_counter (
 
 CREATE INDEX IF NOT EXISTS idx_pity_counter_user ON user_pity_counter(user_id);
 
--- 8. Função para verificar hard cap
+-- 8. Funo para verificar hard cap
 CREATE OR REPLACE FUNCTION check_edition_hard_cap(p_edition_id TEXT)
 RETURNS BOOLEAN AS $$
 DECLARE
@@ -160,7 +160,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 9. Função para atualizar edition metrics
+-- 9. Funo para atualizar edition metrics
 CREATE OR REPLACE FUNCTION update_edition_metrics()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -174,17 +174,17 @@ BEGIN
   WHERE bt.id = NEW.booster_type_id;
   
   IF v_edition_id IS NULL THEN
-    RETURN NEW; -- Skip se não tem edition_id
+    RETURN NEW; -- Skip se no tem edition_id
   END IF;
   
-  -- Atualizar métricas diárias
+  -- Atualizar mtricas dirias
   INSERT INTO edition_metrics (edition_id, date, boosters_sold, revenue)
   VALUES (v_edition_id, CURRENT_DATE, 1, v_price)
   ON CONFLICT (edition_id, date) DO UPDATE SET
     boosters_sold = edition_metrics.boosters_sold + 1,
     revenue = edition_metrics.revenue + EXCLUDED.revenue;
   
-  -- Atualizar totais da edição
+  -- Atualizar totais da edio
   UPDATE edition_configs
   SET 
     total_boosters_sold = total_boosters_sold + 1,
@@ -196,14 +196,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Trigger para atualizar métricas após cada booster opening
+-- Trigger para atualizar mtricas aps cada booster opening
 DROP TRIGGER IF EXISTS trigger_update_edition_metrics ON booster_openings;
 CREATE TRIGGER trigger_update_edition_metrics
 AFTER INSERT ON booster_openings
 FOR EACH ROW
 EXECUTE FUNCTION update_edition_metrics();
 
--- 10. Função para incrementar pity counter
+-- 10. Funo para incrementar pity counter
 CREATE OR REPLACE FUNCTION increment_pity_counter(p_user_id UUID, p_edition_id TEXT)
 RETURNS INTEGER AS $$
 DECLARE
@@ -221,7 +221,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 11. Função para resetar pity counter
+-- 11. Funo para resetar pity counter
 CREATE OR REPLACE FUNCTION reset_pity_counter(p_user_id UUID, p_edition_id TEXT)
 RETURNS VOID AS $$
 BEGIN
@@ -252,7 +252,7 @@ INSERT INTO edition_configs (
 ) VALUES (
   'ED01',
   'Colapso da Interface',
-  'Primeira edição oficial do universo Kroova. Entidades que vazaram da camada digital para o mundo real.',
+  'Primeira edio oficial do universo Kroova. Entidades que vazaram da camada digital para o mundo real.',
   '2026-03-01 00:00:00+00',
   'active',
   '{"trash":0.01,"meme":0.05,"viral":0.20,"legendary":1.00,"epica":2.00}'::jsonb,
@@ -262,7 +262,7 @@ INSERT INTO edition_configs (
   0.30,
   0.15,
   '{"primary":"#FF006D","secondary":"#00F0FF","value":"#FFC700"}'::jsonb,
-  'Quando a interface cai, quem sobrevive é quem sabe negociar.'
+  'Quando a interface cai, quem sobrevive  quem sabe negociar.'
 )
 ON CONFLICT (id) DO UPDATE SET
   base_liquidity = EXCLUDED.base_liquidity,
@@ -280,35 +280,30 @@ DELETE FROM booster_types WHERE edition_id = 'ED01';
 
 INSERT INTO booster_types (
   id, name, edition_id, price_brl, price_multiplier, cards_per_booster,
-  rarity_distribution, guaranteed_cards, badge_emoji, color_primary, color_secondary
+  rarity_distribution
 ) VALUES
-  -- Tier 1: Básico (R$ 0.50, multiplier 1x)
+  -- Tier 1: Bsico (R$ 0.50, multiplier 1x)
   (
     'ed01-basico',
-    'Básico',
+    'Bsico',
     'ED01',
     0.50,
     1.0,
-    5,
     '{"trash":60,"meme":25,"viral":10,"legendary":4,"epica":1}'::jsonb,
-    '[]'::jsonb,
-    '🎴',
+    '',
     '#555555',
     '#888888'
   ),
   
-  -- Tier 2: Padrão (R$ 1.00, multiplier 2x)
+  -- Tier 2: Padro (R$ 1.00, multiplier 2x)
   (
     'ed01-padrao',
-    'Padrão',
+    'Padro',
     'ED01',
     1.00,
     2.0,
-    5,
-    1,
     '{"trash":60,"meme":25,"viral":10,"legendary":4,"epica":1}'::jsonb,
-    '[]'::jsonb,
-    '💎',
+    '',
     '#00F0FF',
     '#3AFAFF'
   ),
@@ -320,11 +315,8 @@ INSERT INTO booster_types (
     'ED01',
     2.00,
     4.0,
-    5,
-    1,
     '{"trash":60,"meme":25,"viral":10,"legendary":4,"epica":1}'::jsonb,
-    '[]'::jsonb,
-    '⚡',
+    '',
     '#9B59B6',
     '#AF7AC5'
   ),
@@ -336,11 +328,8 @@ INSERT INTO booster_types (
     'ED01',
     5.00,
     10.0,
-    5,
-    1,
     '{"trash":55,"meme":28,"viral":12,"legendary":4,"epica":1}'::jsonb,
-    '[{"rarity":"meme","count":1}]'::jsonb,
-    '👑',
+    '',
     '#FFC700',
     '#FFD84D'
   ),
@@ -352,11 +341,8 @@ INSERT INTO booster_types (
     'ED01',
     10.00,
     20.0,
-    5,
-    1,
     '{"trash":50,"meme":30,"viral":14,"legendary":5,"epica":1}'::jsonb,
-    '[{"rarity":"viral","count":1}]'::jsonb,
-    '🔥',
+    '',
     '#FF006D',
     '#FF2E85'
   ),
@@ -369,40 +355,34 @@ INSERT INTO booster_types (
     2.25,
     1.0,
     5,
-    5,
     '{"trash":55,"meme":28,"viral":12,"legendary":4,"epica":1}'::jsonb,
-    '[{"rarity":"meme","count":1}]'::jsonb,
-    '💎',
+    '',
     '#00F0FF',
     '#3AFAFF'
   ),
   
   (
     'ed01-pack-lendario',
-    'Pack Lendário',
+    'Pack Lendrio',
     'ED01',
     4.00,
     1.0,
     5,
-    10,
     '{"trash":50,"meme":30,"viral":14,"legendary":5,"epica":1}'::jsonb,
-    '[{"rarity":"viral","count":1}]'::jsonb,
-    '⚡',
+    '',
     '#9B59B6',
     '#AF7AC5'
   ),
   
   (
     'ed01-pack-epico',
-    'Pack Épico',
+    'Pack pico',
     'ED01',
     9.00,
     1.0,
     5,
-    25,
     '{"trash":45,"meme":30,"viral":16,"legendary":7,"epica":2}'::jsonb,
-    '[{"rarity":"legendary","count":1}]'::jsonb,
-    '👑',
+    '',
     '#FFC700',
     '#FFD84D'
   ),
@@ -414,31 +394,29 @@ INSERT INTO booster_types (
     16.00,
     1.0,
     5,
-    50,
     '{"trash":40,"meme":30,"viral":18,"legendary":9,"epica":3}'::jsonb,
-    '[{"rarity":"legendary","count":2},{"rarity":"epica","count":1,"force_godmode":true}]'::jsonb,
-    '🔥',
+    '',
     '#FF006D',
     '#FF2E85'
   );
 
--- 16. Comentários e documentação
-COMMENT ON TABLE edition_configs IS 'Configuração imutável de cada edição KROOVA';
-COMMENT ON TABLE edition_metrics IS 'Métricas diárias agregadas por edição';
+-- 16. Comentrios e documentao
+COMMENT ON TABLE edition_configs IS 'Configurao imutvel de cada edio KROOVA';
+COMMENT ON TABLE edition_metrics IS 'Mtricas dirias agregadas por edio';
 COMMENT ON TABLE user_pity_counter IS 'Tracking de pity system (100 boosters = godmode garantido)';
-COMMENT ON COLUMN booster_types.price_multiplier IS 'Multiplicador de liquidez baseado no preço (1x = R$ 0.50, 20x = R$ 10.00)';
-COMMENT ON COLUMN cards_instances.is_godmode IS 'Status especial (3ª camada): multiplica liquidez por 10x';
+COMMENT ON COLUMN booster_types.price_multiplier IS 'Multiplicador de liquidez baseado no preo (1x = R$ 0.50, 20x = R$ 10.00)';
+COMMENT ON COLUMN cards_instances.is_godmode IS 'Status especial (3 camada): multiplica liquidez por 10x';
 COMMENT ON COLUMN cards_instances.skin IS 'Visual variant: default, neon, glow, glitch, ghost, holo, dark';
-COMMENT ON COLUMN cards_instances.liquidity_brl IS 'Valor final: base_liquidity × skin_multiplier × price_multiplier × godmode_multiplier';
+COMMENT ON COLUMN cards_instances.liquidity_brl IS 'Valor final: base_liquidity  skin_multiplier  price_multiplier  godmode_multiplier';
 
 -- =====================================================
--- QUERIES ÚTEIS
+-- QUERIES TEIS
 -- =====================================================
 
--- Ver todas edições
+-- Ver todas edies
 -- SELECT * FROM edition_configs;
 
--- Ver métricas da semana
+-- Ver mtricas da semana
 -- SELECT * FROM edition_metrics WHERE edition_id = 'ED01' AND date >= CURRENT_DATE - INTERVAL '7 days';
 
 -- Ver hard cap status
@@ -451,8 +429,17 @@ COMMENT ON COLUMN cards_instances.liquidity_brl IS 'Valor final: base_liquidity 
 -- FROM edition_configs
 -- WHERE id = 'ED01';
 
--- Ver pity counters próximos do limite
+-- Ver pity counters prximos do limite
 -- SELECT * FROM user_pity_counter WHERE counter >= 90;
 
 -- Verificar se pode dar godmode
 -- SELECT check_edition_hard_cap('ED01');
+
+
+
+
+
+
+
+
+

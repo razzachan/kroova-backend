@@ -41,7 +41,17 @@ function selectSkin(): string {
 export async function POST(request: NextRequest) {
   try {
     const supabase = createClient(supabaseUrl, serviceKey);
-    const body = await request.json();
+    
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError: any) {
+      return NextResponse.json(
+        { ok: false, error: { code: 'INVALID_JSON', message: `JSON parse error: ${parseError.message}` } },
+        { status: 400 }
+      );
+    }
+    
     const { user_id, booster_id } = body;
 
     if (!user_id || !booster_id) {

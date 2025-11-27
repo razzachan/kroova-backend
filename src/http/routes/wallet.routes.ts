@@ -12,6 +12,7 @@ export async function walletRoutes(app: FastifyInstance) {
   /**
    * GET /wallet
    * Consulta saldos BRL/Cripto
+   * Auth: Bearer token required
    */
   app.get(
     "/wallet",

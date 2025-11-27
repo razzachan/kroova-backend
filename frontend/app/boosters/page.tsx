@@ -188,8 +188,18 @@ export default function BoostersPage() {
                     key={card.id}
                     className="bg-gray-800 rounded-lg p-4 border-2 border-gray-700 hover:scale-105 transition"
                   >
-                    <div className="aspect-[2/3] bg-gray-700 rounded mb-2 flex items-center justify-center">
-                      <span className="text-4xl">🎴</span>
+                    <div className="aspect-[2/3] bg-gray-700 rounded mb-2 overflow-hidden">
+                      {card.card.image_url ? (
+                        <img 
+                          src={card.card.image_url} 
+                          alt={card.card.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-4xl">🎴</span>
+                        </div>
+                      )}
                     </div>
                     <h4 className={`font-bold ${getRarityColor(card.card.rarity)}`}>
                       {card.card.name}

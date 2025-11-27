@@ -33,6 +33,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log('[PURCHASE] Looking for booster_type_id:', booster_type_id);
+
     // 1. Buscar booster type
     const { data: boosterType, error: boosterError } = await supabaseAdmin
       .from('booster_types')
@@ -40,9 +42,19 @@ export async function POST(request: NextRequest) {
       .eq('id', booster_type_id)
       .single();
 
+    console.log('[PURCHASE] Booster type result:', { boosterType, boosterError });
+
     if (boosterError || !boosterType) {
+      // List all available booster types for debugging
+      const { data: allTypes } = await supabaseAdmin
+        .from('booster_types')
+        .select('id, name')
+        .limit(5);
+      
+      console.log('[PURCHASE] Available booster types:', allTypes);
+      
       return NextResponse.json(
-        { ok: false, error: { code: 'NOT_FOUND', message: 'Booster type not found' } },
+        { ok: false, error: { code: 'NOT_FOUND', message: `Booster type not found. ID received: ${booster_type_id}` } },
         { status: 404 }
       );
     }

@@ -5,6 +5,16 @@ import jwt from 'jsonwebtoken';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_KEY!;
 const jwtSecret = process.env.SUPABASE_JWT_SECRET!;
+
+// Validação de env vars
+if (!supabaseUrl || !supabaseKey || !jwtSecret) {
+  console.error('Missing env vars:', { 
+    hasUrl: !!supabaseUrl, 
+    hasKey: !!supabaseKey, 
+    hasSecret: !!jwtSecret 
+  });
+}
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 function getUserFromToken(request: NextRequest) {
@@ -34,6 +44,7 @@ export async function GET(request: NextRequest) {
       .single();
 
     if (error) {
+      console.error('Supabase error:', error);
       return NextResponse.json(
         { ok: false, error: { code: 'DATABASE_ERROR', message: error.message } },
         { status: 500 }
@@ -49,6 +60,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ ok: true, data });
   } catch (error: any) {
+    console.error('Wallet API error:', error);
+    
     if (error.message === 'No token provided') {
       return NextResponse.json(
         { ok: false, error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
@@ -57,7 +70,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { ok: false, error: { code: 'INTERNAL_ERROR', message: error.message } },
+      { ok: false, error: { code: 'INTERNAL_ERROR', message: error.message, stack: error.stack } },
       { status: 500 }
     );
   }

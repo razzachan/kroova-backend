@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { cardAudio } from '@/lib/cardAudio';
 
 export interface PackOpeningAnimationProps {
@@ -14,6 +14,35 @@ export function PackOpeningAnimation({
 }: PackOpeningAnimationProps) {
   const [stage, setStage] = useState<'idle' | 'shaking' | 'exploding' | 'complete'>('idle');
   const [clicked, setClicked] = useState(false);
+  const promptRef = useRef<HTMLDivElement>(null);
+  const bounceAnimRef = useRef<number | undefined>();
+
+  // Smooth bounce animation using requestAnimationFrame
+  useEffect(() => {
+    if (stage !== 'idle' || !promptRef.current) return;
+
+    let startTime = Date.now();
+    
+    const animate = () => {
+      if (!promptRef.current || stage !== 'idle') return;
+      
+      const elapsed = Date.now() - startTime;
+      const progress = (elapsed % 2000) / 2000; // 2s cycle
+      const y = Math.sin(progress * Math.PI) * -12; // Smooth sine wave
+      
+      promptRef.current.style.transform = `translateX(-50%) translateY(${y}px) translateZ(0)`;
+      
+      bounceAnimRef.current = requestAnimationFrame(animate);
+    };
+    
+    bounceAnimRef.current = requestAnimationFrame(animate);
+    
+    return () => {
+      if (bounceAnimRef.current) {
+        cancelAnimationFrame(bounceAnimRef.current);
+      }
+    };
+  }, [stage]);
 
   useEffect(() => {
     if (!clicked) return;
@@ -50,7 +79,7 @@ export function PackOpeningAnimation({
       {/* Background particles */}
       {stage !== 'idle' && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {Array.from({ length: 12 }).map((_, i) => (
+          {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
               className="absolute w-1 h-1 bg-yellow-400 rounded-full animate-sparkle"
@@ -105,11 +134,11 @@ export function PackOpeningAnimation({
         {/* Click prompt */}
         {stage === 'idle' && (
           <div 
+            ref={promptRef}
             className="absolute bottom-8 left-1/2 text-white text-xl font-bold pointer-events-none"
             style={{
               transform: 'translateX(-50%) translateZ(0)',
               willChange: 'transform',
-              animation: 'bounce-smooth 2s ease-in-out infinite',
             }}
           >
             👆 Clique para abrir
@@ -123,15 +152,6 @@ export function PackOpeningAnimation({
       </div>
 
       <style jsx>{`
-        @keyframes bounce-smooth {
-          0%, 100% {
-            transform: translateX(-50%) translateY(0) translateZ(0);
-          }
-          50% {
-            transform: translateX(-50%) translateY(-12px) translateZ(0);
-          }
-        }
-
         @keyframes shake-intense {
           0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
           10% { transform: translate3d(-10px, -5px, 0) rotate(-2deg); }

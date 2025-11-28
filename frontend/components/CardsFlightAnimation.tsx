@@ -20,7 +20,7 @@ export function CardsFlightAnimation({
     // Animation complete after all cards land
     const timer = setTimeout(() => {
       onFlightComplete();
-    }, 1000 + cardCount * 100);
+    }, 700 + cardCount * 80);
 
     return () => clearTimeout(timer);
   }, [cardCount, onFlightComplete]);
@@ -35,7 +35,7 @@ export function CardsFlightAnimation({
         const finalX = offset * 180; // Horizontal spacing
         const finalY = arcHeight; // Arc curve
         const rotation = offset * 8; // Rotation angle
-        const delay = i * 100; // Stagger effect
+        const delay = i * 80; // Stagger effect (faster)
 
         return (
           <div
@@ -71,22 +71,19 @@ export function CardsFlightAnimation({
       <style jsx>{`
         @keyframes card-flight {
           0% {
-            transform: translate(-50%, -50%) translateY(-300px) rotateZ(360deg) scale(0.3) translateZ(0);
+            transform: translate(-50%, -50%) translateY(-200px) scale(0.5) translateZ(0);
             opacity: 0;
-          }
-          30% {
-            opacity: 1;
           }
           100% {
             transform: translate(
               calc(-50% + var(--final-x)), 
               calc(-50% + var(--final-y))
-            ) rotateZ(var(--rotation)) scale(1) translateZ(0);
+            ) rotate(var(--rotation)) scale(1) translateZ(0);
             opacity: 1;
           }
         }
         .animate-card-flight {
-          animation: card-flight 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+          animation: card-flight 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
 
         @keyframes spin-slow {

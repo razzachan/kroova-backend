@@ -261,8 +261,34 @@ export default function BoostersPage() {
               </div>
               <div className="text-sm text-gray-300 mb-3">💡 Pausa sugerida: evite gastos impulsivos. Veja seu progresso antes de continuar.</div>
               <div className="flex gap-2 justify-end">
-                <button className="px-3 py-2 rounded bg-gray-700" onClick={() => setShowCheckpoint(false)}>Fechar</button>
-                <button className="px-4 py-2 rounded bg-pink-600" onClick={() => setShowCheckpoint(false)}>Continuar abrindo</button>
+                <button 
+                  className="px-3 py-2 rounded bg-gray-700" 
+                  onClick={() => setShowCheckpoint(false)}
+                  style={{
+                    transition: 'transform 0.1s ease-out',
+                    willChange: 'transform',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.05) translateZ(0)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1) translateZ(0)';
+                  }}
+                >Fechar</button>
+                <button 
+                  className="px-4 py-2 rounded bg-pink-600" 
+                  onClick={() => setShowCheckpoint(false)}
+                  style={{
+                    transition: 'transform 0.1s ease-out',
+                    willChange: 'transform',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.05) translateZ(0)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1) translateZ(0)';
+                  }}
+                >Continuar abrindo</button>
               </div>
             </div>
           </div>
@@ -292,6 +318,16 @@ export default function BoostersPage() {
                 <button
                   onClick={() => setQuantityByBooster(prev => ({ ...prev, [booster.id]: 5 }))}
                   className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded border border-gray-600"
+                  style={{
+                    transition: 'transform 0.1s ease-out',
+                    willChange: 'transform',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.05) translateZ(0)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1) translateZ(0)';
+                  }}
                 >x5</button>
               </div>
 
@@ -313,7 +349,19 @@ export default function BoostersPage() {
                   handlePurchase(booster.id, quantityByBooster[booster.id] || 1);
                 }}
                 disabled={purchasing === booster.id || opening !== null || balance < booster.price_brl}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded transition"
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded"
+                style={{
+                  transition: 'transform 0.15s ease-out, opacity 0.2s ease-out',
+                  willChange: 'transform',
+                }}
+                onMouseEnter={(e) => {
+                  if (!e.currentTarget.disabled) {
+                    e.currentTarget.style.transform = 'translateY(-2px) translateZ(0)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0) translateZ(0)';
+                }}
               >
                 {purchasing === booster.id
                   ? 'Comprando...'
@@ -361,6 +409,16 @@ export default function BoostersPage() {
                   <button
                     onClick={() => setFlipMode(m => (m === 'interactive' ? 'auto' : 'interactive'))}
                     className="px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 border border-gray-600"
+                    style={{
+                      transition: 'transform 0.1s ease-out',
+                      willChange: 'transform',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.05) translateZ(0)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'scale(1) translateZ(0)';
+                    }}
                   >{flipMode === 'interactive' ? 'Interativo' : 'Automático'}</button>
                 </div>
               </div>
@@ -383,12 +441,32 @@ export default function BoostersPage() {
                     setAnimationStage('none');
                   }}
                   className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-lg"
+                  style={{
+                    transition: 'transform 0.15s ease-out',
+                    willChange: 'transform',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.05) translateZ(0)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1) translateZ(0)';
+                  }}
                 >
                   Fechar
                 </button>
                 <button
                   onClick={() => router.push('/inventory')}
                   className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg"
+                  style={{
+                    transition: 'transform 0.15s ease-out',
+                    willChange: 'transform',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.05) translateZ(0)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1) translateZ(0)';
+                  }}
                 >
                   Ver Inventário
                 </button>

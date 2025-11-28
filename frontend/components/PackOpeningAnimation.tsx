@@ -15,7 +15,7 @@ export function PackOpeningAnimation({
   const [stage, setStage] = useState<'idle' | 'shaking' | 'exploding' | 'complete'>('idle');
   const [clicked, setClicked] = useState(false);
   const promptRef = useRef<HTMLDivElement>(null);
-  const bounceAnimRef = useRef<number | undefined>();
+  const bounceAnimRef = useRef<number | undefined>(undefined);
 
   // Smooth bounce animation using requestAnimationFrame
   useEffect(() => {

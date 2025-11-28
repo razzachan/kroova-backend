@@ -56,18 +56,25 @@ export default function BoostersPage() {
 
   async function loadData() {
     try {
-      const [boostersRes, walletRes, pityRes] = await Promise.all([
+      const [boostersRes, walletRes] = await Promise.all([
         api.get('/boosters'),
-        api.get('/wallet'),
-        api.get('/boosters/pity?edition_id=ED01')
+        api.get('/wallet')
       ]);
 
       setBoosters(unwrap(boostersRes.data));
       setBalance(unwrap(walletRes.data).balance_brl);
-      
-      const pityData = unwrap(pityRes.data);
-      setPityCount(pityData.pity_count || 0);
-      setPityMax(pityData.max || 180);
+
+      // Pity endpoint (optional): handle 404 gracefully
+      try {
+        const pityRes = await api.get('/boosters/pity?edition_id=ED01');
+        const pityData = unwrap(pityRes.data);
+        setPityCount(pityData.pity_count || 0);
+        setPityMax(pityData.max || 180);
+      } catch (pityErr: any) {
+        console.warn('Pity endpoint not available, using defaults');
+        setPityCount(0);
+        setPityMax(180);
+      }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
     } finally {

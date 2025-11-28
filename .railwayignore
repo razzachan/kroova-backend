@@ -1,0 +1,20 @@
+# Large generated assets
+scripts/public/cards/
+croco_trader.jpg
+simulation_results_*.json
+scripts/*.png
+
+# Node/build outputs
+node_modules/
+.next/
+dist/
+out/
+build/
+
+# Local env & Vercel
+.env*
+.vercel/
+
+# Python caches
+**/__pycache__/
+*.pyc

@@ -69,14 +69,14 @@ const RARITY_SYNTH: Record<string, SynthConfig> = {
   }
 };
 
-// ElevenLabs generated audio (cinematic quality)
+// ElevenLabs generated audio (cinematic quality - KROOVA CYBERPUNK DNA)
 const ELEVENLABS_AUDIO: Record<string, string> = {
   packExplosion: '/sfx/explosions/pack_explosion_epic.mp3',
   packOpen: '/sfx/explosions/pack_open_cloth.mp3',
   legendaryReveal: '/sfx/reveals/legendary_reveal.mp3',
   godmodeReveal: '/sfx/reveals/godmode_reveal.mp3',
   rareReveal: '/sfx/reveals/rare_reveal.mp3',
-  ambientMystical: '/sfx/ambient/mystical_ambience.mp3',
+  ambientCyberpunk: '/sfx/ambient/cyberpunk_ambience.mp3',
   ambientTension: '/sfx/ambient/tension_ambience.mp3',
 };
 
@@ -422,14 +422,14 @@ class CardAudioSystem {
   }
 
   // Start ambient background music (looping)
-  startAmbient(type: 'mystical' | 'tension' = 'mystical') {
+  startAmbient(type: 'cyberpunk' | 'tension' = 'cyberpunk') {
     // Stop existing ambient
     if (this.ambientLoop) {
       this.ambientLoop.fade(this.ambientLoop.volume(), 0, 500);
       setTimeout(() => this.ambientLoop?.stop(), 500);
     }
 
-    const key = type === 'mystical' ? 'ambientMystical' : 'ambientTension';
+    const key = type === 'cyberpunk' ? 'ambientCyberpunk' : 'ambientTension';
     const howl = this.getHowl(key);
     
     if (howl) {

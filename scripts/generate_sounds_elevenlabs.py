@@ -30,19 +30,19 @@ client = ElevenLabs(
 OUTPUT_DIR = Path(__file__).parent.parent / "frontend" / "public" / "sfx"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Sound effects definitions
+# Sound effects definitions - KROOVA CYBERPUNK URBAN DNA
 SOUND_EFFECTS = {
     # Pack opening sounds
     "explosions": [
         {
             "filename": "pack_explosion_epic.mp3",
-            "prompt": "Massive booster pack explosion with magical sparkles, cinematic impact and whoosh, glass shattering with mystical chimes",
+            "prompt": "Digital booster pack explosion with electronic glitch burst, cyber impact with distorted bass drop, synthetic glass shattering with neon energy surge, urban futuristic whoosh",
             "duration": 2.5,
             "influence": 0.4
         },
         {
             "filename": "pack_open_cloth.mp3",
-            "prompt": "Soft cloth package being torn open with subtle crinkle, quick and snappy",
+            "prompt": "Tech fabric tearing with digital crackle, quick synthetic snap with subtle electronic buzz, cyberpunk package opening",
             "duration": 0.8,
             "influence": 0.5
         }
@@ -52,19 +52,19 @@ SOUND_EFFECTS = {
     "reveals": [
         {
             "filename": "legendary_reveal.mp3",
-            "prompt": "Epic legendary card reveal with golden orchestral hit, bright chimes cascading, cinematic braam with angelic choir, triumphant and powerful",
+            "prompt": "Epic legendary card reveal with massive synth stab, cyber bass drop with distorted 808 hit, neon energy surge with digital cascade, powerful electronic impact, triumphant cyberpunk braam",
             "duration": 3.0,
             "influence": 0.3
         },
         {
             "filename": "godmode_reveal.mp3",
-            "prompt": "Ultimate godmode card reveal with dramatic orchestral stab, massive braam impact, choir crescendo, thunder rumble, world-shaking epic moment",
+            "prompt": "Ultimate godmode reveal with devastating bass cannon drop, cyberpunk braam with glitched synth layers, electronic thunder with distorted sub-bass rumble, world-breaking digital impact, chaotic energy surge",
             "duration": 3.5,
             "influence": 0.3
         },
         {
             "filename": "rare_reveal.mp3",
-            "prompt": "Mystical rare card reveal with magical sparkle and soft chime, ethereal and exciting",
+            "prompt": "Cyber rare card reveal with glitched electronic chime, synthetic energy pulse with neon shimmer, digital distortion cascade, futuristic and edgy",
             "duration": 1.5,
             "influence": 0.4
         }
@@ -73,15 +73,15 @@ SOUND_EFFECTS = {
     # Ambient sounds (looping)
     "ambient": [
         {
-            "filename": "mystical_ambience.mp3",
-            "prompt": "Soft mystical fantasy ambience with subtle magical sparkles, ethereal pad, distant wind chimes, peaceful and atmospheric, seamless loop",
+            "filename": "cyberpunk_ambience.mp3",
+            "prompt": "Dark cyberpunk urban ambience with subtle synth pad, low electronic drone, distant digital glitches, neon city atmosphere with technological hum, dystopian and atmospheric, seamless loop",
             "duration": 30.0,
             "influence": 0.2,
             "loop": True
         },
         {
             "filename": "tension_ambience.mp3",
-            "prompt": "Suspenseful atmospheric drone with subtle tension, low rumble, mysterious and ominous, perfect for card selection, seamless loop",
+            "prompt": "Suspenseful cyber tension with dark synth drone, glitched pulses, low distorted bass rumble, ominous digital atmosphere, technological unease, perfect for card selection, seamless loop",
             "duration": 30.0,
             "influence": 0.2,
             "loop": True

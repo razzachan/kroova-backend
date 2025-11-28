@@ -165,6 +165,10 @@ export function OpeningSession({
               {burstAt[i] && (card.is_godmode || card.rarity === 'legendary' || card.rarity === 'epica') && (
                 <RayBurst active={true} />
               )}
+              {/* God Rays for legendary/godmode */}
+              {burstAt[i] && (card.is_godmode || card.rarity === 'legendary' || card.rarity === 'epica') && (
+                <GodRays intensity={card.is_godmode ? 'epic' : 'legendary'} />
+              )}
             </div>
           </CardFlip>
           {revealed[i] && (
@@ -465,6 +469,51 @@ function RayBurst({ active }: { active: boolean }) {
         }
         .animate-expand {
           animation: expand 0.8s ease-out;
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// God Rays component
+function GodRays({ intensity }: { intensity: 'legendary' | 'epic' }) {
+  const rayCount = intensity === 'epic' ? 12 : 8;
+  const color = intensity === 'epic' ? 'rgba(220, 38, 127, 0.4)' : 'rgba(251, 191, 36, 0.3)';
+  
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {Array.from({ length: rayCount }).map((_, i) => {
+        const angle = (360 / rayCount) * i;
+        return (
+          <div
+            key={i}
+            className="absolute left-1/2 top-1/2 origin-bottom animate-godRay"
+            style={{
+              width: '4px',
+              height: '200%',
+              background: `linear-gradient(to top, ${color} 0%, transparent 100%)`,
+              transform: `translate(-50%, -100%) rotate(${angle}deg)`,
+              animationDelay: `${i * 50}ms`,
+            }}
+          />
+        );
+      })}
+      <style jsx>{`
+        @keyframes godRay {
+          0% {
+            opacity: 0;
+            transform: translate(-50%, -100%) rotate(var(--angle)) scaleY(0);
+          }
+          20% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+            transform: translate(-50%, -100%) rotate(var(--angle)) scaleY(1.2);
+          }
+        }
+        .animate-godRay {
+          animation: godRay 1.5s ease-out forwards;
         }
       `}</style>
     </div>

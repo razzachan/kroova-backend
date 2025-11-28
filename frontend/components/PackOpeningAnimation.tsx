@@ -14,8 +14,11 @@ export function PackOpeningAnimation({
 }: PackOpeningAnimationProps) {
   const [stage, setStage] = useState<'idle' | 'shaking' | 'exploding' | 'complete'>('idle');
   const [clicked, setClicked] = useState(false);
+  const [cameraShake, setCameraShake] = useState(false);
+  const [screenFlash, setScreenFlash] = useState(false);
   const packRef = useRef<HTMLDivElement>(null);
   const promptRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Smooth bounce using Web Animations API (hardware accelerated, 0 reflows)
   useEffect(() => {
@@ -69,6 +72,14 @@ export function PackOpeningAnimation({
       setStage('exploding');
       cardAudio.playPackOpen();
       
+      // Camera shake effect
+      setCameraShake(true);
+      setTimeout(() => setCameraShake(false), 600);
+      
+      // Screen flash effect
+      setScreenFlash(true);
+      setTimeout(() => setScreenFlash(false), 200);
+      
       // Explosion animation
       if (packRef.current) {
         packRef.current.animate(
@@ -81,6 +92,26 @@ export function PackOpeningAnimation({
             duration: 600,
             easing: 'ease-out',
             fill: 'forwards'
+          }
+        );
+      }
+      
+      // Camera shake animation
+      if (containerRef.current) {
+        containerRef.current.animate(
+          [
+            { transform: 'translate(0, 0)' },
+            { transform: 'translate(-4px, 2px)' },
+            { transform: 'translate(4px, -2px)' },
+            { transform: 'translate(-3px, -3px)' },
+            { transform: 'translate(3px, 3px)' },
+            { transform: 'translate(-2px, 1px)' },
+            { transform: 'translate(2px, -1px)' },
+            { transform: 'translate(0, 0)' }
+          ],
+          {
+            duration: 600,
+            easing: 'ease-out'
           }
         );
       }
@@ -106,7 +137,33 @@ export function PackOpeningAnimation({
   if (stage === 'complete') return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
+    <div 
+      ref={containerRef}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+      style={{
+        willChange: 'transform',
+      }}
+    >
+      {/* Screen Flash Effect */}
+      {screenFlash && (
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.6) 30%, transparent 70%)',
+            animation: 'screenFlash 200ms ease-out',
+            mixBlendMode: 'screen',
+          }}
+        />
+      )}
+
+      {/* Vignette Effect */}
+      <div 
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.8) 100%)',
+        }}
+      />
+
       {/* Pack */}
       <div
         ref={packRef}
@@ -171,6 +228,12 @@ export function PackOpeningAnimation({
         @keyframes flash {
           0% { opacity: 0; }
           50% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+
+        @keyframes screenFlash {
+          0% { opacity: 0; }
+          20% { opacity: 1; }
           100% { opacity: 0; }
         }
       `}</style>

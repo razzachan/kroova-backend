@@ -12,21 +12,53 @@ export function CardsFlightAnimation({
   onFlightComplete 
 }: CardsFlightAnimationProps) {
   const [cards, setCards] = useState<number[]>([]);
+  const [showFog, setShowFog] = useState(true);
 
   useEffect(() => {
     // Generate card indices
     setCards(Array.from({ length: cardCount }, (_, i) => i));
+
+    // Fade out fog after cards appear
+    const fogTimer = setTimeout(() => {
+      setShowFog(false);
+    }, 400);
 
     // Animation complete after all cards land
     const timer = setTimeout(() => {
       onFlightComplete();
     }, 700 + cardCount * 80);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(fogTimer);
+      clearTimeout(timer);
+    };
   }, [cardCount, onFlightComplete]);
 
   return (
     <div className="fixed inset-0 z-40 pointer-events-none overflow-hidden">
+      {/* Mystical fog effect */}
+      {showFog && (
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(circle at 50% 60%, rgba(138, 43, 226, 0.3) 0%, rgba(75, 0, 130, 0.2) 40%, transparent 70%)',
+            animation: 'fogFade 800ms ease-out forwards',
+            backdropFilter: 'blur(8px)',
+          }}
+        />
+      )}
+
+      {/* Volumetric light rays */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: `
+            linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%),
+            radial-gradient(ellipse at 50% 40%, rgba(255,215,0,0.1) 0%, transparent 60%)
+          `,
+          animation: 'volumetricPulse 2s ease-in-out infinite',
+        }}
+      />
       {cards.map((i) => {
         // Calculate arc positions
         const totalCards = cardCount;
@@ -73,6 +105,10 @@ export function CardsFlightAnimation({
           0% {
             transform: translate(-50%, -50%) translateY(-200px) scale(0.5) translateZ(0);
             opacity: 0;
+            filter: brightness(3) blur(4px);
+          }
+          30% {
+            filter: brightness(2) blur(2px);
           }
           100% {
             transform: translate(
@@ -80,6 +116,7 @@ export function CardsFlightAnimation({
               calc(-50% + var(--final-y))
             ) rotate(var(--rotation)) scale(1) translateZ(0);
             opacity: 1;
+            filter: brightness(1) blur(0);
           }
         }
         .animate-card-flight {
@@ -92,6 +129,16 @@ export function CardsFlightAnimation({
         }
         .animate-spin-slow {
           animation: spin-slow 3s linear infinite;
+        }
+
+        @keyframes fogFade {
+          0% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+
+        @keyframes volumetricPulse {
+          0%, 100% { opacity: 0.5; }
+          50% { opacity: 0.8; }
         }
       `}</style>
     </div>

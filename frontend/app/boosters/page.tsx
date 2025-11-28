@@ -59,6 +59,14 @@ export default function BoostersPage() {
 
   useEffect(() => {
     loadData();
+    
+    // 🎵 Start cyberpunk ambient music on page load
+    cardAudio.startAmbient('cyberpunk');
+    
+    // Cleanup: stop ambient when leaving page
+    return () => {
+      cardAudio.stopAmbient();
+    };
   }, []);
 
   async function loadData() {

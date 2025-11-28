@@ -26,7 +26,7 @@ export function CardsFlightAnimation({
   }, [cardCount, onFlightComplete]);
 
   return (
-    <div className="fixed inset-0 z-40 pointer-events-none overflow-hidden">
+    <div className="fixed inset-0 z-40 pointer-events-none overflow-hidden" style={{ contain: 'layout style paint' }}>
       {cards.map((i) => {
         // Calculate arc positions
         const totalCards = cardCount;

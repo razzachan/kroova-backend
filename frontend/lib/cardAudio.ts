@@ -1,8 +1,10 @@
-// Audio system for card reveals with rarity-based sound effects
+// HYBRID AUDIO SYSTEM - Tone.js + ElevenLabs
+// - ElevenLabs: Cinematic sounds (explosions, legendary reveals, ambient)
+// - Tone.js: Procedural UI sounds (card flips, hovers, clicks)
 // Professional synthesis with ADSR envelope and layered effects
-// Ready for Howler.js integration with real audio files
 
 import { Howl } from 'howler';
+import * as Tone from 'tone';
 
 interface SynthConfig {
   mainFreq: number;
@@ -67,15 +69,22 @@ const RARITY_SYNTH: Record<string, SynthConfig> = {
   }
 };
 
-// Sprite URLs for real audio files (to be added)
-const AUDIO_SPRITES: Record<string, string> = {
-  cardFlip: '/sfx/card-flip.mp3',
-  packOpen: '/sfx/pack-open.mp3',
-  trash: '/sfx/reveal-common.mp3',
-  meme: '/sfx/reveal-rare.mp3',
-  viral: '/sfx/reveal-epic.mp3',
-  legendary: '/sfx/reveal-legendary.mp3',
-  epica: '/sfx/reveal-godmode.mp3',
+// ElevenLabs generated audio (cinematic quality)
+const ELEVENLABS_AUDIO: Record<string, string> = {
+  packExplosion: '/sfx/explosions/pack_explosion_epic.mp3',
+  packOpen: '/sfx/explosions/pack_open_cloth.mp3',
+  legendaryReveal: '/sfx/reveals/legendary_reveal.mp3',
+  godmodeReveal: '/sfx/reveals/godmode_reveal.mp3',
+  rareReveal: '/sfx/reveals/rare_reveal.mp3',
+  ambientMystical: '/sfx/ambient/mystical_ambience.mp3',
+  ambientTension: '/sfx/ambient/tension_ambience.mp3',
+};
+
+// Procedural UI sounds (Tone.js - zero latency)
+const PROCEDURAL_SOUNDS = {
+  cardFlip: true,
+  cardHover: true,
+  buttonClick: true,
 };
 
 class CardAudioSystem {
@@ -83,13 +92,93 @@ class CardAudioSystem {
   private queue: Array<() => Promise<void>> = [];
   private isPlaying = false;
   private howlerCache: Map<string, Howl> = new Map();
-  private useRealAudio = false; // Toggle when real files are available
+  private toneInitialized = false;
+  private ambientLoop: Howl | null = null;
 
   private getContext(): AudioContext {
     if (!this.audioContext) {
       this.audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
     }
     return this.audioContext;
+  }
+
+  // Initialize Tone.js (call on first user interaction)
+  private async initTone() {
+    if (this.toneInitialized) return;
+    
+    try {
+      await Tone.start();
+      this.toneInitialized = true;
+      console.log('🎵 Tone.js initialized');
+    } catch (err) {
+      console.error('Failed to init Tone.js:', err);
+    }
+  }
+
+  // ==================== PROCEDURAL SOUNDS (Tone.js) ====================
+  
+  // Card flip - Quick snap with synthetic envelope
+  async playCardFlipProcedural() {
+    await this.initTone();
+    
+    const synth = new Tone.MembraneSynth({
+      pitchDecay: 0.05,
+      octaves: 4,
+      oscillator: { type: 'sine' },
+      envelope: {
+        attack: 0.001,
+        decay: 0.08,
+        sustain: 0,
+        release: 0.12
+      }
+    }).toDestination();
+    
+    synth.volume.value = -15; // Subtle
+    synth.triggerAttackRelease('C5', '0.1');
+    
+    // Cleanup
+    setTimeout(() => synth.dispose(), 200);
+  }
+
+  // Card hover - Soft shimmer
+  async playCardHoverProcedural() {
+    await this.initTone();
+    
+    const synth = new Tone.Synth({
+      oscillator: { type: 'triangle' },
+      envelope: {
+        attack: 0.02,
+        decay: 0.1,
+        sustain: 0,
+        release: 0.15
+      }
+    }).toDestination();
+    
+    synth.volume.value = -20; // Very subtle
+    synth.triggerAttackRelease('G6', '0.08');
+    
+    setTimeout(() => synth.dispose(), 200);
+  }
+
+  // Button click - Satisfying pop
+  async playButtonClickProcedural() {
+    await this.initTone();
+    
+    const synth = new Tone.MembraneSynth({
+      pitchDecay: 0.02,
+      octaves: 6,
+      envelope: {
+        attack: 0.001,
+        decay: 0.05,
+        sustain: 0,
+        release: 0.08
+      }
+    }).toDestination();
+    
+    synth.volume.value = -12;
+    synth.triggerAttackRelease('A4', '0.05');
+    
+    setTimeout(() => synth.dispose(), 150);
   }
 
   // Professional synthesis with ADSR envelope and realistic textures
@@ -189,21 +278,22 @@ class CardAudioSystem {
     });
   }
 
-  // Load and cache Howler sound
+  // Load and cache Howler sound (ElevenLabs audio)
   private getHowl(key: string): Howl | null {
-    if (!this.useRealAudio) return null;
-    
     if (this.howlerCache.has(key)) {
       return this.howlerCache.get(key)!;
     }
     
-    const url = AUDIO_SPRITES[key];
+    const url = ELEVENLABS_AUDIO[key];
     if (!url) return null;
     
     const howl = new Howl({
       src: [url],
       volume: 0.7,
       preload: true,
+      onloaderror: (id, err) => {
+        console.warn(`⚠️ Failed to load ${key}:`, err);
+      }
     });
     
     this.howlerCache.set(key, howl);
@@ -226,20 +316,24 @@ class CardAudioSystem {
   }
 
   playCardSound(rarity: string, isGodmode: boolean = false) {
-    // Godmode overrides rarity
-    const effectiveRarity = isGodmode ? 'epica' : rarity.toLowerCase();
-    
-    // Try Howler first (real audio)
-    const howl = this.getHowl(effectiveRarity);
-    if (howl) {
-      howl.play();
+    // Special cases for ElevenLabs cinematic audio
+    if (isGodmode) {
+      this.playGodmodeReveal();
       return;
     }
     
-    // Fallback to synthesis
-    const config = RARITY_SYNTH[effectiveRarity] || RARITY_SYNTH.trash;
+    if (rarity.toLowerCase() === 'legendary' || rarity.toLowerCase() === 'epica') {
+      this.playLegendaryReveal();
+      return;
+    }
 
-    // Add to queue
+    if (rarity.toLowerCase() === 'viral' || rarity.toLowerCase() === 'meme') {
+      this.playRareReveal();
+      return;
+    }
+    
+    // Common cards - use procedural
+    const config = RARITY_SYNTH[rarity.toLowerCase()] || RARITY_SYNTH.trash;
     this.queue.push(() => this.playSynth(config));
     this.processQueue();
   }
@@ -284,21 +378,102 @@ class CardAudioSystem {
     noiseSource.stop(now + 0.3);
   }
 
-  // Preload real audio files
-  preloadAudio() {
-    if (!this.useRealAudio) return;
-    
-    Object.keys(AUDIO_SPRITES).forEach(key => {
-      this.getHowl(key);
-    });
+  // ==================== ELEVENLABS CINEMATIC SOUNDS ====================
+  
+  // Play pack explosion (ElevenLabs generated)
+  playPackExplosion() {
+    const howl = this.getHowl('packExplosion');
+    if (howl) {
+      howl.play();
+    } else {
+      // Fallback to old synthesis
+      this.playPackOpen();
+    }
   }
 
-  // Enable real audio files when available
-  enableRealAudio(enable: boolean = true) {
-    this.useRealAudio = enable;
-    if (enable) {
-      this.preloadAudio();
+  // Play legendary card reveal (ElevenLabs generated)
+  playLegendaryReveal() {
+    const howl = this.getHowl('legendaryReveal');
+    if (howl) {
+      howl.play();
+    } else {
+      console.warn('⚠️ Legendary reveal audio not loaded');
     }
+  }
+
+  // Play godmode card reveal (ElevenLabs generated)
+  playGodmodeReveal() {
+    const howl = this.getHowl('godmodeReveal');
+    if (howl) {
+      howl.play();
+    } else {
+      console.warn('⚠️ Godmode reveal audio not loaded');
+    }
+  }
+
+  // Play rare card reveal (ElevenLabs generated)
+  playRareReveal() {
+    const howl = this.getHowl('rareReveal');
+    if (howl) {
+      howl.play();
+    } else {
+      console.warn('⚠️ Rare reveal audio not loaded');
+    }
+  }
+
+  // Start ambient background music (looping)
+  startAmbient(type: 'mystical' | 'tension' = 'mystical') {
+    // Stop existing ambient
+    if (this.ambientLoop) {
+      this.ambientLoop.fade(this.ambientLoop.volume(), 0, 500);
+      setTimeout(() => this.ambientLoop?.stop(), 500);
+    }
+
+    const key = type === 'mystical' ? 'ambientMystical' : 'ambientTension';
+    const howl = this.getHowl(key);
+    
+    if (howl) {
+      this.ambientLoop = howl;
+      howl.loop(true);
+      howl.volume(0);
+      howl.play();
+      howl.fade(0, 0.3, 1000); // Fade in
+    }
+  }
+
+  // Stop ambient background
+  stopAmbient() {
+    if (this.ambientLoop) {
+      this.ambientLoop.fade(this.ambientLoop.volume(), 0, 1000);
+      setTimeout(() => {
+        this.ambientLoop?.stop();
+        this.ambientLoop = null;
+      }, 1000);
+    }
+  }
+
+  // ==================== UNIFIED API ====================
+
+  // Main card flip sound (procedural for zero latency)
+  playCardFlip() {
+    this.playCardFlipProcedural();
+  }
+
+  // Card hover sound (procedural)
+  playCardHover() {
+    this.playCardHoverProcedural();
+  }
+
+  // Button click sound (procedural)
+  playButtonClick() {
+    this.playButtonClickProcedural();
+  }
+
+  // Preload ElevenLabs audio files
+  preloadAudio() {
+    Object.keys(ELEVENLABS_AUDIO).forEach(key => {
+      this.getHowl(key);
+    });
   }
 
   // Play multiple sounds in sequence (for batch reveals)

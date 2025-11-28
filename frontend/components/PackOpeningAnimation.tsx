@@ -70,7 +70,9 @@ export function PackOpeningAnimation({
 
     const shakeTimer = setTimeout(() => {
       setStage('exploding');
-      cardAudio.playPackOpen();
+      
+      // 🎵 HYBRID AUDIO: ElevenLabs explosion
+      cardAudio.playPackExplosion();
       
       // Camera shake effect
       setCameraShake(true);

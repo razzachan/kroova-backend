@@ -1,0 +1,23 @@
+{
+  "generated_at": "2025-11-28",
+  "total_sounds": 9,
+  "categories": {
+    "explosions": [
+      "pack_explosion_epic.mp3",
+      "pack_open_cloth.mp3"
+    ],
+    "reveals": [
+      "legendary_reveal.mp3",
+      "godmode_reveal.mp3",
+      "rare_reveal.mp3"
+    ],
+    "ambient": [
+      "mystical_ambience.mp3",
+      "tension_ambience.mp3"
+    ],
+    "ui": [
+      "card_flip.mp3",
+      "card_hover.mp3"
+    ]
+  }
+}

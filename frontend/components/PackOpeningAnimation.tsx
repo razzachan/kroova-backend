@@ -14,47 +14,102 @@ export function PackOpeningAnimation({
 }: PackOpeningAnimationProps) {
   const [stage, setStage] = useState<'idle' | 'shaking' | 'exploding' | 'complete'>('idle');
   const [clicked, setClicked] = useState(false);
+  const packRef = useRef<HTMLDivElement>(null);
   const promptRef = useRef<HTMLDivElement>(null);
-  const bounceAnimRef = useRef<number | undefined>(undefined);
+  const particlesRef = useRef<HTMLDivElement>(null);
 
-  // Smooth bounce animation using requestAnimationFrame
+  // Smooth bounce using Web Animations API (hardware accelerated, 0 reflows)
   useEffect(() => {
     if (stage !== 'idle' || !promptRef.current) return;
 
-    let startTime = Date.now();
-    
-    const animate = () => {
-      if (!promptRef.current || stage !== 'idle') return;
-      
-      const elapsed = Date.now() - startTime;
-      const progress = (elapsed % 2000) / 2000; // 2s cycle
-      const y = Math.sin(progress * Math.PI) * -12; // Smooth sine wave
-      
-      promptRef.current.style.transform = `translateX(-50%) translateY(${y}px) translateZ(0)`;
-      
-      bounceAnimRef.current = requestAnimationFrame(animate);
-    };
-    
-    bounceAnimRef.current = requestAnimationFrame(animate);
-    
-    return () => {
-      if (bounceAnimRef.current) {
-        cancelAnimationFrame(bounceAnimRef.current);
+    const animation = promptRef.current.animate(
+      [
+        { transform: 'translateX(-50%) translateY(0) translateZ(0)' },
+        { transform: 'translateX(-50%) translateY(-12px) translateZ(0)' },
+        { transform: 'translateX(-50%) translateY(0) translateZ(0)' }
+      ],
+      {
+        duration: 2000,
+        iterations: Infinity,
+        easing: 'ease-in-out'
       }
-    };
+    );
+
+    return () => animation.cancel();
   }, [stage]);
 
   useEffect(() => {
     if (!clicked) return;
 
-    // Shake animation
+    // Shake animation using Web Animations API
     setStage('shaking');
+    
+    if (packRef.current) {
+      packRef.current.animate(
+        [
+          { transform: 'translate3d(0, 0, 0) rotate(0deg)' },
+          { transform: 'translate3d(-10px, -5px, 0) rotate(-2deg)' },
+          { transform: 'translate3d(10px, 5px, 0) rotate(2deg)' },
+          { transform: 'translate3d(-10px, 5px, 0) rotate(-1deg)' },
+          { transform: 'translate3d(10px, -5px, 0) rotate(1deg)' },
+          { transform: 'translate3d(-8px, -8px, 0) rotate(-2deg)' },
+          { transform: 'translate3d(8px, 8px, 0) rotate(2deg)' },
+          { transform: 'translate3d(-8px, 5px, 0) rotate(-1deg)' },
+          { transform: 'translate3d(8px, -5px, 0) rotate(1deg)' },
+          { transform: 'translate3d(-5px, -5px, 0) rotate(-1deg)' },
+          { transform: 'translate3d(0, 0, 0) rotate(0deg)' }
+        ],
+        {
+          duration: 600,
+          easing: 'ease-in-out'
+        }
+      );
+    }
+
     const shakeTimer = setTimeout(() => {
       setStage('exploding');
       cardAudio.playPackOpen();
+      
+      // Explosion animation
+      if (packRef.current) {
+        packRef.current.animate(
+          [
+            { transform: 'scale(1) translateZ(0)', opacity: 1 },
+            { transform: 'scale(1.3) translateZ(0)', opacity: 0.8 },
+            { transform: 'scale(2) translateZ(0)', opacity: 0 }
+          ],
+          {
+            duration: 600,
+            easing: 'ease-out',
+            fill: 'forwards'
+          }
+        );
+      }
+      
+      // Animate particles with Web Animations API
+      if (particlesRef.current) {
+        const particles = particlesRef.current.querySelectorAll('.particle');
+        particles.forEach((particle, i) => {
+          const angle = (i / particles.length) * Math.PI * 2;
+          const distance = 150 + Math.random() * 100;
+          const tx = Math.cos(angle) * distance;
+          const ty = Math.sin(angle) * distance;
+          
+          (particle as HTMLElement).animate(
+            [
+              { transform: 'translate(0, 0) scale(0)', opacity: 0 },
+              { transform: `translate(${tx}px, ${ty}px) scale(1)`, opacity: 1, offset: 0.5 },
+              { transform: `translate(${tx * 1.5}px, ${ty * 1.5}px) scale(0.5)`, opacity: 0 }
+            ],
+            {
+              duration: 1000,
+              easing: 'ease-out'
+            }
+          );
+        });
+      }
     }, 600);
 
-    // Explosion complete
     const explodeTimer = setTimeout(() => {
       setStage('complete');
       onOpenComplete();
@@ -76,32 +131,26 @@ export function PackOpeningAnimation({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
-      {/* Background particles */}
-      {stage !== 'idle' && (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-yellow-400 rounded-full animate-sparkle"
-              style={{
-                left: `${50 + (Math.random() - 0.5) * 100}%`,
-                top: `${50 + (Math.random() - 0.5) * 100}%`,
-                animationDelay: `${Math.random() * 0.5}s`,
-                willChange: 'transform, opacity',
-                transform: 'translateZ(0)',
-              }}
-            />
-          ))}
-        </div>
-      )}
+      {/* Background particles - 20 for robust effect */}
+      <div ref={particlesRef} className="absolute inset-0 overflow-hidden pointer-events-none">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div
+            key={i}
+            className="particle absolute w-2 h-2 bg-yellow-400 rounded-full"
+            style={{
+              left: '50%',
+              top: '50%',
+              willChange: 'transform, opacity',
+              transform: 'translateZ(0)',
+            }}
+          />
+        ))}
+      </div>
 
       {/* Pack */}
       <div
-        className={`relative cursor-pointer transition-all duration-300 ${
-          stage === 'idle' ? 'hover:scale-105' : ''
-        } ${stage === 'shaking' ? 'animate-shake-intense' : ''} ${
-          stage === 'exploding' ? 'animate-explode' : ''
-        }`}
+        ref={packRef}
+        className="relative cursor-pointer"
         onClick={handleClick}
         style={{
           width: '400px',
@@ -110,13 +159,14 @@ export function PackOpeningAnimation({
           maxHeight: '80vh',
           willChange: 'transform, opacity',
           transform: 'translateZ(0)',
-          backfaceVisibility: 'hidden',
-          WebkitBackfaceVisibility: 'hidden',
         }}
       >
         {/* Glow effect */}
         {stage === 'idle' && (
-          <div className="absolute inset-0 bg-gradient-radial from-yellow-400/30 via-transparent to-transparent animate-pulse-slow rounded-lg" />
+          <div className="absolute inset-0 rounded-lg" style={{
+            background: 'radial-gradient(circle, rgba(251, 191, 36, 0.3) 0%, transparent 70%)',
+            animation: 'pulse 2s ease-in-out infinite',
+          }} />
         )}
 
         {/* Pack image */}
@@ -125,8 +175,7 @@ export function PackOpeningAnimation({
           alt="Booster Pack"
           className="w-full h-full object-contain drop-shadow-2xl"
           style={{
-            filter: stage === 'exploding' ? 'brightness(2) blur(8px)' : 'none',
-            willChange: 'filter, transform',
+            willChange: 'transform',
             transform: 'translateZ(0)',
           }}
         />
@@ -147,79 +196,22 @@ export function PackOpeningAnimation({
 
         {/* Explosion flash */}
         {stage === 'exploding' && (
-          <div className="absolute inset-0 bg-white animate-flash rounded-lg" />
+          <div className="absolute inset-0 bg-white rounded-lg" style={{
+            animation: 'flash 0.4s ease-out'
+          }} />
         )}
       </div>
 
       <style jsx>{`
-        @keyframes shake-intense {
-          0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
-          10% { transform: translate3d(-10px, -5px, 0) rotate(-2deg); }
-          20% { transform: translate3d(10px, 5px, 0) rotate(2deg); }
-          30% { transform: translate3d(-10px, 5px, 0) rotate(-1deg); }
-          40% { transform: translate3d(10px, -5px, 0) rotate(1deg); }
-          50% { transform: translate3d(-8px, -8px, 0) rotate(-2deg); }
-          60% { transform: translate3d(8px, 8px, 0) rotate(2deg); }
-          70% { transform: translate3d(-8px, 5px, 0) rotate(-1deg); }
-          80% { transform: translate3d(8px, -5px, 0) rotate(1deg); }
-          90% { transform: translate3d(-5px, -5px, 0) rotate(-1deg); }
+        @keyframes pulse {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.6; }
         }
-        .animate-shake-intense {
-          animation: shake-intense 0.6s ease-in-out;
-        }
-
-        @keyframes explode {
-          0% {
-            transform: scale(1) translateZ(0);
-            opacity: 1;
-          }
-          50% {
-            transform: scale(1.3) translateZ(0);
-            opacity: 0.8;
-          }
-          100% {
-            transform: scale(2) translateZ(0);
-            opacity: 0;
-          }
-        }
-        .animate-explode {
-          animation: explode 0.6s ease-out forwards;
-        }
-
+        
         @keyframes flash {
           0% { opacity: 0; }
           50% { opacity: 1; }
           100% { opacity: 0; }
-        }
-        .animate-flash {
-          animation: flash 0.4s ease-out;
-        }
-
-        @keyframes sparkle {
-          0% {
-            transform: translate(0, 0) scale(0);
-            opacity: 0;
-          }
-          50% {
-            opacity: 1;
-          }
-          100% {
-            transform: translate(var(--tx), var(--ty)) scale(1);
-            opacity: 0;
-          }
-        }
-        .animate-sparkle {
-          animation: sparkle 1s ease-out forwards;
-          --tx: calc((random() - 0.5) * 400px);
-          --ty: calc((random() - 0.5) * 400px);
-        }
-
-        @keyframes pulse-slow {
-          0%, 100% { opacity: 0.3; transform: scale(1); }
-          50% { opacity: 0.6; transform: scale(1.1); }
-        }
-        .animate-pulse-slow {
-          animation: pulse-slow 2s ease-in-out infinite;
         }
       `}</style>
     </div>

@@ -49,6 +49,9 @@ export function CardsFlightAnimation({
               '--final-y': `${finalY}px`,
               '--rotation': `${rotation}deg`,
               animationDelay: `${delay}ms`,
+              willChange: 'transform, opacity',
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
             } as any}
           >
             <div className="w-full h-full relative">
@@ -68,7 +71,7 @@ export function CardsFlightAnimation({
       <style jsx>{`
         @keyframes card-flight {
           0% {
-            transform: translate(-50%, -50%) translateY(-300px) rotateZ(360deg) scale(0.3);
+            transform: translate(-50%, -50%) translateY(-300px) rotateZ(360deg) scale(0.3) translateZ(0);
             opacity: 0;
           }
           30% {
@@ -78,7 +81,7 @@ export function CardsFlightAnimation({
             transform: translate(
               calc(-50% + var(--final-x)), 
               calc(-50% + var(--final-y))
-            ) rotateZ(var(--rotation)) scale(1);
+            ) rotateZ(var(--rotation)) scale(1) translateZ(0);
             opacity: 1;
           }
         }

@@ -58,6 +58,8 @@ export function PackOpeningAnimation({
                 left: `${50 + (Math.random() - 0.5) * 100}%`,
                 top: `${50 + (Math.random() - 0.5) * 100}%`,
                 animationDelay: `${Math.random() * 0.5}s`,
+                willChange: 'transform, opacity',
+                transform: 'translateZ(0)',
               }}
             />
           ))}
@@ -77,6 +79,10 @@ export function PackOpeningAnimation({
           height: '580px',
           maxWidth: '90vw',
           maxHeight: '80vh',
+          willChange: 'transform, opacity',
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
         }}
       >
         {/* Glow effect */}
@@ -91,6 +97,8 @@ export function PackOpeningAnimation({
           className="w-full h-full object-contain drop-shadow-2xl"
           style={{
             filter: stage === 'exploding' ? 'brightness(2) blur(8px)' : 'none',
+            willChange: 'filter, transform',
+            transform: 'translateZ(0)',
           }}
         />
 
@@ -109,16 +117,16 @@ export function PackOpeningAnimation({
 
       <style jsx>{`
         @keyframes shake-intense {
-          0%, 100% { transform: translate(0, 0) rotate(0deg); }
-          10% { transform: translate(-10px, -5px) rotate(-2deg); }
-          20% { transform: translate(10px, 5px) rotate(2deg); }
-          30% { transform: translate(-10px, 5px) rotate(-1deg); }
-          40% { transform: translate(10px, -5px) rotate(1deg); }
-          50% { transform: translate(-8px, -8px) rotate(-2deg); }
-          60% { transform: translate(8px, 8px) rotate(2deg); }
-          70% { transform: translate(-8px, 5px) rotate(-1deg); }
-          80% { transform: translate(8px, -5px) rotate(1deg); }
-          90% { transform: translate(-5px, -5px) rotate(-1deg); }
+          0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+          10% { transform: translate3d(-10px, -5px, 0) rotate(-2deg); }
+          20% { transform: translate3d(10px, 5px, 0) rotate(2deg); }
+          30% { transform: translate3d(-10px, 5px, 0) rotate(-1deg); }
+          40% { transform: translate3d(10px, -5px, 0) rotate(1deg); }
+          50% { transform: translate3d(-8px, -8px, 0) rotate(-2deg); }
+          60% { transform: translate3d(8px, 8px, 0) rotate(2deg); }
+          70% { transform: translate3d(-8px, 5px, 0) rotate(-1deg); }
+          80% { transform: translate3d(8px, -5px, 0) rotate(1deg); }
+          90% { transform: translate3d(-5px, -5px, 0) rotate(-1deg); }
         }
         .animate-shake-intense {
           animation: shake-intense 0.6s ease-in-out;
@@ -126,15 +134,15 @@ export function PackOpeningAnimation({
 
         @keyframes explode {
           0% {
-            transform: scale(1);
+            transform: scale(1) translateZ(0);
             opacity: 1;
           }
           50% {
-            transform: scale(1.3);
+            transform: scale(1.3) translateZ(0);
             opacity: 0.8;
           }
           100% {
-            transform: scale(2);
+            transform: scale(2) translateZ(0);
             opacity: 0;
           }
         }

@@ -1,6 +1,6 @@
 {
   "generated_at": "2025-11-28",
-  "total_sounds": 9,
+  "total_sounds": 11,
   "categories": {
     "explosions": [
       "pack_explosion_epic.mp3",
@@ -12,7 +12,9 @@
       "rare_reveal.mp3"
     ],
     "ambient": [
-      "cyberpunk_ambience.mp3",
+      "menu_idle.mp3",
+      "store_active.mp3",
+      "pre_reveal_tension.mp3",
       "tension_ambience.mp3"
     ],
     "ui": [

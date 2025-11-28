@@ -76,7 +76,10 @@ const ELEVENLABS_AUDIO: Record<string, string> = {
   legendaryReveal: '/sfx/reveals/legendary_reveal.mp3',
   godmodeReveal: '/sfx/reveals/godmode_reveal.mp3',
   rareReveal: '/sfx/reveals/rare_reveal.mp3',
-  ambientCyberpunk: '/sfx/ambient/cyberpunk_ambience.mp3',
+  // Adaptive ambient layers
+  ambientIdle: '/sfx/ambient/menu_idle.mp3',
+  ambientActive: '/sfx/ambient/store_active.mp3',
+  ambientIntense: '/sfx/ambient/pre_reveal_tension.mp3',
   ambientTension: '/sfx/ambient/tension_ambience.mp3',
 };
 
@@ -421,24 +424,51 @@ class CardAudioSystem {
     }
   }
 
-  // Start ambient background music (looping)
-  startAmbient(type: 'cyberpunk' | 'tension' = 'cyberpunk') {
-    // Stop existing ambient
-    if (this.ambientLoop) {
-      this.ambientLoop.fade(this.ambientLoop.volume(), 0, 500);
-      setTimeout(() => this.ambientLoop?.stop(), 500);
-    }
-
-    const key = type === 'cyberpunk' ? 'ambientCyberpunk' : 'ambientTension';
+  // ==================== ADAPTIVE AMBIENT SYSTEM ====================
+  
+  // Start ambient background music with adaptive intensity
+  startAmbient(intensity: 'idle' | 'active' | 'intense' = 'active') {
+    const keyMap = {
+      idle: 'ambientIdle',
+      active: 'ambientActive',
+      intense: 'ambientIntense'
+    };
+    
+    const volumeMap = {
+      idle: 0.1,      // Ultra subtle for home/profile
+      active: 0.25,   // Moderate for boosters/marketplace
+      intense: 0.4    // High for pre-purchase tension
+    };
+    
+    const key = keyMap[intensity];
+    const targetVolume = volumeMap[intensity];
     const howl = this.getHowl(key);
+    
+    // If same ambient already playing, just adjust volume
+    if (this.ambientLoop && this.ambientLoop === howl) {
+      this.ambientLoop.fade(this.ambientLoop.volume(), targetVolume, 800);
+      return;
+    }
+    
+    // Crossfade to new ambient
+    if (this.ambientLoop) {
+      const oldLoop = this.ambientLoop;
+      oldLoop.fade(oldLoop.volume(), 0, 600);
+      setTimeout(() => oldLoop.stop(), 600);
+    }
     
     if (howl) {
       this.ambientLoop = howl;
       howl.loop(true);
       howl.volume(0);
       howl.play();
-      howl.fade(0, 0.3, 1000); // Fade in
+      howl.fade(0, targetVolume, 1000); // Smooth fade in
     }
+  }
+  
+  // Change ambient intensity without restarting track
+  setAmbientIntensity(intensity: 'idle' | 'active' | 'intense') {
+    this.startAmbient(intensity);
   }
 
   // Stop ambient background

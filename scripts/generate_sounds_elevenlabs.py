@@ -70,13 +70,27 @@ SOUND_EFFECTS = {
         }
     ],
     
-    # Ambient sounds (looping)
+    # Ambient sounds (adaptive layers)
     "ambient": [
         {
-            "filename": "cyberpunk_ambience.mp3",
-            "prompt": "Dark cyberpunk urban ambience with subtle synth pad, low electronic drone, distant digital glitches, neon city atmosphere with technological hum, dystopian and atmospheric, seamless loop",
+            "filename": "menu_idle.mp3",
+            "prompt": "Minimal cyberpunk ambient drone, ultra subtle synth pad with low-pass filter, barely perceptible technological hum, deep atmospheric presence, very quiet and unobtrusive, seamless loop",
+            "duration": 30.0,
+            "influence": 0.15,
+            "loop": True
+        },
+        {
+            "filename": "store_active.mp3",
+            "prompt": "Dark cyberpunk urban ambience with moderate synth pad, electronic drone with digital glitches, neon city atmosphere with technological hum, dystopian vibe, seamless loop",
             "duration": 30.0,
             "influence": 0.2,
+            "loop": True
+        },
+        {
+            "filename": "pre_reveal_tension.mp3",
+            "prompt": "Intense cyber tension with heavy sub-bass pulsing, dark synth drone with rhythmic glitch hits, ominous digital atmosphere building suspense, distorted bass rumble, high energy technological unease, seamless loop",
+            "duration": 30.0,
+            "influence": 0.25,
             "loop": True
         },
         {

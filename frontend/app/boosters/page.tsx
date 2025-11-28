@@ -60,8 +60,8 @@ export default function BoostersPage() {
   useEffect(() => {
     loadData();
     
-    // 🎵 Start cyberpunk ambient music on page load
-    cardAudio.startAmbient('cyberpunk');
+    // 🎵 ADAPTIVE AMBIENT: Start at 'active' level for boosters page
+    cardAudio.startAmbient('active');
     
     // Cleanup: stop ambient when leaving page
     return () => {
@@ -100,6 +100,10 @@ export default function BoostersPage() {
   async function handlePurchase(boosterId: string, quantity: number = 1) {
     console.log('🛒 handlePurchase called:', { boosterId, quantity });
     setPurchasing(boosterId);
+    
+    // 🎵 ADAPTIVE AUDIO: Increase intensity during purchase
+    cardAudio.setAmbientIntensity('intense');
+    
     try {
       console.log('📤 Sending purchase request...');
       const res = await api.post('/boosters/purchase', {
@@ -120,6 +124,9 @@ export default function BoostersPage() {
       console.error('❌ Purchase error:', error);
       const errorMsg = error.response?.data?.error?.message || 'Erro ao comprar booster';
       alert(errorMsg);
+      
+      // 🎵 Return to active if purchase fails
+      cardAudio.setAmbientIntensity('active');
     } finally {
       setPurchasing(null);
     }
@@ -128,6 +135,9 @@ export default function BoostersPage() {
   async function handleOpen(openingId: string) {
     setOpening(openingId);
     setShowCards(false);
+
+    // 🎵 ADAPTIVE AUDIO: Stop ambient before pack explosion
+    cardAudio.stopAmbient();
 
     try {
       const res = await api.post('/boosters/open', { opening_id: openingId });
@@ -141,6 +151,9 @@ export default function BoostersPage() {
     } catch (error) {
       console.error('Erro ao abrir booster:', error);
       setOpening(null);
+      
+      // 🎵 Restart ambient if open fails
+      cardAudio.startAmbient('active');
     }
   }
 
@@ -155,6 +168,10 @@ export default function BoostersPage() {
     setRevealedCards(pendingCards);
     setShowCards(true);
     setOpenedCount((c) => c + 1);
+    
+    // 🎵 ADAPTIVE AUDIO: Restart ambient at idle during card reveal
+    // (card SFX will play on top)
+    cardAudio.startAmbient('idle');
     
     const now = Date.now();
     // Track open timestamps for Lucky Streak (3 boosters < 2min)
@@ -447,6 +464,8 @@ export default function BoostersPage() {
                   onClick={() => {
                     setShowCards(false);
                     setAnimationStage('none');
+                    // 🎵 Return to active ambient when closing reveal
+                    cardAudio.setAmbientIntensity('active');
                   }}
                   className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-lg"
                   style={{

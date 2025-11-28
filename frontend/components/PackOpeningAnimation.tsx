@@ -46,7 +46,7 @@ export function PackOpeningAnimation({
   if (stage === 'complete') return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90" style={{ contain: 'layout style paint' }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
       {/* Background particles */}
       {stage !== 'idle' && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -105,11 +105,11 @@ export function PackOpeningAnimation({
         {/* Click prompt */}
         {stage === 'idle' && (
           <div 
-            className="absolute bottom-8 left-1/2 text-white text-xl font-bold"
+            className="absolute bottom-8 left-1/2 text-white text-xl font-bold pointer-events-none"
             style={{
               transform: 'translateX(-50%) translateZ(0)',
               willChange: 'transform',
-              animation: 'bounce-fixed 1s ease-in-out infinite',
+              animation: 'bounce-smooth 2s ease-in-out infinite',
             }}
           >
             👆 Clique para abrir
@@ -123,12 +123,12 @@ export function PackOpeningAnimation({
       </div>
 
       <style jsx>{`
-        @keyframes bounce-fixed {
+        @keyframes bounce-smooth {
           0%, 100% {
             transform: translateX(-50%) translateY(0) translateZ(0);
           }
           50% {
-            transform: translateX(-50%) translateY(-10px) translateZ(0);
+            transform: translateX(-50%) translateY(-12px) translateZ(0);
           }
         }
 

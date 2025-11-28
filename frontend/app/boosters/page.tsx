@@ -8,6 +8,8 @@ import { PityBar } from '@/components/PityBar';
 import { OpeningSession } from '@/components/OpeningSession';
 import { VaultMilestonesPanel } from '@/components/VaultMilestonesPanel';
 import { cardAudio, triggerHaptic } from '@/lib/cardAudio';
+import { PackOpeningAnimation } from '@/components/PackOpeningAnimation';
+import { CardsFlightAnimation } from '@/components/CardsFlightAnimation';
 
 interface BoosterType {
   id: string;
@@ -41,6 +43,7 @@ export default function BoostersPage() {
   const [opening, setOpening] = useState<string | null>(null);
   const [revealedCards, setRevealedCards] = useState<Card[]>([]);
   const [showCards, setShowCards] = useState(false);
+  const [flipMode, setFlipMode] = useState<'interactive' | 'auto'>('interactive');
   const [quantityByBooster, setQuantityByBooster] = useState<Record<string, number>>({});
   const [pityCount, setPityCount] = useState(0);
   const [pityMax, setPityMax] = useState(180);
@@ -49,6 +52,10 @@ export default function BoostersPage() {
   const [checkpointTop, setCheckpointTop] = useState<Card[]>([]);
   const [streakActive, setStreakActive] = useState<{ until: number } | null>(null);
   const [openTimestamps, setOpenTimestamps] = useState<number[]>([]);
+  
+  // Pack opening animation states
+  const [animationStage, setAnimationStage] = useState<'none' | 'pack' | 'flight' | 'reveal'>('none');
+  const [pendingCards, setPendingCards] = useState<Card[]>([]);
 
   useEffect(() => {
     loadData();
@@ -83,23 +90,26 @@ export default function BoostersPage() {
   }
 
   async function handlePurchase(boosterId: string, quantity: number = 1) {
+    console.log('🛒 handlePurchase called:', { boosterId, quantity });
     setPurchasing(boosterId);
     try {
+      console.log('📤 Sending purchase request...');
       const res = await api.post('/boosters/purchase', {
         booster_type_id: boosterId,
         quantity: quantity,
         currency: 'brl'
       });
-      const data = unwrap<{ boosters: { id: string }[] }>(res.data);
+      console.log('📥 Purchase response:', res);
+      const data = unwrap<{ opening_id: string; new_balance: number; booster_type: any }>(res.data);
+      console.log('✅ Purchase successful, data:', data);
       // Recarrega saldo após compra
       await loadData();
-      // Abre automaticamente o primeiro (ou todos em sequência)
-      if (data?.boosters?.length) {
-        for (const opening of data.boosters) {
-          await handleOpen(opening.id);
-        }
+      // Abre automaticamente o booster
+      if (data?.opening_id) {
+        await handleOpen(data.opening_id);
       }
     } catch (error: any) {
+      console.error('❌ Purchase error:', error);
       const errorMsg = error.response?.data?.error?.message || 'Erro ao comprar booster';
       alert(errorMsg);
     } finally {
@@ -112,43 +122,53 @@ export default function BoostersPage() {
     setShowCards(false);
 
     try {
-      const res = await api.post('/boosters/open', { booster_opening_id: openingId });
+      const res = await api.post('/boosters/open', { opening_id: openingId });
       const data = unwrap(res.data);
 
-      // Animação: espera 2s antes de revelar
-      setTimeout(() => {
-        setRevealedCards(data.cards);
-        setShowCards(true);
-        setOpening(null);
-        setOpenedCount((c) => c + 1);
-        const now = Date.now();
-        // Track open timestamps for Lucky Streak (3 boosters < 2min)
-        setOpenTimestamps((arr) => {
-          const next = [...arr.filter((t) => now - t < 2 * 60 * 1000), now];
-          if (next.length >= 3 && !streakActive) {
-            setStreakActive({ until: now + 30 * 60 * 1000 }); // 30min
-          }
-          return next;
-        });
-        
-        // SFX/Haptics now triggered inside OpeningSession synchronized with the flip
-        
-        // Checkpoint a cada 10 boosters
-        if ((openedCount + 1) % 10 === 0) {
-          const top3 = [...data.cards]
-            .sort((a: any, b: any) => (b.liquidity_brl || 0) - (a.liquidity_brl || 0))
-            .slice(0, 3);
-          setCheckpointTop(top3);
-          setShowCheckpoint(true);
-        }
-
-        // Recarrega pity após abrir
-        loadData();
-      }, 2000);
+      // Start pack animation sequence
+      setPendingCards(data.cards);
+      setAnimationStage('pack');
+      setOpening(null); // Hide loading spinner
+      
     } catch (error) {
       console.error('Erro ao abrir booster:', error);
       setOpening(null);
     }
+  }
+
+  function handlePackOpenComplete() {
+    // Pack exploded, now show cards flying
+    setAnimationStage('flight');
+  }
+
+  function handleCardsFlightComplete() {
+    // Cards landed, now show reveal session
+    setAnimationStage('reveal');
+    setRevealedCards(pendingCards);
+    setShowCards(true);
+    setOpenedCount((c) => c + 1);
+    
+    const now = Date.now();
+    // Track open timestamps for Lucky Streak (3 boosters < 2min)
+    setOpenTimestamps((arr) => {
+      const next = [...arr.filter((t) => now - t < 2 * 60 * 1000), now];
+      if (next.length >= 3 && !streakActive) {
+        setStreakActive({ until: now + 30 * 60 * 1000 }); // 30min
+      }
+      return next;
+    });
+    
+    // Checkpoint a cada 10 boosters
+    if ((openedCount + 1) % 10 === 0) {
+      const top3 = [...pendingCards]
+        .sort((a: any, b: any) => (b.liquidity_brl || 0) - (a.liquidity_brl || 0))
+        .slice(0, 3);
+      setCheckpointTop(top3);
+      setShowCheckpoint(true);
+    }
+
+    // Recarrega pity após abrir
+    loadData();
   }
 
   // Expire Lucky Streak when time passes
@@ -288,7 +308,10 @@ export default function BoostersPage() {
               </div>
 
               <button
-                onClick={() => handlePurchase(booster.id, quantityByBooster[booster.id] || 1)}
+                onClick={() => {
+                  console.log('🖱️ Button clicked!', { boosterId: booster.id, quantity: quantityByBooster[booster.id] || 1 });
+                  handlePurchase(booster.id, quantityByBooster[booster.id] || 1);
+                }}
                 disabled={purchasing === booster.id || opening !== null || balance < booster.price_brl}
                 className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded transition"
               >
@@ -312,11 +335,35 @@ export default function BoostersPage() {
           </div>
         )}
 
+        {/* Pack Opening Animation Sequence */}
+        {animationStage === 'pack' && (
+          <PackOpeningAnimation
+            packImageUrl="/pack-back-ed01.png"
+            onOpenComplete={handlePackOpenComplete}
+          />
+        )}
+
+        {animationStage === 'flight' && (
+          <CardsFlightAnimation
+            cardCount={pendingCards.length}
+            onFlightComplete={handleCardsFlightComplete}
+          />
+        )}
+
         {/* Cartas Reveladas (OpeningSession) */}
-        {showCards && revealedCards.length > 0 && (
+        {animationStage === 'reveal' && showCards && revealedCards.length > 0 && (
           <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4 overflow-y-auto">
             <div className="max-w-6xl w-full my-8">
-              <h2 className="text-3xl font-bold text-center mb-8 text-white">✨ Suas Novas Cartas! ✨</h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-3xl font-bold text-white">✨ Suas Novas Cartas! ✨</h2>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-gray-300">Modo de flip:</span>
+                  <button
+                    onClick={() => setFlipMode(m => (m === 'interactive' ? 'auto' : 'interactive'))}
+                    className="px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 border border-gray-600"
+                  >{flipMode === 'interactive' ? 'Interativo' : 'Automático'}</button>
+                </div>
+              </div>
               <OpeningSession
                 cards={revealedCards.map((c) => ({
                   id: c.id,
@@ -325,11 +372,16 @@ export default function BoostersPage() {
                   image_url: c.card.image_url,
                   liquidity_brl: c.liquidity_brl,
                   is_godmode: c.is_godmode,
+                  skin: c.skin,
                 }))}
+                mode={flipMode}
               />
               <div className="text-center space-x-4 pb-8 mt-6">
                 <button
-                  onClick={() => setShowCards(false)}
+                  onClick={() => {
+                    setShowCards(false);
+                    setAnimationStage('none');
+                  }}
                   className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded-lg"
                 >
                   Fechar

@@ -42,12 +42,13 @@
     "cards:seed": "node scripts/seed_supabase.js",
     "cards:figma": "node scripts/export_figma.js",
     "cards:verify": "node scripts/cards_verify.js",
-    "nft:worker": "tsx src/modules/nft/nft.queue.ts"
-    ,"get:token:akroma": "tsx scripts/get-akroma-access-token.ts"
+    "nft:worker": "tsx src/modules/nft/nft.queue.ts",
+    "get:token:akroma": "tsx scripts/get-akroma-access-token.ts"
   },
   "dependencies": {
     "@fastify/cors": "^8.5.0",
     "@fastify/jwt": "^7.2.4",
+    "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.42.3",
     "@types/jsonwebtoken": "^9.0.10",
     "bcryptjs": "^2.4.3",

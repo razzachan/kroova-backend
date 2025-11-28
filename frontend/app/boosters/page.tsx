@@ -151,6 +151,17 @@ export default function BoostersPage() {
     }
   }
 
+  // Expire Lucky Streak when time passes
+  useEffect(() => {
+    if (!streakActive) return;
+    const id = setInterval(() => {
+      if (Date.now() > streakActive.until) {
+        setStreakActive(null);
+      }
+    }, 10000);
+    return () => clearInterval(id);
+  }, [streakActive]);
+
   function getRarityColor(rarity: string) {
     const colors: Record<string, string> = {
       trash: 'text-gray-400',
@@ -172,17 +183,6 @@ export default function BoostersPage() {
       </div>
     );
   }
-
-  // Expire Lucky Streak when time passes
-  useEffect(() => {
-    if (!streakActive) return;
-    const id = setInterval(() => {
-      if (Date.now() > streakActive.until) {
-        setStreakActive(null);
-      }
-    }, 10000);
-    return () => clearInterval(id);
-  }, [streakActive]);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">

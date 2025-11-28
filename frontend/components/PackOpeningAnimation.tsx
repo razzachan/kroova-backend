@@ -86,28 +86,30 @@ export function PackOpeningAnimation({
         );
       }
       
-      // Animate particles with Web Animations API
-      if (particlesRef.current) {
-        const particles = particlesRef.current.querySelectorAll('.particle');
-        particles.forEach((particle, i) => {
-          const angle = (i / particles.length) * Math.PI * 2;
-          const distance = 150 + Math.random() * 100;
-          const tx = Math.cos(angle) * distance;
-          const ty = Math.sin(angle) * distance;
-          
-          (particle as HTMLElement).animate(
-            [
-              { transform: 'translate(0, 0) scale(0)', opacity: 0 },
-              { transform: `translate(${tx}px, ${ty}px) scale(1)`, opacity: 1, offset: 0.5 },
-              { transform: `translate(${tx * 1.5}px, ${ty * 1.5}px) scale(0.5)`, opacity: 0 }
-            ],
-            {
-              duration: 1000,
-              easing: 'ease-out'
-            }
-          );
-        });
-      }
+      // Animate particles - wait for next frame to ensure DOM is ready
+      requestAnimationFrame(() => {
+        if (particlesRef.current) {
+          const particles = particlesRef.current.querySelectorAll('.particle');
+          particles.forEach((particle, i) => {
+            const angle = (i / particles.length) * Math.PI * 2;
+            const distance = 150 + Math.random() * 100;
+            const tx = Math.cos(angle) * distance;
+            const ty = Math.sin(angle) * distance;
+            
+            (particle as HTMLElement).animate(
+              [
+                { transform: 'translate(0, 0) scale(0)', opacity: 0 },
+                { transform: `translate(${tx}px, ${ty}px) scale(1)`, opacity: 1, offset: 0.5 },
+                { transform: `translate(${tx * 1.5}px, ${ty * 1.5}px) scale(0.5)`, opacity: 0 }
+              ],
+              {
+                duration: 1000,
+                easing: 'ease-out'
+              }
+            );
+          });
+        }
+      });
     }, 600);
 
     const explodeTimer = setTimeout(() => {
@@ -131,21 +133,23 @@ export function PackOpeningAnimation({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
-      {/* Background particles - 20 for robust effect */}
-      <div ref={particlesRef} className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div
-            key={i}
-            className="particle absolute w-2 h-2 bg-yellow-400 rounded-full"
-            style={{
-              left: '50%',
-              top: '50%',
-              willChange: 'transform, opacity',
-              transform: 'translateZ(0)',
-            }}
-          />
-        ))}
-      </div>
+      {/* Background particles - only render when exploding */}
+      {stage === 'exploding' && (
+        <div ref={particlesRef} className="absolute inset-0 overflow-hidden pointer-events-none">
+          {Array.from({ length: 20 }).map((_, i) => (
+            <div
+              key={i}
+              className="particle absolute w-2 h-2 bg-yellow-400 rounded-full"
+              style={{
+                left: '50%',
+                top: '50%',
+                willChange: 'transform, opacity',
+                transform: 'translateZ(0)',
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Pack */}
       <div

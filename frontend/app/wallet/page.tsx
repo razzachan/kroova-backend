@@ -24,6 +24,8 @@ export default function WalletPage() {
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [depositAmount, setDepositAmount] = useState<number>(5);
+  const [preview, setPreview] = useState<{ net_amount_brl: number; fee_brl: number; fee_applied: boolean } | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -53,6 +55,21 @@ export default function WalletPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const res = await api.get('/wallet/deposit/preview', { params: { amount_brl: depositAmount } });
+        const data = unwrap<{ net_amount_brl: number; fee_brl: number; fee_applied: boolean }>(res.data);
+        setPreview(data || null);
+      } catch (e) {
+        setPreview(null);
+      }
+    };
+    if (depositAmount && depositAmount > 0) {
+      run();
+    }
+  }, [depositAmount]);
 
   if (authLoading || !user) {
     return (
@@ -91,13 +108,31 @@ export default function WalletPage() {
                 </p>
               </div>
               <div className="flex gap-4 mt-6 justify-center">
+                <div className="flex items-center gap-2 bg-gray-700 border border-gray-600 rounded px-3 py-2">
+                  <span className="text-gray-300 text-sm">Depósito</span>
+                  <input
+                    type="number"
+                    min={0.1}
+                    step={0.1}
+                    value={depositAmount}
+                    onChange={(e) => setDepositAmount(Number(e.target.value) || 0)}
+                    className="w-28 bg-gray-800 text-white rounded px-2 py-1 border border-gray-600"
+                  />
+                  <span className="text-gray-400 text-sm">R$</span>
+                </div>
                 <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition">
-                  Depositar
+                  Gerar Pagamento
                 </button>
                 <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition">
                   Sacar
                 </button>
               </div>
+              {preview && (
+                <div className="text-center mt-3 text-sm text-gray-300">
+                  <p>Você receberá líquido: <span className="text-white font-semibold">R$ {preview.net_amount_brl.toFixed(2)}</span>{' '}
+                  {preview.fee_applied ? <span className="text-gray-400">(repasse taxa R$ {preview.fee_brl.toFixed(2)})</span> : <span className="text-gray-400">(sem taxa)</span>}</p>
+                </div>
+              )}
             </div>
 
             <div className="bg-gray-800 rounded-lg p-6">

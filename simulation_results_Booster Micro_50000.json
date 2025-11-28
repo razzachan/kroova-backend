@@ -1,0 +1,23 @@
+{
+  "rtp": 27.427999999989094,
+  "total_spent": 25000.0,
+  "total_returned": 6856.999999997274,
+  "godmode_count": 606,
+  "godmode_rate": 1.212,
+  "rarity_counts": {
+    "trash": 30207,
+    "viral": 4853,
+    "meme": 13892,
+    "legendary": 1048
+  },
+  "skin_counts": {
+    "glitch": 3514,
+    "ghost": 1018,
+    "default": 25146,
+    "neon": 12470,
+    "glow": 7306,
+    "holo": 442,
+    "dark": 104
+  },
+  "avg_liquidity": 0.13714
+}

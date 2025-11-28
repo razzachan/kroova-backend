@@ -10,34 +10,26 @@ interface CardBase {
   id: string;
   name: string;
   rarity: string;
-  card_type: string;
-  energy_cost: number;
-  attack: number | null;
-  defense: number | null;
-  ability_text: string;
+  display_id: string;
+  image_url?: string;
+  description?: string;
 }
 
 interface CardInstance {
   id: string;
-  card_base_id: string;
-  mint_number: number;
-  total_minted: number;
-  condition: string;
-  card_base?: CardBase;
-}
-
-interface InventoryItem {
-  id: string;
-  card_instance_id: string;
-  acquired_at: string;
-  card_instance?: CardInstance;
-  cards_instances?: CardInstance;
+  base_id: string;
+  owner_id: string;
+  skin: string;
+  is_godmode: boolean;
+  liquidity_brl: number;
+  minted_at: string;
+  cards_base?: CardBase;
 }
 
 export default function InventoryPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [inventory, setInventory] = useState<CardInstance[]>([]);
   const [loading, setLoading] = useState(true);
   const [sellingCard, setSellingCard] = useState<string | null>(null);
   const [salePrice, setSalePrice] = useState<string>('');
@@ -57,8 +49,8 @@ export default function InventoryPage() {
   const loadInventory = async () => {
     try {
       const response = await api.get('/inventory');
-      const data = unwrap<{ cards?: InventoryItem[]; inventory?: InventoryItem[] }>(response);
-      setInventory(data.cards || data.inventory || []);
+      const data = unwrap<{ cards: CardInstance[] }>(response);
+      setInventory(data.cards || []);
     } catch (error) {
       console.error('Erro ao carregar inventário:', error);
     } finally {
@@ -125,49 +117,57 @@ export default function InventoryPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {inventory.map((item) => {
-              const instance = item.card_instance || item.cards_instances;
-              const card = instance?.card_base;
+            {inventory.map((card) => {
+              const baseCard = card.cards_base;
               const rarityColors: Record<string, string> = {
-                common: 'text-gray-400',
-                rare: 'text-blue-400',
-                epic: 'text-purple-400',
-                legendary: 'text-yellow-400'
+                trash: 'text-gray-400',
+                meme: 'text-blue-400',
+                viral: 'text-purple-400',
+                legendary: 'text-yellow-400',
+                epica: 'text-red-400',
+                godmode: 'text-pink-400'
               };
               
               return (
-                <div key={item.id} className="bg-gray-800 rounded-lg p-4">
-                  <div className="aspect-square bg-gradient-to-br from-gray-700 to-gray-900 rounded-lg mb-4 flex flex-col items-center justify-center p-4 relative">
-                    <span className="text-6xl mb-2">🃏</span>
-                    {card && (
-                      <>
-                        <div className="absolute top-2 right-2 bg-gray-900/80 px-2 py-1 rounded text-xs text-yellow-400">
-                          ⚡{card.energy_cost}
-                        </div>
-                        {card.attack !== null && card.defense !== null && (
-                          <div className="absolute bottom-2 left-2 right-2 flex justify-between text-xs">
-                            <span className="bg-red-900/80 px-2 py-1 rounded text-white">⚔️ {card.attack}</span>
-                            <span className="bg-blue-900/80 px-2 py-1 rounded text-white">🛡️ {card.defense}</span>
-                          </div>
-                        )}
-                      </>
+                <div key={card.id} className="bg-gray-800 rounded-lg p-4 border-2 border-gray-700 hover:border-blue-500 transition">
+                  {/* Card Image */}
+                  <div className="aspect-[2/3] bg-gray-700 rounded-lg mb-4 overflow-hidden relative">
+                    {baseCard?.image_url ? (
+                      <img 
+                        src={baseCard.image_url} 
+                        alt={baseCard.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-6xl">🎴</span>
+                      </div>
+                    )}
+                    {card.is_godmode && (
+                      <div className="absolute top-2 right-2 bg-pink-600 text-white px-2 py-1 rounded text-xs font-bold">
+                        ✨ GODMODE
+                      </div>
                     )}
                   </div>
+
+                  {/* Card Info */}
                   <div className="space-y-2">
-                    <h3 className="text-white font-bold truncate">{card?.name || 'Carta'}</h3>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className={`font-semibold capitalize ${rarityColors[card?.rarity || 'common']}`}>
-                        {card?.rarity || 'common'}
-                      </span>
-                      <span className="text-gray-500">
-                        #{instance?.mint_number}/{instance?.total_minted}
-                      </span>
-                    </div>
-                    <p className="text-gray-400 text-xs truncate">{card?.ability_text}</p>
-                    <p className="text-gray-500 text-xs">Adquirida: {new Date(item.acquired_at).toLocaleDateString('pt-BR')}</p>
+                    <h3 className="text-white font-bold truncate">{baseCard?.name || 'Carta'}</h3>
                     
-                    {sellingCard === item.card_instance_id ? (
-                      <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className={`font-semibold capitalize ${rarityColors[baseCard?.rarity || 'trash']}`}>
+                        {baseCard?.rarity || 'common'}
+                      </span>
+                      <span className="text-gray-400 text-xs">{card.skin}</span>
+                    </div>
+
+                    <div className="text-xs text-gray-400">
+                      <div>ID: {baseCard?.display_id}</div>
+                      <div>Liquidez: R$ {card.liquidity_brl?.toFixed(2) || '0.00'}</div>
+                    </div>
+                    
+                    {sellingCard === card.id ? (
+                      <div className="space-y-2 mt-4">
                         <input
                           type="number"
                           value={salePrice}
@@ -179,7 +179,7 @@ export default function InventoryPage() {
                         />
                         <div className="flex gap-2">
                           <button
-                            onClick={() => handleSell(item.card_instance_id)}
+                            onClick={() => handleSell(card.id)}
                             className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition text-sm font-semibold"
                           >
                             Confirmar
@@ -197,8 +197,8 @@ export default function InventoryPage() {
                       </div>
                     ) : (
                       <button
-                        onClick={() => setSellingCard(item.card_instance_id)}
-                        className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition font-semibold"
+                        onClick={() => setSellingCard(card.id)}
+                        className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition font-semibold mt-4"
                       >
                         Vender no Marketplace
                       </button>

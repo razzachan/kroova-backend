@@ -23,6 +23,15 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
 
+    // Obter user_id do token
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      return NextResponse.json(
+        { ok: false, error: { code: 'UNAUTHORIZED', message: 'Invalid token' } },
+        { status: 401 }
+      );
+    }
+
     const { data: inventory, error, count } = await supabase
       .from('cards_instances')
       .select(
@@ -32,6 +41,7 @@ export async function GET(request: NextRequest) {
       `,
         { count: 'exact' }
       )
+      .eq('owner_id', user.id)
       .order('minted_at', { ascending: false })
       .range((page - 1) * limit, page * limit - 1);
 

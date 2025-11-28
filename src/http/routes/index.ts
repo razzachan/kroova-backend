@@ -11,6 +11,7 @@ import { cardRoutes } from "./card.routes.js";
 import { marketRoutes } from "./market.routes.js";
 import { nftRoutes } from "./nft.routes.js";
 import { listEconomicSeries } from "../../observability/economicSeries.js";
+import { jackpotRoutes } from "./jackpot.routes.js";
 import { env } from "../../config/env.js";
 import { startEconomicSeriesScheduler } from "../../observability/economicSeries.js";
 import { ROOT_MESSAGE } from "../../config/brand.js";
@@ -41,6 +42,7 @@ export async function routes(app: FastifyInstance) {
   await app.register(authRoutes, { prefix: "/api/v1" });
   await app.register(walletRoutes, { prefix: "/api/v1" });
   await app.register(boosterRoutes, { prefix: "/api/v1" });
+  await app.register(jackpotRoutes, { prefix: "/api/v1" });
 
   // Metrics endpoints (internal)
   app.get('/internal/metrics', async (_req, reply) => {

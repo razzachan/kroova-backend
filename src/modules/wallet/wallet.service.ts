@@ -2,6 +2,7 @@ import { supabase, supabaseAdmin } from "../../config/supabase.js";
 import { calculateFee } from "../../lib/utils.js";
 import { supabaseHybrid } from "../../core/supabase-hybrid.service.js";
 import { Logger } from "../../core/logger.service.js";
+import { env } from "../../config/env.js";
 
 interface WithdrawInput {
   method: "pix" | "crypto";
@@ -103,6 +104,11 @@ export class WalletService {
 
     // Validações específicas por método
     if (method === "pix") {
+      // Enforce minimum withdraw to reduce fixed costs
+      const minPix = env.minWithdrawPixBrl || 10;
+      if ((amount_brl || 0) < minPix) {
+        throw new Error(`Saque mínimo via PIX é R$ ${minPix.toFixed(2)}`);
+      }
       if (!user?.cpf) {
         throw new Error("CPF é obrigatório para saques via PIX");
       }
@@ -236,9 +242,15 @@ export class WalletService {
       throw new Error("Carteira não encontrada");
     }
 
+    // Apply pass-through fixed fee for small deposits to avoid unit loss
+    const threshold = env.smallDepositThresholdBrl || 5;
+    const fixedFee = env.smallDepositFixedFeeBrl || 0;
+    const feeApplied = amount_brl < threshold ? fixedFee : 0;
+    const netAmount = Math.max(0, amount_brl - feeApplied);
+
     await supabaseHybrid.getAdminClient()
       .from("wallets")
-      .update({ balance_brl: wallet.balance_brl + amount_brl })
+      .update({ balance_brl: wallet.balance_brl + netAmount })
       .eq("user_id", user.id);
 
     // Cria transação (admin client)
@@ -247,12 +259,13 @@ export class WalletService {
       .insert({
         user_id: user.id,
         type: "deposit",
-        amount_brl,
+        amount_brl: netAmount,
+        fee_brl: feeApplied || null,
         status: "completed",
-        metadata: { payment_id },
+        metadata: { payment_id, gross_brl: amount_brl, fee_pass_through_brl: feeApplied },
       });
 
-    return { success: true };
+    return { success: true, net_amount_brl: netAmount, fee_brl: feeApplied };
   }
 
   /**

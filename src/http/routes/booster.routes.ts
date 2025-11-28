@@ -90,6 +90,31 @@ export async function boosterRoutes(app: FastifyInstance) {
   );
 
   /**
+   * GET /boosters/pity
+   * Retorna contador de pity do usuário para uma edição
+   */
+  app.get(
+    "/boosters/pity",
+    { preHandler: authMiddleware },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        if (!request.user) {
+          return reply.code(401).send(fail("UNAUTHORIZED"));
+        }
+
+        const query = request.query as { edition_id?: string };
+        const editionId = query.edition_id || 'ED01';
+
+        const pityCount = await boosterService.getPityCounter(request.user.sub, editionId);
+
+        return reply.send(ok({ pity_count: pityCount, max: 180, edition_id: editionId }));
+      } catch (error) {
+        return reply.code(500).send(fail("INTERNAL_ERROR"));
+      }
+    },
+  );
+
+  /**
    * GET /inventory
    * Lista cartas do jogador
    */

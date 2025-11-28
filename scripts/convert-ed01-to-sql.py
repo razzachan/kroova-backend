@@ -64,8 +64,9 @@ sql_lines.append("")
 # Adicionar Croco Trader como primeira carta (legendary especial)
 crocodile_id = 'crd_croco01'
 sql_lines.append("-- 🐊 SPECIAL: Croco Trader (Legendary)")
-sql = f"""INSERT INTO cards_base (display_id, name, description, rarity, archetype, base_liquidity_brl, base_liquidity_crypto, edition_id, image_url, metadata)
-SELECT '{crocodile_id}', 'Croco Trader', 'Reptiliano que manipula mercados como quem troca peles', 'legendary', 'Ganância Digital', 100.00, 0.00000000, 'ED01', 'https://kroova.com/cards/{crocodile_id}.png', '{{}}'::jsonb
+# Valores conforme imagem: influence=92, rarity_score=88, liquidez=500
+sql = f"""INSERT INTO cards_base (display_id, name, description, rarity, archetype, base_liquidity_brl, base_liquidity_crypto, edition_id, image_url, metadata, influence_score, rarity_score)
+SELECT '{crocodile_id}', 'Croco Trader', 'Um negociador predatório, movido por fluxos invisíveis de lucro', 'legendary', 'Ganância Digital', 500.00, 0.00000000, 'ED01', 'https://kroova.com/cards/{crocodile_id}.png', '{{}}'::jsonb, 92, 88
 WHERE NOT EXISTS (SELECT 1 FROM cards_base WHERE display_id='{crocodile_id}');"""
 sql_lines.append(sql)
 sql_lines.append("")
@@ -96,12 +97,27 @@ for i, card in enumerate(cards, start=1):
     if i == 1 or (i > 1 and cards[i-2]['tier'] != card['tier']):
         sql_lines.append(f"-- {card['tier'].upper()} tier")
     
+    # Calcular influence_score baseado no archetype (Ganância, Influência alto; Preguiça baixo)
+    archetype_influence_map = {
+        'Ganância': 0.9,      # Alta influência social
+        'Influência': 0.95,   # Muito alta
+        'Impulso': 0.7,       # Média-alta
+        'Informação': 0.75,
+        'Consumo': 0.6,
+        'Preguiça': 0.4       # Baixa influência
+    }
+    influence_multiplier = archetype_influence_map.get(archetype, 0.5)
+    influence_score = int(card['rarity_score'] * influence_multiplier)
+    
+    # rarity_score já vem do markdown
+    rarity_score_value = card['rarity_score']
+    
     # Metadata: preserva tier e marca godmode como flag de camada extra
     is_godmode_flag = 'true' if card['tier'] == 'godmode' else 'false'
     metadata_json = f"{{\"tier\":\"{card['tier']}\",\"rarity_score\":{card['rarity_score']},\"trend\":{card['trend']},\"force_godmode\":{is_godmode_flag}}}"
 
-    sql = f"""INSERT INTO cards_base (display_id, name, description, rarity, archetype, base_liquidity_brl, base_liquidity_crypto, edition_id, image_url, metadata)
-SELECT '{display_id}', '{name}', '{description}', '{db_rarity}', '{archetype}', {base_liquidity:.2f}, 0.00000000, 'ED01', 'https://kroova.com/cards/{display_id}.png', '{metadata_json}'::jsonb
+    sql = f"""INSERT INTO cards_base (display_id, name, description, rarity, archetype, base_liquidity_brl, base_liquidity_crypto, edition_id, image_url, metadata, influence_score, rarity_score)
+SELECT '{display_id}', '{name}', '{description}', '{db_rarity}', '{archetype}', {base_liquidity:.2f}, 0.00000000, 'ED01', 'https://kroova.com/cards/{display_id}.png', '{metadata_json}'::jsonb, {influence_score}, {rarity_score_value}
 WHERE NOT EXISTS (SELECT 1 FROM cards_base WHERE display_id='{display_id}');"""
     
     sql_lines.append(sql)

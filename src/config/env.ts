@@ -30,6 +30,11 @@ export const env = {
   // App
   appUrl: process.env.APP_URL || "http://localhost:3333",
 
+  // Payments & Wallet policy
+  minWithdrawPixBrl: Number(process.env.MIN_WITHDRAW_PIX_BRL || 10),
+  smallDepositThresholdBrl: Number(process.env.SMALL_DEPOSIT_THRESHOLD_BRL || 5),
+  smallDepositFixedFeeBrl: Number(process.env.SMALL_DEPOSIT_FIXED_FEE_BRL || 0.39),
+
   // Observability
   distributionSnapshotIntervalMinutes: Number(process.env.DIST_SNAPSHOT_INTERVAL_MINUTES || 15),
   thresholdChangeMinSeconds: Number(process.env.THRESHOLD_CHANGE_MIN_SECONDS || 60),

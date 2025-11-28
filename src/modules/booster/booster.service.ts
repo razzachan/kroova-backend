@@ -37,6 +37,13 @@ export class BoosterService {
   }
 
   /**
+   * Retorna contador de pity do usuário para uma edição
+   */
+  async getPityCounter(userId: string, editionId: string = 'ED01'): Promise<number> {
+    return await pityService.getAttempts(userId, editionId);
+  }
+
+  /**
    * Compra boosters com saldo interno
    */
   async purchase(userId: string, input: PurchaseInput) {

@@ -3,7 +3,7 @@
 # Sistema 3 Camadas: Base x Skin x Price x Godmode
 # ==========================================
 
-$API_URL = "https://frontend-le36ofq2i-razzachans-projects.vercel.app"
+$API_URL = "https://frontend-30p442b9r-razzachans-projects.vercel.app"
 $USER_ID = "1ad0a835-46a4-465a-a436-6275c9dcdde1"
 
 Write-Host ""

@@ -10,6 +10,31 @@ const walletService = new WalletService();
 
 export async function walletRoutes(app: FastifyInstance) {
   /**
+   * GET /wallet/deposit/preview?amount_brl=10
+   * Preview de crédito líquido considerando repasse para depósitos pequenos
+   */
+  app.get(
+    "/wallet/deposit/preview",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const q = request.query as any;
+      const gross = Number(q.amount_brl || 0);
+      if (!isFinite(gross) || gross <= 0) {
+        return reply.code(400).send(fail("INVALID_AMOUNT", "amount_brl inválido"));
+      }
+      const threshold = env.smallDepositThresholdBrl || 5;
+      const fixedFee = env.smallDepositFixedFeeBrl || 0;
+      const fee = gross < threshold ? fixedFee : 0;
+      const net = Math.max(0, gross - fee);
+      return reply.send(ok({
+        amount_brl: gross,
+        net_amount_brl: Number(net.toFixed(2)),
+        fee_brl: Number(fee.toFixed(2)),
+        threshold_brl: threshold,
+        fee_applied: gross < threshold
+      }));
+    }
+  );
+  /**
    * GET /wallet/health
    * Health check with user info (debug)
    */

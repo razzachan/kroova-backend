@@ -1,0 +1,54 @@
+{
+  "booster_types": [
+    {
+      "name": "Basico",
+      "edition_id": "ED01",
+      "price_brl": 0.5,
+      "cards_per_booster": 5,
+      "price_multiplier": 1,
+      "rarity_distribution": { "trash": 60, "meme": 25, "viral": 10, "legendary": 4, "epica": 1 }
+    },
+    {
+      "name": "Booster Básico",
+      "edition_id": "ED01",
+      "price_brl": 25,
+      "cards_per_booster": 5,
+      "price_multiplier": 12,
+      "rarity_distribution": { "trash": 50, "meme": 30, "viral": 15, "legendary": 4, "epica": 1 }
+    },
+    {
+      "name": "Booster Premium",
+      "edition_id": "ED01",
+      "price_brl": 75,
+      "cards_per_booster": 10,
+      "price_multiplier": 20,
+      "rarity_distribution": { "trash": 30, "meme": 30, "viral": 25, "legendary": 12, "epica": 3 }
+    },
+    {
+      "name": "Booster Lendário",
+      "edition_id": "ED01",
+      "price_brl": 250,
+      "cards_per_booster": 15,
+      "price_multiplier": 50,
+      "rarity_distribution": { "trash": 20, "meme": 25, "viral": 30, "legendary": 20, "epica": 5 }
+    }
+  ],
+  "edition_configs": {
+    "ED01": {
+      "base_liquidity": { "trash": 0.01, "meme": 0.15, "viral": 3, "legendary": 30, "epica": 60 },
+      "skin_multipliers": { "default": 1, "neon": 1.5, "glow": 2, "glitch": 3, "ghost": 6, "holo": 30, "dark": 100 },
+      "godmode_multiplier": 5,
+      "godmode_probability": 0.01
+    }
+  },
+  "cards_base": [
+    { "name": "Trash A", "rarity": "trash", "edition_id": "ED01" },
+    { "name": "Trash B", "rarity": "trash", "edition_id": "ED01" },
+    { "name": "Meme A", "rarity": "meme", "edition_id": "ED01" },
+    { "name": "Meme B", "rarity": "meme", "edition_id": "ED01" },
+    { "name": "Viral A", "rarity": "viral", "edition_id": "ED01" },
+    { "name": "Viral B", "rarity": "viral", "edition_id": "ED01" },
+    { "name": "Legend A", "rarity": "legendary", "edition_id": "ED01" },
+    { "name": "Legend B", "rarity": "legendary", "edition_id": "ED01" }
+  ]
+}

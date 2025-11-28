@@ -117,12 +117,13 @@ export async function POST(request: NextRequest) {
       });
 
     // 6. Criar booster_opening (não aberto ainda)
+    // WORKAROUND: Supabase tem DEFAULT now() em opened_at, então atualizamos para NULL depois
     const { data: opening, error: openingError } = await supabaseAdmin
       .from('booster_openings')
       .insert({
         user_id: user.id,
         booster_type_id,
-        cards_received: []
+        cards_obtained: []
       })
       .select()
       .single();
@@ -133,6 +134,12 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // WORKAROUND: Forçar opened_at = NULL (schema tem DEFAULT now())
+    await supabaseAdmin
+      .from('booster_openings')
+      .update({ opened_at: null })
+      .eq('id', opening.id);
 
     return NextResponse.json({ 
       ok: true, 

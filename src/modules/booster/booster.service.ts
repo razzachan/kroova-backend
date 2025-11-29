@@ -103,7 +103,8 @@ export class BoosterService {
           user_id: userId,
           booster_type_id,
           cards_obtained: [],
-          opened_at: null,
+          opened_at: null, // Booster fechado (não aberto)
+          purchased_at: new Date().toISOString(), // Timestamp da compra
         })
         .select()
         .single();

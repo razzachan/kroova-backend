@@ -3,6 +3,12 @@ scripts/public/cards/
 croco_trader.jpg
 simulation_results_*.json
 scripts/*.png
+frontend/
+supabase/
+*.md
+.git/
+.github/
+.vscode/
 
 # Node/build outputs
 node_modules/

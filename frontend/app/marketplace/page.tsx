@@ -21,6 +21,7 @@ interface CardBase {
   ability_text: string;
   flavor_text: string;
   artist: string;
+  image_url?: string;
 }
 
 interface CardInstance {
@@ -143,22 +144,34 @@ export default function MarketplacePage() {
                   rarity={(card?.rarity as any) || 'common'}
                   className="p-4"
                 >
-                  <div className="aspect-square bg-gradient-to-br from-gray-700/50 to-gray-900/50 rounded-lg mb-4 flex flex-col items-center justify-center p-4 relative">
-                    <span className="text-6xl mb-2">🃏</span>
+                  {/* Card Image */}
+                  <div className="aspect-[2/3] bg-gray-700/50 rounded-lg mb-4 overflow-hidden relative">
+                    {card?.image_url ? (
+                      <img 
+                        src={card.image_url} 
+                        alt={card.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-6xl">🎴</span>
+                      </div>
+                    )}
                     {card && (
                       <>
-                        <div className="absolute top-2 right-2 bg-gray-900/80 px-2 py-1 rounded text-xs text-yellow-400">
+                        <div className="absolute top-2 right-2 bg-gray-900/90 px-2 py-1 rounded text-xs text-yellow-400 backdrop-blur-sm">
                           ⚡{card.energy_cost}
                         </div>
                         {card.attack !== null && card.defense !== null && (
-                          <div className="absolute bottom-2 left-2 right-2 flex justify-between text-xs">
-                            <span className="bg-red-900/80 px-2 py-1 rounded text-white">⚔️ {card.attack}</span>
-                            <span className="bg-blue-900/80 px-2 py-1 rounded text-white">🛡️ {card.defense}</span>
+                          <div className="absolute bottom-2 left-2 right-2 flex justify-between text-xs gap-2">
+                            <span className="bg-red-900/90 px-2 py-1 rounded text-white backdrop-blur-sm">⚔️ {card.attack}</span>
+                            <span className="bg-blue-900/90 px-2 py-1 rounded text-white backdrop-blur-sm">🛡️ {card.defense}</span>
                           </div>
                         )}
                       </>
                     )}
                   </div>
+                  
                   <div className="space-y-2">
                     <h3 className="text-white font-bold truncate">{card?.name || 'Carta Desconhecida'}</h3>
                     <div className="flex items-center justify-between text-sm">

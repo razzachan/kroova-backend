@@ -40,6 +40,7 @@ export default function InventoryPage() {
   const [sellingCard, setSellingCard] = useState<string | null>(null);
   const [salePrice, setSalePrice] = useState<string>('');
   const [showRecycleBulk, setShowRecycleBulk] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -79,13 +80,16 @@ export default function InventoryPage() {
         price_brl: price
       });
       cardAudio.playSuccessChime();
-      alert('Carta listada no marketplace! 🎉');
+      setShowSuccessModal(true);
       setSellingCard(null);
       setSalePrice('');
-      loadInventory();
+      setTimeout(() => {
+        setShowSuccessModal(false);
+        loadInventory();
+      }, 2000);
     } catch (error: any) {
       cardAudio.playErrorBuzz();
-      alert(error.response?.data?.message || 'Erro ao listar carta');
+      alert(error.response?.data?.error?.message || 'Erro ao listar carta');
     }
   };
 
@@ -269,6 +273,24 @@ export default function InventoryPage() {
           </div>
         )}
       </main>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-[#00F0FF] rounded-lg p-8 max-w-md mx-4 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#00F0FF]/10 to-[#FF006D]/10 animate-pulse"></div>
+            <div className="relative z-10 text-center">
+              <div className="text-6xl mb-4">🎉</div>
+              <h2 className="text-2xl font-bold text-[#00F0FF] mb-2">
+                <TextGlitch delay={0}>LISTADO!</TextGlitch>
+              </h2>
+              <p className="text-gray-300">
+                Sua carta foi listada no marketplace com sucesso!
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

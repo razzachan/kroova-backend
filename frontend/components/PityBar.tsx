@@ -54,11 +54,11 @@ export function PityBar({ current, max, edition = 'ED01' }: PityBarProps) {
       <div className="mt-2 text-xs text-gray-400">
         {percentage >= 100 ? (
           <span className="text-red-300 font-semibold">
-            Seu próximo booster terá uma carta de alto valor garantida!
+            Seu próximo pacote terá uma carta de alto valor garantida!
           </span>
         ) : (
           <span>
-            Próxima carta de alto valor garantida em <strong className="text-white">{remaining}</strong> boosters
+            Próxima carta de alto valor garantida em <strong className="text-white">{remaining}</strong> pacotes
           </span>
         )}
       </div>

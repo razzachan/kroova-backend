@@ -3,6 +3,10 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import GlitchButton from '@/components/UI/GlitchButton';
+import DataStreamInput from '@/components/UI/DataStreamInput';
+import TextGlitch from '@/components/Effects/TextGlitch';
+import { cardAudio } from '@/lib/cardAudio';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -24,10 +28,13 @@ export default function LoginPage() {
 
     if (error) {
       setError(error.message);
+      cardAudio.playErrorBuzz();
     } else {
       if (!isLogin) {
         setError('Conta criada! Verifique seu email para confirmar.');
+        cardAudio.playSuccessChime();
       } else {
+        cardAudio.playPortalOpen();
         router.push('/dashboard');
       }
     }
@@ -36,65 +43,61 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center px-4">
-      <div className="max-w-md w-full bg-gray-800 rounded-lg shadow-xl p-8">
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="max-w-md w-full bg-black/60 backdrop-blur-md rounded-lg shadow-2xl p-8 border-2 border-[#FF006D]/30">
         <h1 className="text-3xl font-bold text-white text-center mb-2">
-          🃏 Krouva
+          <TextGlitch delay={200}>🃏 KROOVA</TextGlitch>
         </h1>
         <p className="text-gray-400 text-center mb-8">
           {isLogin ? 'Entre na sua conta' : 'Crie sua conta'}
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
-              required
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <DataStreamInput
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            variant="magenta"
+            required
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Senha
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
-              required
-              minLength={6}
-            />
-          </div>
+          <DataStreamInput
+            label="Senha"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            variant="cyan"
+            required
+            minLength={6}
+          />
 
           {error && (
-            <div className={`p-3 rounded-lg ${error.includes('criada') ? 'bg-green-900/50 text-green-300' : 'bg-red-900/50 text-red-300'}`}>
+            <div className={`p-3 rounded-lg border-2 ${error.includes('criada') ? 'bg-green-900/30 text-green-300 border-green-500' : 'bg-red-900/30 text-red-300 border-red-500'}`}>
               {error}
             </div>
           )}
 
-          <button
+          <GlitchButton
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition disabled:opacity-50"
+            variant="primary"
+            size="lg"
+            className="w-full"
+            isLoading={loading}
           >
-            {loading ? 'Aguarde...' : isLogin ? 'Entrar' : 'Criar Conta'}
-          </button>
+            {loading ? 'PROCESSANDO...' : isLogin ? 'ENTRAR' : 'CRIAR CONTA'}
+          </GlitchButton>
         </form>
 
         <div className="mt-6 text-center">
-          <button
+          <GlitchButton
             onClick={() => setIsLogin(!isLogin)}
-            className="text-blue-400 hover:text-blue-300 text-sm"
+            variant="secondary"
+            size="sm"
           >
-            {isLogin ? 'Não tem conta? Criar conta' : 'Já tem conta? Entrar'}
-          </button>
+            {isLogin ? 'CRIAR CONTA' : 'JÁ TENHO CONTA'}
+          </GlitchButton>
         </div>
       </div>
     </div>

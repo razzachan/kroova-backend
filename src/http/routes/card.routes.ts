@@ -72,6 +72,37 @@ export async function cardRoutes(app: FastifyInstance) {
   );
 
   /**
+   * POST /cards/recycle-bulk
+   * Recicla 25 cartas e ganha 1 booster grátis
+   */
+  app.post(
+    "/cards/recycle-bulk",
+    { preHandler: authMiddleware },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        if (!request.user) {
+          return reply.code(401).send(fail("UNAUTHORIZED"));
+        }
+
+        const { card_instance_ids } = request.body as { card_instance_ids: string[] };
+
+        if (!Array.isArray(card_instance_ids)) {
+          return reply.code(400).send(fail("INVALID_INPUT", "card_instance_ids deve ser um array"));
+        }
+
+        const result = await cardService.recycleBulk(request.user.sub, card_instance_ids);
+
+        return reply.send(ok(result));
+      } catch (error) {
+        if (error instanceof Error) {
+          return reply.code(400).send(fail("RECYCLE_BULK_FAILED", error.message));
+        }
+        return reply.code(500).send(fail("INTERNAL_ERROR"));
+      }
+    },
+  );
+
+  /**
    * POST /cards/:instance_id/recycle
    * Recicla carta e retorna liquidez base
    */

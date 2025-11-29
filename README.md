@@ -47,13 +47,12 @@ npm run start
 ## 🏗️ Arquitetura
 
 ### Stack Tecnológico
-- **Runtime:** Node.js 20+
-- **Framework:** Fastify 4.x
-- **Database:** PostgreSQL (Supabase)
+- **Backend:** Node.js 20+ | Fastify 4.x | PostgreSQL (Supabase)
+- **Frontend:** Next.js 16 | React 19 | Tailwind CSS
 - **Auth:** JWT + Refresh Tokens
 - **Testing:** Vitest
 - **CI/CD:** GitHub Actions
-- **Deploy:** Railway
+- **Deploy:** Railway (backend) | Vercel (frontend)
 
 ### Estrutura de Pastas
 ```

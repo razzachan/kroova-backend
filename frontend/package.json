@@ -13,11 +13,13 @@
     "@types/howler": "^2.2.12",
     "@types/jsonwebtoken": "^9.0.10",
     "axios": "^1.13.2",
+    "clsx": "^2.1.1",
     "howler": "^2.2.4",
     "jsonwebtoken": "^9.0.2",
     "next": "16.0.4",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "tailwind-merge": "^3.4.0",
     "tone": "^15.1.22"
   },
   "devDependencies": {

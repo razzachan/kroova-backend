@@ -179,9 +179,18 @@ export class BoosterService {
       });
     }
 
+    // Verifica e concede recompensa de pity (booster gratuito a cada 50 boosters)
+    const boosterType = opening.booster_types as Record<string, unknown>;
+    const editionId = boosterType.edition_id as string;
+    const pityReward = await pityService.checkAndGrantPityReward(userId, editionId);
+
     return {
       cards,
       booster_id: boosterOpeningId,
+      pity_reward: pityReward.granted ? { 
+        message: 'Parabéns! Você ganhou 1 booster gratuito por fidelidade!',
+        attempts_reached: pityReward.attempts 
+      } : null,
     };
   }
 
@@ -232,6 +241,38 @@ export class BoosterService {
         total: count || 0,
         totalPages: Math.ceil((count || 0) / limit),
       },
+    };
+  }
+
+  /**
+   * Lista boosters não abertos (sealed packs) do usuário
+   */
+  async getSealedPacks(userId: string) {
+    const { data: sealedPacks, error } = await supabaseAdmin
+      .from("booster_openings")
+      .select(
+        `
+        *,
+        booster_types (
+          id,
+          name,
+          price_brl,
+          cards_per_booster,
+          edition_id
+        )
+      `,
+      )
+      .eq("user_id", userId)
+      .is("opened_at", null)
+      .order("purchased_at", { ascending: false });
+
+    if (error) {
+      throw new Error("Erro ao buscar boosters fechados: " + error.message);
+    }
+
+    return {
+      sealed_packs: sealedPacks || [],
+      count: sealedPacks?.length || 0,
     };
   }
 

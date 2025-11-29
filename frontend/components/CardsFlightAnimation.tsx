@@ -1,144 +1,117 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { cardAudio } from '@/lib/cardAudio';
 
 export interface CardsFlightAnimationProps {
   cardCount: number;
   onFlightComplete: () => void;
+  packImageUrl?: string;
 }
 
 export function CardsFlightAnimation({ 
   cardCount,
-  onFlightComplete 
+  onFlightComplete,
+  packImageUrl = '/pack-back-ed01.png'
 }: CardsFlightAnimationProps) {
-  const [cards, setCards] = useState<number[]>([]);
-  const [showFog, setShowFog] = useState(true);
+  const [showExplosion, setShowExplosion] = useState(true);
+  const [showCards, setShowCards] = useState(false);
 
   useEffect(() => {
-    // Generate card indices
-    setCards(Array.from({ length: cardCount }, (_, i) => i));
+    // 🔊 Play card materialize sound
+    cardAudio.playCardMaterialize();
 
-    // Fade out fog after cards appear
-    const fogTimer = setTimeout(() => {
-      setShowFog(false);
-    }, 400);
+    // Show explosion burst
+    const explosionTimer = setTimeout(() => {
+      setShowExplosion(false);
+      setShowCards(true);
+    }, 300);
 
-    // Animation complete after all cards land
-    const timer = setTimeout(() => {
+    // Animation complete after cards fly out
+    const completeTimer = setTimeout(() => {
       onFlightComplete();
-    }, 700 + cardCount * 80);
+    }, 1000);
 
     return () => {
-      clearTimeout(fogTimer);
-      clearTimeout(timer);
+      clearTimeout(explosionTimer);
+      clearTimeout(completeTimer);
     };
   }, [cardCount, onFlightComplete]);
 
   return (
-    <div className="fixed inset-0 z-40 pointer-events-none overflow-hidden">
-      {/* Mystical fog effect */}
-      {showFog && (
+    <div className="fixed inset-0 z-40 pointer-events-none overflow-hidden"
+      style={{
+        backgroundImage: 'url(/backgrounds/portal-burst.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      {/* Explosion flash */}
+      {showExplosion && (
         <div 
           className="absolute inset-0"
           style={{
-            background: 'radial-gradient(circle at 50% 60%, rgba(138, 43, 226, 0.3) 0%, rgba(75, 0, 130, 0.2) 40%, transparent 70%)',
-            animation: 'fogFade 800ms ease-out forwards',
-            backdropFilter: 'blur(8px)',
+            background: 'radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(138, 43, 226, 0.4) 30%, transparent 60%)',
+            animation: 'explosionFlash 300ms ease-out',
           }}
         />
       )}
 
-      {/* Volumetric light rays */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          background: `
-            linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.03) 50%, transparent 100%),
-            radial-gradient(ellipse at 50% 40%, rgba(255,215,0,0.1) 0%, transparent 60%)
-          `,
-          animation: 'volumetricPulse 2s ease-in-out infinite',
-        }}
-      />
-      {cards.map((i) => {
-        // Calculate arc positions
-        const totalCards = cardCount;
-        const offset = i - (totalCards - 1) / 2;
-        const arcHeight = Math.abs(offset) * 30;
-        const finalX = offset * 180; // Horizontal spacing
-        const finalY = arcHeight; // Arc curve
-        const rotation = offset * 8; // Rotation angle
-        const delay = i * 80; // Stagger effect (faster)
+      {/* Cards flying out */}
+      {showCards && Array.from({ length: cardCount }).map((_, i) => {
+        const angle = (360 / cardCount) * i;
+        const distance = 600;
+        const finalX = Math.cos((angle * Math.PI) / 180) * distance;
+        const finalY = Math.sin((angle * Math.PI) / 180) * distance;
 
         return (
           <div
             key={i}
-            className="absolute top-1/2 left-1/2 animate-card-flight"
+            className="absolute top-1/2 left-1/2"
             style={{
-              width: '140px',
-              height: '202px',
-              '--delay': `${delay}ms`,
+              width: '160px',
+              height: '230px',
+              animation: `cardBurst 800ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards`,
+              animationDelay: `${i * 30}ms`,
               '--final-x': `${finalX}px`,
               '--final-y': `${finalY}px`,
-              '--rotation': `${rotation}deg`,
-              animationDelay: `${delay}ms`,
-              willChange: 'transform, opacity',
-              backfaceVisibility: 'hidden',
-              WebkitBackfaceVisibility: 'hidden',
+              '--rotation': `${angle + 720}deg`,
             } as any}
           >
-            <div className="w-full h-full relative">
-              {/* Card back (glowing) */}
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-yellow-600 via-yellow-500 to-yellow-700 shadow-2xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-lg" />
-                <div className="absolute inset-2 border-2 border-yellow-300/50 rounded-lg" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-6xl animate-spin-slow">✨</div>
-                </div>
-              </div>
-            </div>
+            <img 
+              src={packImageUrl}
+              alt="Card"
+              className="w-full h-full object-cover rounded-lg shadow-2xl"
+              style={{
+                filter: 'brightness(1.3) drop-shadow(0 0 20px rgba(138, 43, 226, 0.8))',
+              }}
+            />
           </div>
         );
       })}
 
       <style jsx>{`
-        @keyframes card-flight {
+        @keyframes explosionFlash {
+          0% { opacity: 0; transform: scale(0.5); }
+          50% { opacity: 1; transform: scale(1); }
+          100% { opacity: 0; transform: scale(1.5); }
+        }
+
+        @keyframes cardBurst {
           0% {
-            transform: translate(-50%, -50%) translateY(-200px) scale(0.5) translateZ(0);
+            transform: translate(-50%, -50%) scale(0.3) rotate(0deg);
             opacity: 0;
-            filter: brightness(3) blur(4px);
           }
-          30% {
-            filter: brightness(2) blur(2px);
+          20% {
+            opacity: 1;
           }
           100% {
             transform: translate(
               calc(-50% + var(--final-x)), 
               calc(-50% + var(--final-y))
-            ) rotate(var(--rotation)) scale(1) translateZ(0);
-            opacity: 1;
-            filter: brightness(1) blur(0);
+            ) scale(0.5) rotate(var(--rotation));
+            opacity: 0;
           }
-        }
-        .animate-card-flight {
-          animation: card-flight 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        }
-
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 3s linear infinite;
-        }
-
-        @keyframes fogFade {
-          0% { opacity: 1; }
-          100% { opacity: 0; }
-        }
-
-        @keyframes volumetricPulse {
-          0%, 100% { opacity: 0.5; }
-          50% { opacity: 0.8; }
         }
       `}</style>
     </div>

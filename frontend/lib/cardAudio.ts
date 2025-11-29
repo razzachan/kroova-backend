@@ -76,11 +76,25 @@ const ELEVENLABS_AUDIO: Record<string, string> = {
   legendaryReveal: '/sfx/reveals/legendary_reveal.mp3',
   godmodeReveal: '/sfx/reveals/godmode_reveal.mp3',
   rareReveal: '/sfx/reveals/rare_reveal.mp3',
-  // Adaptive ambient layers
-  ambientIdle: '/sfx/ambient/menu_idle.mp3',
-  ambientActive: '/sfx/ambient/store_active.mp3',
-  ambientIntense: '/sfx/ambient/pre_reveal_tension.mp3',
+  // Adaptive ambient layers (30s extended loops)
+  ambientIdle: '/sfx/ambient_idle_extended.mp3',
+  ambientActive: '/sfx/ambient_active_extended.mp3',
+  ambientIntense: '/sfx/ambient_intense_extended.mp3',
+  // Legacy ambient (backup)
+  ambientIdleLegacy: '/sfx/ambient/menu_idle.mp3',
+  ambientActiveLegacy: '/sfx/ambient/store_active.mp3',
+  ambientIntenseLegacy: '/sfx/ambient/pre_reveal_tension.mp3',
   ambientTension: '/sfx/ambient/tension_ambience.mp3',
+  // UI feedback sounds (cyber/glitch aesthetic)
+  uiClick: '/sfx/ui_click_cyber.mp3',
+  uiHover: '/sfx/ui_hover_glitch.mp3',
+  uiSuccess: '/sfx/ui_success_chime.mp3',
+  uiError: '/sfx/ui_error_buzz.mp3',
+  // Interaction sounds (reality manipulation)
+  cardMaterialize: '/sfx/card_materialize.mp3',
+  realityTear: '/sfx/reality_tear.mp3',
+  dataFlow: '/sfx/data_flow.mp3',
+  portalOpen: '/sfx/portal_open.mp3',
 };
 
 // Procedural UI sounds (Tone.js - zero latency)
@@ -428,6 +442,8 @@ class CardAudioSystem {
   
   // Start ambient background music with adaptive intensity
   startAmbient(intensity: 'idle' | 'active' | 'intense' = 'active') {
+    console.log('🎵 startAmbient called with intensity:', intensity);
+    
     const keyMap = {
       idle: 'ambientIdle',
       active: 'ambientActive',
@@ -435,35 +451,44 @@ class CardAudioSystem {
     };
     
     const volumeMap = {
-      idle: 0.1,      // Ultra subtle for home/profile
-      active: 0.25,   // Moderate for boosters/marketplace
-      intense: 0.4    // High for pre-purchase tension
+      idle: 0.12,      // Normalizado - reduzido
+      active: 0.18,    // Normalizado - reduzido
+      intense: 0.25    // Normalizado - reduzido
     };
     
     const key = keyMap[intensity];
     const targetVolume = volumeMap[intensity];
+    
+    console.log('🎵 Getting Howl for key:', key);
     const howl = this.getHowl(key);
+    
+    if (!howl) {
+      console.error('❌ Failed to get Howl for key:', key);
+      return;
+    }
     
     // If same ambient already playing, just adjust volume
     if (this.ambientLoop && this.ambientLoop === howl) {
+      console.log('🎵 Same ambient playing, adjusting volume to:', targetVolume);
       this.ambientLoop.fade(this.ambientLoop.volume(), targetVolume, 800);
       return;
     }
     
     // Crossfade to new ambient
     if (this.ambientLoop) {
+      console.log('🎵 Crossfading to new ambient');
       const oldLoop = this.ambientLoop;
       oldLoop.fade(oldLoop.volume(), 0, 600);
       setTimeout(() => oldLoop.stop(), 600);
     }
     
-    if (howl) {
-      this.ambientLoop = howl;
-      howl.loop(true);
-      howl.volume(0);
-      howl.play();
-      howl.fade(0, targetVolume, 1000); // Smooth fade in
-    }
+    console.log('🎵 Starting new ambient loop');
+    this.ambientLoop = howl;
+    howl.loop(true);
+    howl.volume(0);
+    const soundId = howl.play();
+    console.log('🎵 Play returned soundId:', soundId);
+    howl.fade(0, targetVolume, 1000); // Smooth fade in
   }
   
   // Change ambient intensity without restarting track
@@ -497,6 +522,50 @@ class CardAudioSystem {
   // Button click sound (procedural)
   playButtonClick() {
     this.playButtonClickProcedural();
+  }
+
+  // ==================== LIVING INTERFACE AUDIO ====================
+  
+  // UI Feedback Sounds (ElevenLabs generated)
+  playClickCyber() {
+    const howl = this.getHowl('uiClick');
+    if (howl) howl.play();
+  }
+
+  playHoverGlitch() {
+    const howl = this.getHowl('uiHover');
+    if (howl) howl.play();
+  }
+
+  playSuccessChime() {
+    const howl = this.getHowl('uiSuccess');
+    if (howl) howl.play();
+  }
+
+  playErrorBuzz() {
+    const howl = this.getHowl('uiError');
+    if (howl) howl.play();
+  }
+
+  // Interaction Sounds (reality manipulation)
+  playCardMaterialize() {
+    const howl = this.getHowl('cardMaterialize');
+    if (howl) howl.play();
+  }
+
+  playRealityTear() {
+    const howl = this.getHowl('realityTear');
+    if (howl) howl.play();
+  }
+
+  playDataFlow() {
+    const howl = this.getHowl('dataFlow');
+    if (howl) howl.play();
+  }
+
+  playPortalOpen() {
+    const howl = this.getHowl('portalOpen');
+    if (howl) howl.play();
   }
 
   // Preload ElevenLabs audio files

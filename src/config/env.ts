@@ -31,7 +31,7 @@ export const env = {
   appUrl: process.env.APP_URL || "http://localhost:3333",
 
   // Payments & Wallet policy
-  minWithdrawPixBrl: Number(process.env.MIN_WITHDRAW_PIX_BRL || 10),
+  minWithdrawPixBrl: Number(process.env.MIN_WITHDRAW_PIX_BRL || 5),
   smallDepositThresholdBrl: Number(process.env.SMALL_DEPOSIT_THRESHOLD_BRL || 5),
   smallDepositFixedFeeBrl: Number(process.env.SMALL_DEPOSIT_FIXED_FEE_BRL || 0.39),
 

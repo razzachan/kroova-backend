@@ -97,14 +97,23 @@ export function OpeningSession({
   }, [revealed, top3, onCheckpoint]);
 
   return (
-    <div className="relative">
-      {/* Explosion flash */}
-      {!showCards && (
-        <div className="absolute inset-0 bg-gradient-radial from-yellow-400/30 via-transparent to-transparent animate-pulse" />
-      )}
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-        {cards.map((card, i) => {
+    <div 
+      className="fixed inset-0 overflow-y-auto"
+      style={{
+        backgroundImage: 'url(/backgrounds/cards-reveal-bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      <div className="min-h-screen p-8 flex items-center justify-center">
+        {/* Explosion flash */}
+        {!showCards && (
+          <div className="absolute inset-0 bg-gradient-radial from-yellow-400/30 via-transparent to-transparent animate-pulse" />
+        )}
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 w-full max-w-7xl">
+          {cards.map((card, i) => {
           // Fan layout positions (arc effect)
           const totalCards = cards.length;
           const offset = i - (totalCards - 1) / 2;
@@ -182,9 +191,10 @@ export function OpeningSession({
           )}
         </div>
       );
-    })}
+        })}
+      </div>
+      </div>
     </div>
-  </div>
   );
 }
 

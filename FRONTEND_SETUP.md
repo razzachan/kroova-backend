@@ -3,7 +3,7 @@
 ## 🎯 Arquitetura Recomendada
 
 ### Stack Tecnológica
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **Linguagem**: TypeScript
 - **Estilização**: Tailwind CSS
 - **Componentes**: shadcn/ui
@@ -17,7 +17,7 @@
 ```
 kroova-frontend/
 ├── src/
-│   ├── app/                    # App Router (Next.js 14)
+│   ├── app/                    # App Router (Next.js 16)
 │   │   ├── (auth)/            # Layout de autenticação
 │   │   │   ├── login/
 │   │   │   └── register/
@@ -68,7 +68,7 @@ kroova-frontend/
 ## 🚀 Comandos de Setup
 
 ```bash
-# Criar projeto Next.js 14 com TypeScript
+# Criar projeto Next.js 16 com TypeScript
 npx create-next-app@latest kroova-frontend --typescript --tailwind --app --eslint
 
 cd kroova-frontend

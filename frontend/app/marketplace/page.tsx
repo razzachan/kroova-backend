@@ -5,6 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { unwrap } from '@/lib/unwrap';
+import GlitchButton from '@/components/UI/GlitchButton';
+import TextGlitch from '@/components/Effects/TextGlitch';
+import HolographicCard from '@/components/UI/HolographicCard';
+import { cardAudio } from '@/lib/cardAudio';
 
 interface CardBase {
   id: string;
@@ -75,9 +79,11 @@ export default function MarketplacePage() {
     
     try {
       await api.post(`/market/listings/${listingId}/buy`);
+      cardAudio.playSuccessChime();
       alert('Carta comprada com sucesso! 🎉');
       loadListings();
     } catch (error: any) {
+      cardAudio.playErrorBuzz();
       alert(error.response?.data?.message || 'Erro ao comprar carta. Verifique seu saldo.');
     }
   };
@@ -91,21 +97,26 @@ export default function MarketplacePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
-      <nav className="bg-gray-800 border-b border-gray-700">
+    <div className="min-h-screen">
+      <nav className="bg-black/40 backdrop-blur-md border-b border-[#00F0FF]/30">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <a href="/dashboard" className="text-2xl font-bold text-white">🃏 Krouva</a>
+          <a href="/dashboard" className="flex items-center gap-3">
+            <img src="/logo_icon.png" alt="KROUVA" className="w-10 h-10 rounded-lg" style={{ boxShadow: '0 0 20px rgba(0, 240, 255, 0.6), 0 0 40px rgba(255, 0, 109, 0.4)', border: '2px solid rgba(0, 240, 255, 0.3)' }} />
+            <span className="text-2xl font-bold text-white tracking-wider" style={{ fontFamily: 'var(--font-geist-mono), monospace', letterSpacing: '0.1em' }}>KROUVA</span>
+          </a>
           <div className="flex items-center gap-4">
-            <a href="/dashboard" className="text-gray-300 hover:text-white">Dashboard</a>
-            <a href="/marketplace" className="text-blue-400 font-semibold">Marketplace</a>
-            <a href="/boosters" className="text-gray-300 hover:text-white">Boosters</a>
-            <a href="/wallet" className="text-gray-300 hover:text-white">Wallet</a>
+            <a href="/dashboard" className="text-gray-300 hover:text-[#00F0FF] transition">Dashboard</a>
+            <a href="/marketplace" className="text-[#00F0FF] font-semibold">Marketplace</a>
+            <a href="/boosters" className="text-gray-300 hover:text-[#00F0FF] transition">Boosters</a>
+            <a href="/wallet" className="text-gray-300 hover:text-[#00F0FF] transition">Wallet</a>
           </div>
         </div>
       </nav>
 
       <main className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-white mb-6">🛒 Marketplace</h1>
+        <h1 className="text-3xl font-bold text-white mb-6">
+          <TextGlitch delay={300}>🛒 TRADING HUB</TextGlitch>
+        </h1>
 
         {loading ? (
           <div className="text-center text-gray-400 py-12">Carregando cartas...</div>
@@ -127,8 +138,12 @@ export default function MarketplacePage() {
               };
               
               return (
-                <div key={listing.id} className="bg-gray-800 rounded-lg p-4 hover:bg-gray-700 transition">
-                  <div className="aspect-square bg-gradient-to-br from-gray-700 to-gray-900 rounded-lg mb-4 flex flex-col items-center justify-center p-4 relative">
+                <HolographicCard 
+                  key={listing.id} 
+                  rarity={(card?.rarity as any) || 'common'}
+                  className="p-4"
+                >
+                  <div className="aspect-square bg-gradient-to-br from-gray-700/50 to-gray-900/50 rounded-lg mb-4 flex flex-col items-center justify-center p-4 relative">
                     <span className="text-6xl mb-2">🃏</span>
                     {card && (
                       <>
@@ -154,15 +169,17 @@ export default function MarketplacePage() {
                         #{ci?.mint_number}/{ci?.total_minted}
                       </span>
                     </div>
-                    <p className="text-2xl font-bold text-green-400">R$ {listing.price_brl || listing.price}</p>
-                    <button 
+                    <p className="text-2xl font-bold text-[#00F0FF]">R$ {listing.price_brl || listing.price}</p>
+                    <GlitchButton 
                       onClick={() => handleBuy(listing.id, listing.price_brl || listing.price || 0)}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition font-semibold"
+                      variant="success"
+                      size="md"
+                      className="w-full"
                     >
-                      Comprar
-                    </button>
+                      COMPRAR
+                    </GlitchButton>
                   </div>
-                </div>
+                </HolographicCard>
               );
             })}
           </div>

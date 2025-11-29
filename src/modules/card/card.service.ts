@@ -151,6 +151,127 @@ export class CardService {
   }
 
   /**
+   * Recicla múltiplas cartas e ganha 1 booster grátis
+   * Requer 25 cartas para conversão (economicamente viável)
+   */
+  async recycleBulk(userId: string, instanceIds: string[]) {
+    const REQUIRED_CARDS = 25;
+    
+    if (instanceIds.length !== REQUIRED_CARDS) {
+      throw new Error(`É necessário reciclar exatamente ${REQUIRED_CARDS} cartas`);
+    }
+
+    // Verifica ownership de todas as cartas
+    const { data: cards, error } = await supabaseAdmin
+      .from("cards_instances")
+      .select(`
+        *,
+        cards_base (*),
+        user_inventory!inner (user_id)
+      `)
+      .in("id", instanceIds)
+      .eq("user_inventory.user_id", userId);
+
+    if (error || !cards || cards.length !== REQUIRED_CARDS) {
+      throw new Error("Cartas não encontradas ou você não é o dono de todas");
+    }
+
+    // Calcula valor total reciclado (para métricas)
+    let totalValue = 0;
+    for (const card of cards) {
+      const cardBase = card.cards_base as Record<string, unknown>;
+      const baseValue = (cardBase.base_liquidity_brl as number) || 0;
+      const editionId = (cardBase.edition_id as string) || 'ED01';
+      const skin = (card.skin as string) || 'default';
+      const adjusted = computeAdjustedLiquidity(baseValue, skin, editionId);
+      totalValue += adjusted;
+    }
+
+    // Remove todas as cartas do inventário
+    await supabaseAdmin
+      .from("user_inventory")
+      .delete()
+      .in("card_instance_id", instanceIds)
+      .eq("user_id", userId);
+
+    // Marca cartas como recicladas
+    await supabaseAdmin
+      .from("cards_instances")
+      .update({ owner_id: null })
+      .in("id", instanceIds);
+
+    // Busca o booster mais barato (Micro)
+    const { data: boosterType, error: boosterError } = await supabaseAdmin
+      .from("booster_types")
+      .select("*")
+      .order("price_brl", { ascending: true })
+      .limit(1)
+      .single();
+
+    if (boosterError || !boosterType) {
+      throw new Error("Tipo de booster não encontrado");
+    }
+
+    // Cria 1 booster grátis (não fechado)
+    const { data: opening, error: openingError } = await supabaseAdmin
+      .from("booster_openings")
+      .insert({
+        user_id: userId,
+        booster_type_id: boosterType.id,
+        cards_obtained: [],
+        opened_at: null,
+      })
+      .select()
+      .single();
+
+    if (openingError || !opening) {
+      throw new Error("Erro ao criar booster: " + openingError?.message);
+    }
+
+    // Registra reciclagem em lote
+    await supabaseAdmin.from("recycle_history").insert({
+      user_id: userId,
+      card_instance_id: instanceIds[0], // Referência ao primeiro
+      value_brl: 0, // Não credita BRL, dá booster
+      metadata: { 
+        bulk_recycle: true,
+        cards_recycled: instanceIds.length,
+        total_value: totalValue,
+        reward_booster_id: opening.id
+      },
+    });
+
+    // Registra transação
+    await supabaseAdmin.from("transactions").insert({
+      user_id: userId,
+      type: "recycle_bulk",
+      amount_brl: 0, // Não é BRL, é booster
+      status: "confirmed",
+      metadata: { 
+        cards_recycled: REQUIRED_CARDS,
+        booster_id: opening.id,
+        total_value_recycled: totalValue
+      },
+    });
+
+    // Métricas
+    import('../../observability/metrics.js').then(m => {
+      m.domainMetrics.recycleConversion(totalValue);
+    }).catch(()=>{});
+
+    return {
+      recycled: true,
+      cards_recycled: REQUIRED_CARDS,
+      reward: {
+        type: 'booster',
+        booster_id: opening.id,
+        booster_name: boosterType.name
+      },
+      total_value_recycled: totalValue,
+    };
+  }
+
+  /**
    * Lista cartas base de uma edição com filtros opcionais
    */
   static async listEditionCards(editionId: string, filters: { rarity?: string; archetype?: string }) {

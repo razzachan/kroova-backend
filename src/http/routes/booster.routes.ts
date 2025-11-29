@@ -115,6 +115,28 @@ export async function boosterRoutes(app: FastifyInstance) {
   );
 
   /**
+   * GET /boosters/sealed
+   * Lista boosters não abertos (sealed packs) do jogador
+   */
+  app.get(
+    "/boosters/sealed",
+    { preHandler: authMiddleware },
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      try {
+        if (!request.user) {
+          return reply.code(401).send(fail("UNAUTHORIZED"));
+        }
+
+        const result = await boosterService.getSealedPacks(request.user.sub);
+
+        return reply.send(ok(result));
+      } catch (error) {
+        return reply.code(500).send(fail("INTERNAL_ERROR"));
+      }
+    },
+  );
+
+  /**
    * GET /inventory
    * Lista cartas do jogador
    */

@@ -12,6 +12,8 @@ export interface EditionConfig {
   pityCapMultiplier?: number; // planned cap multiplier for probability (phase2)
   pityThresholds?: number[]; // marcos de tentativas
   pityIncrements?: number[]; // incrementos relativos (multiplicador sobre basePct, ex 0.10 => +10% da base)
+  pityRewardType?: string; // Tipo de recompensa do pity system
+  pityRewardQuantity?: number; // Quantidade de boosters na recompensa
   skinEconomyEnabled?: boolean; // controla aplicação de multiplicador em reciclagem/marketplace
 }
 
@@ -32,10 +34,12 @@ const ED01: EditionConfig = {
     { name: 'holo', weight: 1.5, multiplier: 8 },
     { name: 'dark', weight: 0.5, multiplier: 12 },
   ],
-  pityEnabled: false,
-  pityCapMultiplier: 2, // placeholder for future use
-  pityThresholds: [50, 100, 150, 200, 250],
-  pityIncrements: [0.10, 0.25, 0.45, 0.70, 1.00],
+  pityEnabled: true, // ATIVADO: 3 boosters grátis a cada 50 boosters (RTP +6%)
+  pityCapMultiplier: 2,
+  pityThresholds: [50], // A cada 50 boosters = 3 boosters grátis
+  pityIncrements: [0], // Não aumenta chance de Godmode, apenas premia com boosters
+  pityRewardType: 'free_booster', // Tipo de recompensa
+  pityRewardQuantity: 3, // Quantidade de boosters na recompensa
   skinEconomyEnabled: true,
 };
 

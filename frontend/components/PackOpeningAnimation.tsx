@@ -143,8 +143,11 @@ export function PackOpeningAnimation({
   return (
     <div 
       ref={containerRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+      className="fixed inset-0 z-50 flex items-center justify-center"
       style={{
+        backgroundImage: 'url(/backgrounds/pack-opening-bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
         willChange: 'transform',
       }}
     >
@@ -191,15 +194,28 @@ export function PackOpeningAnimation({
         )}
 
         {/* Pack image */}
-        <img
-          src={packImageUrl}
-          alt="Booster Pack"
-          className="w-full h-full object-contain drop-shadow-2xl"
-          style={{
-            willChange: 'transform',
-            transform: 'translateZ(0)',
-          }}
-        />
+        <div className="relative w-full h-full flex items-center justify-center">
+          <img
+            src={packImageUrl}
+            alt="Booster Pack"
+            className="w-full h-full object-contain drop-shadow-2xl"
+            style={{
+              willChange: 'transform',
+              transform: 'translateZ(0)',
+              filter: stage === 'exploding' ? 'brightness(2) blur(4px)' : 'brightness(1)',
+              transition: 'filter 100ms',
+            }}
+          />
+          
+          {/* "Abrindo booster" text */}
+          {stage === 'shaking' && (
+            <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 text-center">
+              <p className="text-2xl font-bold text-white tracking-wider animate-pulse" style={{ fontFamily: 'var(--font-geist-mono), monospace' }}>
+                ABRINDO BOOSTER...
+              </p>
+            </div>
+          )}
+        </div>
 
         {/* Click prompt */}
         {stage === 'idle' && (

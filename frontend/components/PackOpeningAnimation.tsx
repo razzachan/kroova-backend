@@ -132,6 +132,8 @@ export function PackOpeningAnimation({
 
   const handleClick = () => {
     if (stage === 'idle') {
+      // 🎵 Stop ambient NOW - user clicked, explosion incoming!
+      cardAudio.stopAmbient();
       setClicked(true);
     }
   };

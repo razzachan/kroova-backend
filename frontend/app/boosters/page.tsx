@@ -136,8 +136,8 @@ export default function BoostersPage() {
     setOpening(openingId);
     setShowCards(false);
 
-    // 🎵 ADAPTIVE AUDIO: Stop ambient before pack explosion
-    cardAudio.stopAmbient();
+    // 🎵 KEEP INTENSE - Don't stop ambient yet! 
+    // User still needs to click the pack (tension moment)
 
     try {
       const res = await api.post('/boosters/open', { opening_id: openingId });

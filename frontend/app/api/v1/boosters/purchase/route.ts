@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+export const runtime = 'edge';
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const serviceKey = process.env.SUPABASE_SERVICE_KEY!;
@@ -24,11 +26,18 @@ export async function POST(request: NextRequest) {
     const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
     const body = await request.json();
-    const { booster_type_id } = body;
+    const { booster_type_id, quantity = 1 } = body;
 
     if (!booster_type_id) {
       return NextResponse.json(
         { ok: false, error: { code: 'VALIDATION_ERROR', message: 'booster_type_id is required' } },
+        { status: 400 }
+      );
+    }
+
+    if (quantity < 1 || quantity > 10) {
+      return NextResponse.json(
+        { ok: false, error: { code: 'VALIDATION_ERROR', message: 'quantity must be between 1 and 10' } },
         { status: 400 }
       );
     }
@@ -89,11 +98,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 4. Debitar wallet
+    // 4. Debitar wallet (total = preço * quantidade)
+    const totalPrice = boosterType.price_brl * quantity;
+    
     const { error: debitError } = await supabaseAdmin
       .from('wallets')
       .update({ 
-        balance_brl: wallet.balance_brl - boosterType.price_brl,
+        balance_brl: wallet.balance_brl - totalPrice,
         updated_at: new Date().toISOString()
       })
       .eq('user_id', user.id);
@@ -111,42 +122,44 @@ export async function POST(request: NextRequest) {
       .insert({
         user_id: user.id,
         type: 'booster_purchase',
-        amount_brl: -boosterType.price_brl,
-        description: `Compra: ${boosterType.name}`,
-        metadata: { booster_type_id }
+        amount_brl: -totalPrice,
+        description: `Compra: ${quantity}x ${boosterType.name}`,
+        metadata: { booster_type_id, quantity }
       });
 
-    // 6. Criar booster_opening (não aberto ainda)
-    // WORKAROUND: Supabase tem DEFAULT now() em opened_at, então atualizamos para NULL depois
-    const { data: opening, error: openingError } = await supabaseAdmin
-      .from('booster_openings')
-      .insert({
-        user_id: user.id,
-        booster_type_id,
-        cards_obtained: []
-      })
-      .select()
-      .single();
+    // 6. Criar booster_openings (um para cada booster comprado)
+    const openingsToInsert = Array.from({ length: quantity }, () => ({
+      user_id: user.id,
+      booster_type_id,
+      cards_obtained: [],
+      purchased_at: new Date().toISOString()
+    }));
 
-    if (openingError) {
+    const { data: openings, error: openingError } = await supabaseAdmin
+      .from('booster_openings')
+      .insert(openingsToInsert)
+      .select();
+
+    if (openingError || !openings) {
       return NextResponse.json(
-        { ok: false, error: { code: 'DATABASE_ERROR', message: openingError.message } },
+        { ok: false, error: { code: 'DATABASE_ERROR', message: openingError?.message || 'Failed to create openings' } },
         { status: 500 }
       );
     }
 
-    // WORKAROUND: Forçar opened_at = NULL (schema tem DEFAULT now())
+    // Forçar opened_at = NULL para todos
     await supabaseAdmin
       .from('booster_openings')
       .update({ opened_at: null })
-      .eq('id', opening.id);
+      .in('id', openings.map(o => o.id));
 
     return NextResponse.json({ 
       ok: true, 
       data: {
-        opening_id: opening.id,
+        boosters: openings.map(o => ({ id: o.id })),
+        total_paid: totalPrice,
         booster_type: boosterType,
-        new_balance: wallet.balance_brl - boosterType.price_brl
+        new_balance: wallet.balance_brl - totalPrice
       }
     });
 

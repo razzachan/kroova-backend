@@ -186,7 +186,7 @@ export default function DashboardPage() {
           <DashboardCard
             title="Pacotes de Cartas"
             value="Comprar"
-            icon="/icon_boosters_thumb.png"
+            icon="/pack-front-ed01.png"
             href="/boosters"
           />
         </div>

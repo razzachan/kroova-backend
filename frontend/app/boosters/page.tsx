@@ -135,24 +135,39 @@ export default function BoostersPage() {
 
   async function loadData() {
     try {
-      const [boostersRes, walletRes] = await Promise.all([
+      // 🚀 Carrega tudo em paralelo para reduzir latência
+      const [boostersRes, walletRes, sealedRes, pityRes] = await Promise.allSettled([
         api.get('/boosters'),
-        api.get('/wallet')
+        api.get('/wallet'),
+        api.get('/boosters/sealed'),
+        api.get('/boosters/pity?edition_id=ED01')
       ]);
 
-      setBoosters(unwrap(boostersRes.data));
-      setBalance(unwrap(walletRes.data).balance_brl);
-      
-      // Load sealed packs
-      await loadSealedPacks();
+      // Boosters
+      if (boostersRes.status === 'fulfilled') {
+        setBoosters(unwrap(boostersRes.value.data));
+      }
 
-      // Pity endpoint (optional): handle 404 gracefully
-      try {
-        const pityRes = await api.get('/boosters/pity?edition_id=ED01');
-        const pityData = unwrap(pityRes.data);
+      // Wallet
+      if (walletRes.status === 'fulfilled') {
+        setBalance(unwrap(walletRes.value.data).balance_brl);
+      }
+
+      // Sealed packs
+      if (sealedRes.status === 'fulfilled') {
+        const data = unwrap(sealedRes.value.data);
+        setSealedPacks(data.sealed_packs || []);
+      } else {
+        console.warn('Sealed packs endpoint not available yet');
+        setSealedPacks([]);
+      }
+
+      // Pity counter
+      if (pityRes.status === 'fulfilled') {
+        const pityData = unwrap(pityRes.value.data);
         setPityCount(pityData.pity_count || 0);
         setPityMax(pityData.max || 180);
-      } catch (pityErr: any) {
+      } else {
         console.warn('Pity endpoint not available, using defaults');
         setPityCount(0);
         setPityMax(180);
@@ -236,7 +251,7 @@ export default function BoostersPage() {
     // User still needs to click the pack (tension moment)
 
     try {
-      const res = await api.post('/boosters/open', { booster_opening_id: openingId });
+      const res = await api.post('/boosters/open', { opening_id: openingId });
       const data = unwrap(res.data);
 
       // Start pack animation sequence
@@ -360,7 +375,18 @@ export default function BoostersPage() {
   }
 
   return (
-    <div className="min-h-screen relative">
+    <div 
+      className="min-h-screen relative bg-cover bg-center bg-fixed" 
+      style={{
+        backgroundImage: 'url(/kroova-background.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Overlay escuro para melhor legibilidade */}
+      <div className="absolute inset-0 bg-black/50 pointer-events-none" />
+      
       <nav className="bg-black/40 backdrop-blur-md border-b border-[#FFC700]/30 relative z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <a href="/dashboard" className="flex items-center gap-3">
@@ -377,7 +403,7 @@ export default function BoostersPage() {
         </div>
       </nav>
 
-      <div className="text-white p-8">
+      <div className="text-white p-8 relative z-10">
         <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-bold">
@@ -463,29 +489,43 @@ export default function BoostersPage() {
           <div className="mb-8">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold flex items-center gap-2">
-                🎁 Seus Boosters Fechados ({sealedPacks.length})
+                🎁 <TextGlitch delay={200}>BOOSTERS FECHADOS</TextGlitch> ({sealedPacks.length})
               </h2>
-              <button
+              <GlitchButton
+                variant="secondary"
+                size="sm"
                 onClick={() => router.push('/inventory?tab=sealed')}
-                className="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white transition"
               >
                 Ver Todos →
-              </button>
+              </GlitchButton>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {sealedPacks.slice(0, 6).map((pack: any) => (
                 <div key={pack.id} className="relative group">
-                  <div className="bg-gradient-to-br from-purple-900 to-pink-900 rounded-lg p-4 border-2 border-purple-500/50 hover:border-purple-400 transition cursor-pointer">
-                    <div className="aspect-[2/3] flex items-center justify-center mb-2">
-                      <div className="text-5xl">📦</div>
+                  <div className="relative cursor-pointer transform transition-transform hover:scale-105 rounded-lg overflow-hidden">
+                    {/* Imagem do booster pack */}
+                    <img 
+                      src="/pack-front-ed01.png" 
+                      alt="Kroova Booster Pack" 
+                      className="w-full h-auto shadow-2xl"
+                    />
+                    
+                    {/* Label do tipo de booster */}
+                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
+                      <p className="text-xs text-center text-white font-bold">{pack.booster_types?.name || 'Booster'}</p>
                     </div>
-                    <p className="text-xs text-center text-gray-300 mb-2">{pack.booster_type?.name || 'Booster'}</p>
-                    <button
-                      onClick={() => handleOpen(pack.id)}
-                      className="w-full px-3 py-2 rounded bg-gradient-to-r from-[#FF006D] to-[#00F0FF] text-white text-sm font-bold hover:scale-105 transition"
-                    >
-                      ABRIR
-                    </button>
+                    
+                    {/* Botão de abrir sobreposto */}
+                    <div className="absolute inset-0 flex items-end justify-center p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <GlitchButton
+                        variant="primary"
+                        size="sm"
+                        onClick={() => handleOpen(pack.id)}
+                        className="w-full shadow-2xl"
+                      >
+                        ABRIR
+                      </GlitchButton>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -610,33 +650,30 @@ export default function BoostersPage() {
                 </p>
                 
                 <div className="space-y-4">
-                  <button
-                    onClick={openAllBoosters}
-                    className="w-full px-6 py-4 rounded-lg bg-gradient-to-r from-[#FF006D] to-[#00F0FF] text-white font-bold uppercase tracking-wider hover:scale-105 transition"
-                  >
-                    🔥 ABRIR TODOS AGORA
-                  </button>
-                  
-                  <button
-                    onClick={saveForLater}
-                    className="w-full px-6 py-4 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold uppercase tracking-wider hover:scale-105 transition"
-                  >
-                    💼 GUARDAR PARA DEPOIS
-                  </button>
-                  
-                  <button
+                  <GlitchButton
+                    variant="primary"
+                    size="lg"
                     onClick={() => {
                       setShowMultipleModal(false);
                       handleOpen(purchasedBoosters[0].id);
                     }}
-                    className="w-full px-6 py-4 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-bold uppercase tracking-wider transition"
+                    className="w-full"
                   >
-                    🎁 ABRIR APENAS 1
-                  </button>
+                    🎁 ABRIR PRIMEIRO
+                  </GlitchButton>
+                  
+                  <GlitchButton
+                    variant="secondary"
+                    size="lg"
+                    onClick={saveForLater}
+                    className="w-full"
+                  >
+                    💼 GUARDAR PARA DEPOIS
+                  </GlitchButton>
                 </div>
                 
                 <p className="text-gray-400 text-sm mt-4 text-center">
-                  💡 Boosters guardados ficam disponíveis no inventário
+                  💡 Após abrir, você pode escolher abrir o próximo ou guardar os restantes
                 </p>
               </div>
             </div>
@@ -684,39 +721,74 @@ export default function BoostersPage() {
             
             {/* Action Buttons After Reveal */}
             <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[60] flex gap-4">
+              {/* Se tem mais boosters comprados para abrir */}
               {purchasedBoosters.length > currentBoosterIndex + 1 && (
-                <button
+                <GlitchButton
+                  variant="primary"
+                  size="lg"
                   onClick={() => {
                     setShowCards(false);
                     setAnimationStage('none');
                     openNextBooster();
                   }}
-                  className="px-8 py-4 rounded-lg bg-gradient-to-r from-[#FF006D] to-[#00F0FF] text-white font-bold uppercase tracking-wider hover:scale-105 transition shadow-lg"
                 >
                   🎁 ABRIR PRÓXIMO ({purchasedBoosters.length - currentBoosterIndex - 1} restantes)
-                </button>
+                </GlitchButton>
+              )}
+
+              {/* Se tem boosters selados no inventário */}
+              {sealedPacks.length > 0 && (
+                <GlitchButton
+                  variant="secondary"
+                  size="lg"
+                  onClick={() => {
+                    setShowCards(false);
+                    setAnimationStage('none');
+                    setPendingCards([]);
+                    setPurchasedBoosters([]);
+                    // Scroll para a seção de boosters selados
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                >
+                  🎁 ABRIR OUTRO BOOSTER ({sealedPacks.length} disponíveis)
+                </GlitchButton>
               )}
               
-              <button
+              <GlitchButton
+                variant="success"
+                size="lg"
                 onClick={() => {
                   setShowCards(false);
                   setAnimationStage('none');
                   setPendingCards([]);
                   setPurchasedBoosters([]);
                 }}
-                className="px-8 py-4 rounded-lg bg-gradient-to-r from-green-600 to-blue-600 text-white font-bold uppercase tracking-wider hover:scale-105 transition shadow-lg"
               >
                 💰 COMPRAR MAIS
-              </button>
+              </GlitchButton>
               
-              <button
+              <GlitchButton
+                variant="secondary"
+                size="lg"
                 onClick={() => {
                   router.push('/inventory');
                 }}
-                className="px-8 py-4 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-bold uppercase tracking-wider transition shadow-lg"
               >
                 📦 VER INVENTÁRIO
-              </button>
+              </GlitchButton>
+
+              <GlitchButton
+                variant="danger"
+                size="md"
+                onClick={() => {
+                  setShowCards(false);
+                  setAnimationStage('none');
+                  setPendingCards([]);
+                  setPurchasedBoosters([]);
+                }}
+              >
+                ✖️ FECHAR
+              </GlitchButton>
             </div>
           </>
         )}

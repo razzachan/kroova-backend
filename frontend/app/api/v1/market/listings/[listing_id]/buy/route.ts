@@ -14,7 +14,7 @@ const MARKET_FEE = 0.04; // 4%
 // POST /api/v1/market/listings/:listing_id/buy - Buy card
 export async function POST(
   request: NextRequest,
-  { params }: { params: { listing_id: string } }
+  { params }: { params: Promise<{ listing_id: string }> }
 ) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -35,7 +35,8 @@ export async function POST(
       );
     }
 
-    const listingId = params.listing_id;
+    const { listing_id } = await params;
+    const listingId = listing_id;
 
     // Buscar listing com validações
     const { data: listing, error: listingError } = await supabaseAdmin

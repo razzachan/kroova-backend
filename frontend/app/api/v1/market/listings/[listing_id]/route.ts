@@ -12,7 +12,7 @@ const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 // DELETE /api/v1/market/listings/:listing_id - Cancel listing
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { listing_id: string } }
+  { params }: { params: Promise<{ listing_id: string }> }
 ) {
   try {
     const authHeader = request.headers.get('authorization');
@@ -33,7 +33,8 @@ export async function DELETE(
       );
     }
 
-    const listingId = params.listing_id;
+    const { listing_id } = await params;
+    const listingId = listing_id;
 
     // Verificar se listing existe e pertence ao usuário
     const { data: listing, error: listingError } = await supabaseAdmin

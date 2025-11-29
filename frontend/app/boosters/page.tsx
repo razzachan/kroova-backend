@@ -60,13 +60,8 @@ export default function BoostersPage() {
   useEffect(() => {
     loadData();
     
-    // 🎵 ADAPTIVE AMBIENT: Start at 'active' level for boosters page
-    cardAudio.startAmbient('active');
-    
-    // Cleanup: stop ambient when leaving page
-    return () => {
-      cardAudio.stopAmbient();
-    };
+    // 🎵 Ambient managed globally by GlobalAmbientManager
+    // No need to start/stop here anymore
   }, []);
 
   async function loadData() {

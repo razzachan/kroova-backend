@@ -454,7 +454,7 @@ export default function BoostersPage() {
 
         {/* Checkpoint Modal */}
         {showCheckpoint && (
-          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60]">
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[90]">
             <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 w-[560px]">
               <h3 className="text-2xl font-bold mb-2">🎉 Checkpoint alcançado!</h3>
               <p className="text-sm text-gray-400 mb-4">Você abriu {openedCount} pacotes. Melhores cartas:</p>
@@ -622,11 +622,12 @@ export default function BoostersPage() {
         {/* Animação de Abertura */}
         {opening && (
           <div 
-            className="fixed inset-0 flex items-center justify-center z-[60]"
+            className="fixed inset-0 flex items-center justify-center z-[100]"
             style={{
               backgroundImage: 'url(/backgrounds/pack-opening-bg.png)',
               backgroundSize: 'cover',
-              backgroundPosition: 'center'
+              backgroundPosition: 'center',
+              backgroundAttachment: 'fixed'
             }}
           >
             <div className="text-center">
@@ -654,7 +655,7 @@ export default function BoostersPage() {
 
         {/* Multiple Boosters Modal */}
         {showMultipleModal && (
-          <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[90] flex items-center justify-center p-4">
             <div className="bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 border-2 border-[#FF006D] rounded-2xl p-8 max-w-md w-full relative overflow-hidden">
               <div className="absolute inset-0 bg-[#00F0FF]/5 animate-pulse" />
               <div className="relative z-10">

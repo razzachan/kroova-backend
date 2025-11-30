@@ -499,7 +499,7 @@ export default function BoostersPage() {
                 Ver Todos →
               </GlitchButton>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {sealedPacks.slice(0, 6).map((pack: any) => (
                 <div key={pack.id} className="relative group">
                   <div className="relative cursor-pointer transform transition-transform hover:scale-105 rounded-lg overflow-hidden bg-transparent">
@@ -508,7 +508,7 @@ export default function BoostersPage() {
                       src="/pack-front-ed01.png" 
                       alt="Kroova Booster Pack" 
                       className="w-full h-auto shadow-2xl object-contain"
-                      style={{ background: 'transparent' }}
+                      style={{ background: 'transparent', minHeight: '300px' }}
                     />
                     
                     {/* Label do tipo de booster */}

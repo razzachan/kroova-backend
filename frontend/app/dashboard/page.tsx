@@ -168,25 +168,25 @@ export default function DashboardPage() {
           <DashboardCard
             title="Wallet"
             value={`R$ ${stats.balance.toFixed(2)}`}
-            icon="/icon_wallet_thumb_transparent.png"
+            icon="/icon_wallet_thumb.png"
             href="/wallet"
           />
           <DashboardCard
             title="Cartas"
             value={stats.cardsCount.toString()}
-            icon="/icon_cards_thumb_transparent.png"
+            icon="/icon_cards_thumb.png"
             href="/inventory"
           />
           <DashboardCard
             title="Marketplace"
             value="Explorar"
-            icon="/icon_marketplace_thumb_transparent.png"
+            icon="/icon_marketplace_thumb.png"
             href="/marketplace"
           />
           <DashboardCard
             title="Pacotes de Cartas"
             value="Comprar"
-            icon="/icon_boosters_thumb_transparent.png"
+            icon="/icon_boosters_thumb.png"
             href="/boosters"
           />
         </div>

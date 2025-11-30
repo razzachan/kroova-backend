@@ -502,12 +502,13 @@ export default function BoostersPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {sealedPacks.slice(0, 6).map((pack: any) => (
                 <div key={pack.id} className="relative group">
-                  <div className="relative cursor-pointer transform transition-transform hover:scale-105 rounded-lg overflow-hidden">
+                  <div className="relative cursor-pointer transform transition-transform hover:scale-105 rounded-lg overflow-hidden bg-transparent">
                     {/* Imagem do booster pack */}
                     <img 
                       src="/pack-front-ed01.png" 
                       alt="Kroova Booster Pack" 
-                      className="w-full h-auto shadow-2xl"
+                      className="w-full h-auto shadow-2xl object-contain"
+                      style={{ background: 'transparent' }}
                     />
                     
                     {/* Label do tipo de booster */}

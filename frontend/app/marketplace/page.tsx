@@ -166,7 +166,7 @@ export default function MarketplacePage() {
       <nav className="bg-black/40 backdrop-blur-md border-b border-[#00F0FF]/30">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <a href="/dashboard" className="flex items-center gap-3">
-            <img src="/logo_full_transparent.png" alt="KROUVA" className="w-10 h-10 rounded-lg object-contain" style={{ boxShadow: '0 0 20px rgba(0, 240, 255, 0.6), 0 0 40px rgba(255, 0, 109, 0.4)', border: '2px solid rgba(0, 240, 255, 0.3)' }} />
+            <img src="/logo_icon.png" alt="KROUVA" className="w-10 h-10 rounded-lg object-contain" style={{ boxShadow: '0 0 20px rgba(0, 240, 255, 0.6), 0 0 40px rgba(255, 0, 109, 0.4)', border: '2px solid rgba(0, 240, 255, 0.3)' }} />
             <span className="text-2xl font-bold text-white tracking-wider" style={{ fontFamily: 'var(--font-geist-mono), monospace', letterSpacing: '0.1em' }}>KROUVA</span>
           </a>
           <div className="flex items-center gap-4">

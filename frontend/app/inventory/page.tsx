@@ -172,6 +172,19 @@ export default function InventoryPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {inventory.map((card) => {
               const baseCard = card.cards_base;
+              
+              // Mapear raridades do banco para o HolographicCard
+              const mapRarity = (dbRarity: string): 'common' | 'rare' | 'epic' | 'legendary' | 'godmode' => {
+                const mapping: Record<string, 'common' | 'rare' | 'epic' | 'legendary' | 'godmode'> = {
+                  'trash': 'common',
+                  'meme': 'rare',
+                  'viral': 'epic',
+                  'legendary': 'legendary',
+                  'epica': 'legendary'
+                };
+                return mapping[dbRarity?.toLowerCase()] || 'common';
+              };
+              
               const rarityColors: Record<string, string> = {
                 trash: 'text-gray-400',
                 meme: 'text-blue-400',
@@ -184,7 +197,7 @@ export default function InventoryPage() {
               return (
                 <HolographicCard 
                   key={card.id} 
-                  rarity={card.is_godmode ? 'godmode' : (baseCard?.rarity as any) || 'trash'}
+                  rarity={card.is_godmode ? 'godmode' : mapRarity(baseCard?.rarity || 'trash')}
                   className="p-4"
                 >
                   {/* Card Image */}

@@ -13,6 +13,7 @@ import { CardsFlightAnimation } from '@/components/CardsFlightAnimation';
 import GlitchButton from '@/components/UI/GlitchButton';
 import TextGlitch from '@/components/Effects/TextGlitch';
 import HolographicCard from '@/components/UI/HolographicCard';
+import BoosterCard3D from '@/components/UI/BoosterCard3D';
 
 interface BoosterType {
   id: string;
@@ -436,7 +437,7 @@ export default function BoostersPage() {
 
         {/* Checkpoint Modal */}
         {showCheckpoint && (
-          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60]">
             <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 w-[560px]">
               <h3 className="text-2xl font-bold mb-2">🎉 Checkpoint alcançado!</h3>
               <p className="text-sm text-gray-400 mb-4">Você abriu {openedCount} pacotes. Melhores cartas:</p>
@@ -499,23 +500,34 @@ export default function BoostersPage() {
                 Ver Todos →
               </GlitchButton>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {sealedPacks.slice(0, 6).map((pack: any) => (
-                <HolographicCard
-                  key={pack.id}
-                  rarity="epic"
-                  onClick={() => handleOpen(pack.id)}
-                  className="w-full"
-                >
-                  {/* Imagem do booster pack - SEM wrapper, SEM container */}
-                  <img 
-                    src="/pack-front-ed01.png" 
-                    alt="Kroova Booster Pack" 
-                    className="w-full h-auto object-contain rounded-lg border-2 border-[#8B5CF6] shadow-[0_0_30px_rgba(139,92,246,0.8)]"
-                    style={{ minHeight: '350px' }}
-                  />
-                </HolographicCard>
-              ))}
+            {/* Layout empilhado - boosters sobrepostos como leque (máximo 3) */}
+            <div className="relative flex justify-center items-start min-h-[500px] w-full pt-16 pb-20 mb-12">
+              <div className="relative w-fit">
+                {sealedPacks.slice(0, 3).map((pack: any, index: number) => (
+                  <div
+                    key={pack.id}
+                    className="absolute left-1/2"
+                    style={{
+                      zIndex: index,
+                      transform: `translateX(calc(-50% + ${(index - 1) * 80}px)) translateY(${index * -10}px) rotate(${(index - 1) * 5}deg)`,
+                      transition: 'all 0.3s ease-out',
+                    }}
+                  >
+                    <BoosterCard3D
+                      onClick={() => handleOpen(pack.id)}
+                      className="w-[260px]"
+                    >
+                      {/* Imagem do booster pack - SEM bordas, efeito 3D puro */}
+                      <img 
+                        src="/pack-front-ed01.png" 
+                        alt="Kroova Booster Pack" 
+                        className="w-full h-auto object-contain"
+                        style={{ minHeight: '380px' }}
+                      />
+                    </BoosterCard3D>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -593,7 +605,7 @@ export default function BoostersPage() {
         {/* Animação de Abertura */}
         {opening && (
           <div 
-            className="fixed inset-0 flex items-center justify-center z-50"
+            className="fixed inset-0 flex items-center justify-center z-[60]"
             style={{
               backgroundImage: 'url(/backgrounds/pack-opening-bg.png)',
               backgroundSize: 'cover',

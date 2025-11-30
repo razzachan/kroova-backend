@@ -287,14 +287,28 @@ export default function BoostersPage() {
     const count = purchasedBoosters.length;
     setPurchasedBoosters([]);
     
-    // Mostra toast estilizado ao invés de alert
+    // Mostra toast estilizado com o mesmo estilo dos botões
     const toast = document.createElement('div');
-    toast.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#00F0FF] to-[#FF006D] text-white px-8 py-4 rounded-lg font-bold z-[80] animate-pulse';
-    toast.innerHTML = `✅ ${count} booster(s) guardado(s) no seu inventário!`;
+    toast.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 z-[80]';
+    toast.innerHTML = `
+      <div class="bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 border-2 border-[#00F0FF] rounded-xl px-8 py-4 shadow-2xl shadow-[#00F0FF]/30 backdrop-blur-sm">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">💼</span>
+          <div>
+            <p class="text-white font-bold text-lg tracking-wider" style="font-family: var(--font-geist-mono), monospace;">
+              ${count} BOOSTER${count > 1 ? 'S' : ''} GUARDADO${count > 1 ? 'S' : ''}
+            </p>
+            <p class="text-[#00F0FF] text-sm">Disponível no seu inventário</p>
+          </div>
+        </div>
+      </div>
+    `;
     document.body.appendChild(toast);
     
     setTimeout(() => {
-      toast.remove();
+      toast.style.transition = 'opacity 0.3s ease-out';
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 300);
     }, 3000);
     
     loadData();

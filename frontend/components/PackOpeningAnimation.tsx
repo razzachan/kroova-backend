@@ -143,7 +143,7 @@ export function PackOpeningAnimation({
   return (
     <div 
       ref={containerRef}
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-0 z-[70] flex items-center justify-center"
       style={{
         backgroundImage: 'url(/backgrounds/pack-opening-bg.png)',
         backgroundSize: 'cover',

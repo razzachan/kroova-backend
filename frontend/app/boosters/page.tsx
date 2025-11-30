@@ -501,36 +501,20 @@ export default function BoostersPage() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {sealedPacks.slice(0, 6).map((pack: any) => (
-                <div key={pack.id} className="relative">
-                  <HolographicCard
-                    rarity="epic"
-                    onClick={() => handleOpen(pack.id)}
-                    className="w-full bg-transparent"
-                  >
-                    {/* Imagem do booster pack - sem container */}
-                    <img 
-                      src="/pack-front-ed01.png" 
-                      alt="Kroova Booster Pack" 
-                      className="w-full h-auto object-contain rounded-lg border-2 border-[#8B5CF6] shadow-[0_0_30px_rgba(139,92,246,0.8)]"
-                      style={{ minHeight: '350px' }}
-                    />
-                    
-                    {/* Botão de abrir sobreposto */}
-                    <div className="absolute inset-0 flex items-end justify-center p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <GlitchButton
-                        variant="primary"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpen(pack.id);
-                        }}
-                        className="w-full shadow-2xl"
-                      >
-                        ABRIR
-                      </GlitchButton>
-                    </div>
-                  </HolographicCard>
-                </div>
+                <HolographicCard
+                  key={pack.id}
+                  rarity="epic"
+                  onClick={() => handleOpen(pack.id)}
+                  className="w-full"
+                >
+                  {/* Imagem do booster pack - SEM wrapper, SEM container */}
+                  <img 
+                    src="/pack-front-ed01.png" 
+                    alt="Kroova Booster Pack" 
+                    className="w-full h-auto object-contain rounded-lg border-2 border-[#8B5CF6] shadow-[0_0_30px_rgba(139,92,246,0.8)]"
+                    style={{ minHeight: '350px' }}
+                  />
+                </HolographicCard>
               ))}
             </div>
           </div>

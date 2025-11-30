@@ -122,7 +122,7 @@ export default function DashboardPage() {
       <nav className="bg-black/40 backdrop-blur-md border-b border-[#FF006D]/30">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <a href="/dashboard" className="flex items-center gap-3">
-            <img src="/logo_icon.png" alt="KROUVA" className="w-10 h-10 rounded-lg object-contain mix-blend-lighten" style={{ boxShadow: '0 0 20px rgba(255, 0, 109, 0.6), 0 0 40px rgba(0, 240, 255, 0.4)', border: '2px solid rgba(255, 0, 109, 0.3)' }} />
+            <img src="/logo_full_transparent.png" alt="KROUVA" className="w-10 h-10 rounded-lg object-contain" style={{ boxShadow: '0 0 20px rgba(255, 0, 109, 0.6), 0 0 40px rgba(0, 240, 255, 0.4)', border: '2px solid rgba(255, 0, 109, 0.3)' }} />
             <span className="text-2xl font-bold text-white tracking-wider" style={{ fontFamily: 'var(--font-geist-mono), monospace', letterSpacing: '0.1em' }}>KROUVA</span>
           </a>
           <div className="flex items-center gap-6">
@@ -168,25 +168,25 @@ export default function DashboardPage() {
           <DashboardCard
             title="Wallet"
             value={`R$ ${stats.balance.toFixed(2)}`}
-            icon="/icon_wallet_thumb.png"
+            icon="/icon_wallet_transparent.png"
             href="/wallet"
           />
           <DashboardCard
             title="Cartas"
             value={stats.cardsCount.toString()}
-            icon="/icon_cards_thumb.png"
+            icon="/icon_cards_transparent.png"
             href="/inventory"
           />
           <DashboardCard
             title="Marketplace"
             value="Explorar"
-            icon="/icon_marketplace_thumb.png"
+            icon="/icon_marketplace_transparent.png"
             href="/marketplace"
           />
           <DashboardCard
             title="Pacotes de Cartas"
             value="Comprar"
-            icon="/pack-front-ed01.png"
+            icon="/pack-front-ed01_transparent.png"
             href="/boosters"
           />
         </div>
@@ -221,17 +221,11 @@ function DashboardCard({ title, value, icon, href }: { title: string; value: str
       className="bg-black/40 backdrop-blur-md border-2 border-[#00F0FF]/30 rounded-lg p-6 hover:border-[#00F0FF]/60 transition cursor-pointer group"
     >
       {isImage ? (
-        <div className="w-16 h-16 mb-2 group-hover:scale-110 transition-transform relative bg-transparent">
-          <img 
-            src={icon} 
-            alt={title} 
-            className="w-full h-full object-contain"
-            style={{ 
-              mixBlendMode: 'screen',
-              filter: 'brightness(1.2) contrast(1.1)'
-            }}
-          />
-        </div>
+        <img 
+          src={icon} 
+          alt={title} 
+          className="w-16 h-16 mb-2 group-hover:scale-110 transition-transform object-contain"
+        />
       ) : (
         <div className="text-4xl mb-2 group-hover:scale-110 transition-transform">{icon}</div>
       )}

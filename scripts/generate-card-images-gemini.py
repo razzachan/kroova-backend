@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Kroova Card Image Generator - Vortex AI API
+Kroova Card Image Generator - Vertex AI API
 Gera imagens fotorealísticas 4K (3:4 aspect ratio) para todas as 251 cartas ED01
-usando Imagen 4 Ultra Generate via Vortex AI API
+usando Imagen 4 Ultra Generate via Vertex AI API (Google Cloud)
 
 🎯 CRITICAL: Each card gets a UNIQUE prompt based on its COMPLETE description
    - Not generic templates, but SPECIFIC visual narratives
@@ -26,7 +26,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configuration
-VORTEX_API_KEY = os.getenv('VORTEX_API_KEY')
+VERTEX_API_KEY = os.getenv('VERTEX_API_KEY')
 SUPABASE_URL = os.getenv('NEXT_PUBLIC_SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY')
 
@@ -40,13 +40,14 @@ except ImportError as e:
     print("   Install with: pip install requests pillow python-dotenv")
     sys.exit(1)
 
-# Vortex AI API (Imagen 4 Ultra Generate) settings
+# Vertex AI API (Imagen 4 Ultra Generate) settings
 IMAGEN_CONFIG = {
     'model': 'imagen-4.0-ultra-generate',
     'aspect_ratio': '3:4',  # Portrait orientation
 }
 
-VORTEX_API_URL = 'https://api.vortexai.dev/v1/generate'
+# Vertex AI usa API key diretamente no URL (não precisa de project_id)
+VERTEX_API_BASE = 'https://aiplatform.googleapis.com/v1/publishers/google/models'
 
 # Branding constants from KROOVA_BRANDING.md
 BRANDING = {
@@ -312,40 +313,46 @@ This is "{name}" - make them VISUALLY UNFORGETTABLE and UNIQUE."""
 
 
 def create_generation(prompt: str, card: Dict, model: str) -> Optional[Dict]:
-    """Generate image using Vortex AI API (Imagen 4 Ultra Generate)"""
+    """Generate image using Vertex AI API (Imagen 4 Ultra Generate)"""
     
     try:
+        # Vertex AI endpoint com API key no URL
+        endpoint = f"{VERTEX_API_BASE}/{model}:predict?key={VERTEX_API_KEY}"
+        
         headers = {
-            'Authorization': f'Bearer {VORTEX_API_KEY}',
             'Content-Type': 'application/json'
         }
         
         payload = {
-            'model': model,
-            'prompt': prompt,
-            'aspectRatio': IMAGEN_CONFIG['aspect_ratio'],
-            'numImages': 1
+            'instances': [{
+                'prompt': prompt
+            }],
+            'parameters': {
+                'sampleCount': 1,
+                'aspectRatio': IMAGEN_CONFIG['aspect_ratio']
+            }
         }
         
-        response = requests.post(VORTEX_API_URL, headers=headers, json=payload, timeout=60)
+        response = requests.post(endpoint, headers=headers, json=payload, timeout=60)
         response.raise_for_status()
         
         data = response.json()
         
-        if data.get('images') and len(data['images']) > 0:
-            # Vortex AI retorna base64
-            image_b64 = data['images'][0]
-            image_bytes = base64.b64decode(image_b64)
-            image = Image.open(BytesIO(image_bytes))
-            
-            print(f"  ✅ Image generated successfully")
-            return {
-                'image': image,
-                'prompt': prompt,
-            }
-        else:
-            print(f"  ❌ No images generated")
-            return None
+        if data.get('predictions') and len(data['predictions']) > 0:
+            # Vertex AI retorna base64 em bytesBase64Encoded
+            image_b64 = data['predictions'][0].get('bytesBase64Encoded')
+            if image_b64:
+                image_bytes = base64.b64decode(image_b64)
+                image = Image.open(BytesIO(image_bytes))
+                
+                print(f"  ✅ Image generated successfully")
+                return {
+                    'image': image,
+                    'prompt': prompt,
+                }
+        
+        print(f"  ❌ No images generated")
+        return None
 
     except Exception as e:
         msg = str(e)
@@ -408,7 +415,7 @@ def generate_card_image(card: Dict, output_dir: Path, model: str, delay: int = 2
     prompt = generate_prompt(card)
     print(f"   Story-based prompt: {prompt[:100]}...")
 
-    # Generate image (synchronous with Vortex AI API)
+    # Generate image (synchronous with Vertex AI API)
     result = create_generation(prompt, card, model)
     if not result:
         return False
@@ -459,15 +466,16 @@ def main():
 
     print("🚀 Kroova Card Image Generator - UNIQUE DESIGN MODE")
     print("=" * 70)
-    print(f"Model: Vortex AI - Imagen 4 Ultra Generate")
+    print(f"Model: Vertex AI - Imagen 4 Ultra Generate (Google Cloud)")
     print(f"Aspect Ratio: 3:4 (portrait)")
     print(f"Quality: Ultra (maximum photorealistic)")
     print(f"🎯 Each card gets UNIQUE prompt based on its story")
     print("=" * 70)
 
     # Check environment variables
-    if not VORTEX_API_KEY:
-        print("\n❌ ERROR: VORTEX_API_KEY not found")
+    if not VERTEX_API_KEY:
+        print("\n❌ ERROR: VERTEX_API_KEY not found")
+        print("   Get your key from Google Cloud Console")
         print("   Set it in .env file or environment variable")
         sys.exit(1)
 

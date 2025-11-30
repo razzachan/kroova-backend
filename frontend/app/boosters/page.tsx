@@ -390,7 +390,7 @@ export default function BoostersPage() {
       <nav className="bg-black/40 backdrop-blur-md border-b border-[#FFC700]/30 relative z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <a href="/dashboard" className="flex items-center gap-3">
-            <img src="/logo_icon.png" alt="KROUVA" className="w-10 h-10 rounded-lg" style={{ boxShadow: '0 0 20px rgba(255, 199, 0, 0.6), 0 0 40px rgba(0, 240, 255, 0.4)', border: '2px solid rgba(255, 199, 0, 0.3)' }} />
+            <img src="/logo_icon.png" alt="KROUVA" className="w-10 h-10 rounded-lg object-contain mix-blend-lighten" style={{ boxShadow: '0 0 20px rgba(255, 199, 0, 0.6), 0 0 40px rgba(0, 240, 255, 0.4)', border: '2px solid rgba(255, 199, 0, 0.3)' }} />
             <span className="text-2xl font-bold text-white tracking-wider" style={{ fontFamily: 'var(--font-geist-mono), monospace', letterSpacing: '0.1em' }}>KROUVA</span>
           </a>
           <div className="flex items-center gap-6">
@@ -443,7 +443,7 @@ export default function BoostersPage() {
               <div className="grid grid-cols-3 gap-3 mb-4">
                 {checkpointTop.map((c, i) => (
                   <div key={i} className="bg-gray-900 rounded-lg p-2">
-                    <img src={c.card?.image_url || (c as any).image_url} alt={c.card?.name || (c as any).name} className="rounded" />
+                    <img src={c.card?.image_url || (c as any).image_url} alt={c.card?.name || (c as any).name} className="rounded object-contain mix-blend-lighten" />
                     <div className="text-xs mt-1">{c.card?.name || (c as any).name}</div>
                     <div className="text-[11px] text-gray-500">R$ {(c.liquidity_brl || 0).toFixed(2)}</div>
                   </div>

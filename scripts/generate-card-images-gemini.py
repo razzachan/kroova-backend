@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Kroova Card Image Generator - Google Gemini API (Nano Banana Pro)
+Kroova Card Image Generator - Vortex AI API
 Gera imagens fotorealísticas 4K (3:4 aspect ratio) para todas as 251 cartas ED01
-usando Imagen 4 via Google Gemini API
+usando Imagen 4 Ultra Generate via Vortex AI API
 
 🎯 CRITICAL: Each card gets a UNIQUE prompt based on its COMPLETE description
    - Not generic templates, but SPECIFIC visual narratives
@@ -17,6 +17,7 @@ import re
 import json
 import unicodedata
 import argparse
+import base64
 from typing import Dict, List, Optional, Tuple
 from pathlib import Path
 from dotenv import load_dotenv
@@ -25,28 +26,27 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configuration
-GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+VORTEX_API_KEY = os.getenv('VORTEX_API_KEY')
 SUPABASE_URL = os.getenv('NEXT_PUBLIC_SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY')
 
 # Import after environment is loaded
 try:
-    from google import genai
-    from google.genai import types
     import requests
+    from PIL import Image
+    from io import BytesIO
 except ImportError as e:
     print(f"❌ Missing dependencies: {e}")
-    print("   Install with: pip install google-genai requests python-dotenv")
+    print("   Install with: pip install requests pillow python-dotenv")
     sys.exit(1)
 
-# Google Gemini API (Imagen 4) settings
+# Vortex AI API (Imagen 4 Ultra Generate) settings
 IMAGEN_CONFIG = {
-    'model': 'imagen-4.0-ultra-generate-001',  # default model (can be overridden via --model)
-    'number_of_images': 1,
+    'model': 'imagen-4.0-ultra-generate',
     'aspect_ratio': '3:4',  # Portrait orientation
-    'image_size': '2K',  # Maximum quality (2048px)
-    'person_generation': 'allow_adult',
 }
+
+VORTEX_API_URL = 'https://api.vortexai.dev/v1/generate'
 
 # Branding constants from KROOVA_BRANDING.md
 BRANDING = {
@@ -311,31 +311,36 @@ This is "{name}" - make them VISUALLY UNFORGETTABLE and UNIQUE."""
     return ' '.join(prompt.split())
 
 
-def create_generation(prompt: str, card: Dict, client: genai.Client, model: str) -> Optional[Dict]:
-    """Generate image using Google Gemini API (Imagen 4)"""
+def create_generation(prompt: str, card: Dict, model: str) -> Optional[Dict]:
+    """Generate image using Vortex AI API (Imagen 4 Ultra Generate)"""
     
     try:
-        # Some variants (fast/ultra) don't allow adjustable image_size; omit when necessary
-        model_lc = (model or '').lower()
-        config_kwargs = dict(
-            number_of_images=IMAGEN_CONFIG['number_of_images'],
-            aspect_ratio=IMAGEN_CONFIG['aspect_ratio'],
-            person_generation=IMAGEN_CONFIG['person_generation'],
-        )
-        if 'fast' not in model_lc and 'ultra' not in model_lc:
-            config_kwargs['image_size'] = IMAGEN_CONFIG['image_size']
-
-        response = client.models.generate_images(
-            model=model,
-            prompt=prompt,
-            config=types.GenerateImagesConfig(**config_kwargs)
-        )
-
-        if response.generated_images and len(response.generated_images) > 0:
-            image = response.generated_images[0]
+        headers = {
+            'Authorization': f'Bearer {VORTEX_API_KEY}',
+            'Content-Type': 'application/json'
+        }
+        
+        payload = {
+            'model': model,
+            'prompt': prompt,
+            'aspectRatio': IMAGEN_CONFIG['aspect_ratio'],
+            'numImages': 1
+        }
+        
+        response = requests.post(VORTEX_API_URL, headers=headers, json=payload, timeout=60)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        if data.get('images') and len(data['images']) > 0:
+            # Vortex AI retorna base64
+            image_b64 = data['images'][0]
+            image_bytes = base64.b64decode(image_b64)
+            image = Image.open(BytesIO(image_bytes))
+            
             print(f"  ✅ Image generated successfully")
             return {
-                'image': image.image,
+                'image': image,
                 'prompt': prompt,
             }
         else:
@@ -389,7 +394,7 @@ def update_card_image_url(card_id: str, image_url: str):
         print(f"  ❌ Error updating database: {e}")
 
 
-def generate_card_image(card: Dict, output_dir: Path, client: genai.Client, model: str, delay: int = 2) -> bool:
+def generate_card_image(card: Dict, output_dir: Path, model: str, delay: int = 2) -> bool:
     """Generate image for a single card"""
 
     card_id = card['display_id']
@@ -403,8 +408,8 @@ def generate_card_image(card: Dict, output_dir: Path, client: genai.Client, mode
     prompt = generate_prompt(card)
     print(f"   Story-based prompt: {prompt[:100]}...")
 
-    # Generate image (synchronous with Gemini API)
-    result = create_generation(prompt, card, client, model)
+    # Generate image (synchronous with Vortex AI API)
+    result = create_generation(prompt, card, model)
     if not result:
         return False
     
@@ -454,29 +459,20 @@ def main():
 
     print("🚀 Kroova Card Image Generator - UNIQUE DESIGN MODE")
     print("=" * 70)
-    print(f"Model: Google Imagen 4 (Nano Banana Pro)")
+    print(f"Model: Vortex AI - Imagen 4 Ultra Generate")
     print(f"Aspect Ratio: 3:4 (portrait)")
-    print(f"Quality: 2K (maximum photorealistic)")
+    print(f"Quality: Ultra (maximum photorealistic)")
     print(f"🎯 Each card gets UNIQUE prompt based on its story")
     print("=" * 70)
 
     # Check environment variables
-    if not GOOGLE_API_KEY:
-        print("\n❌ ERROR: GOOGLE_API_KEY not found")
-        print("   Get your key at: https://aistudio.google.com/apikey")
+    if not VORTEX_API_KEY:
+        print("\n❌ ERROR: VORTEX_API_KEY not found")
         print("   Set it in .env file or environment variable")
         sys.exit(1)
 
     if not SUPABASE_URL or not SUPABASE_KEY:
         print("\n❌ ERROR: Supabase credentials not found")
-        sys.exit(1)
-
-    # Initialize Gemini client
-    try:
-        client = genai.Client(api_key=GOOGLE_API_KEY)
-        print("✅ Gemini API client initialized")
-    except Exception as e:
-        print(f"❌ Error initializing Gemini client: {e}")
         sys.exit(1)
 
     # Determine output directory (default: scripts/public/cards)
@@ -518,12 +514,9 @@ def main():
     def resolve_model(name: str) -> str:
         name = (name or '').strip().lower()
         aliases = {
-            'generate': 'imagen-4.0-generate-001',
-            'imagen-4.0-generate': 'imagen-4.0-generate-001',
-            'fast': 'imagen-4.0-fast-generate-001',
-            'imagen-4.0-fast-generate': 'imagen-4.0-fast-generate-001',
-            'ultra': 'imagen-4.0-ultra-generate-001',
-            'imagen-4.0-ultra-generate': 'imagen-4.0-ultra-generate-001',
+            'generate': 'imagen-4.0-generate',
+            'fast': 'imagen-4.0-fast-generate',
+            'ultra': 'imagen-4.0-ultra-generate',
         }
         return aliases.get(name, name)
 
@@ -593,7 +586,7 @@ def main():
             # Try current model; on quota switch to next fallback automatically
             while True:
                 try:
-                    if generate_card_image(card, output_dir, client, current_model, delay=2):
+                    if generate_card_image(card, output_dir, current_model, delay=2):
                         successful += 1
                     else:
                         failed += 1

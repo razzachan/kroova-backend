@@ -505,24 +505,19 @@ export default function BoostersPage() {
                   key={pack.id}
                   rarity="epic"
                   onClick={() => handleOpen(pack.id)}
-                  className="w-full"
+                  className="w-full overflow-hidden p-0 border-0"
                 >
-                  <div className="relative">
-                    {/* Imagem do booster pack */}
+                  <div className="relative w-full h-full">
+                    {/* Imagem do booster pack - ocupa tudo */}
                     <img 
                       src="/pack-front-ed01.png" 
                       alt="Kroova Booster Pack" 
-                      className="w-full h-auto shadow-2xl object-contain"
-                      style={{ background: 'transparent', minHeight: '300px' }}
+                      className="w-full h-full object-cover border-2 border-[#8B5CF6] rounded-lg shadow-[0_0_20px_rgba(139,92,246,0.6)]"
+                      style={{ minHeight: '350px' }}
                     />
                     
-                    {/* Label do tipo de booster */}
-                    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
-                      <p className="text-xs text-center text-white font-bold">{pack.booster_types?.name || 'Booster'}</p>
-                    </div>
-                    
                     {/* Botão de abrir sobreposto */}
-                    <div className="absolute inset-0 flex items-end justify-center p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute inset-0 flex items-end justify-center p-4 opacity-0 group-hover:opacity-100 transition-opacity">
                       <GlitchButton
                         variant="primary"
                         size="sm"

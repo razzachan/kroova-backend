@@ -501,8 +501,13 @@ export default function BoostersPage() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {sealedPacks.slice(0, 6).map((pack: any) => (
-                <div key={pack.id} className="relative group">
-                  <div className="relative cursor-pointer transform transition-transform hover:scale-105 rounded-lg overflow-hidden bg-transparent">
+                <HolographicCard
+                  key={pack.id}
+                  rarity="epic"
+                  onClick={() => handleOpenBooster(pack.id)}
+                  className="w-full"
+                >
+                  <div className="relative">
                     {/* Imagem do booster pack */}
                     <img 
                       src="/pack-front-ed01.png" 
@@ -521,14 +526,17 @@ export default function BoostersPage() {
                       <GlitchButton
                         variant="primary"
                         size="sm"
-                        onClick={() => handleOpen(pack.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenBooster(pack.id);
+                        }}
                         className="w-full shadow-2xl"
                       >
                         ABRIR
                       </GlitchButton>
                     </div>
                   </div>
-                </div>
+                </HolographicCard>
               ))}
             </div>
           </div>

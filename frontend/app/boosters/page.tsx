@@ -216,18 +216,10 @@ export default function BoostersPage() {
       // Recarrega saldo após compra
       await loadData();
       
-      // Se comprou múltiplos, mostra modal de escolha
-      if (quantity > 1) {
-        setPurchasedBoosters(data.boosters || []);
-        setShowMultipleModal(true);
-        setCurrentBoosterIndex(0);
-      } else {
-        // Se comprou apenas 1, abre automaticamente
-        const booster = data.boosters?.[0];
-        if (booster?.id) {
-          await handleOpen(booster.id);
-        }
-      }
+      // Sempre mostra modal de escolha (abrir agora ou guardar)
+      setPurchasedBoosters(data.boosters || []);
+      setShowMultipleModal(true);
+      setCurrentBoosterIndex(0);
     } catch (error: any) {
       console.error('❌ Purchase error:', error);
       const errorMsg = error.response?.data?.error?.message || 'Erro ao comprar booster';
@@ -292,8 +284,19 @@ export default function BoostersPage() {
   
   function saveForLater() {
     setShowMultipleModal(false);
+    const count = purchasedBoosters.length;
     setPurchasedBoosters([]);
-    alert(`✅ ${purchasedBoosters.length} booster(s) guardado(s) no seu inventário!`);
+    
+    // Mostra toast estilizado ao invés de alert
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-[#00F0FF] to-[#FF006D] text-white px-8 py-4 rounded-lg font-bold z-[80] animate-pulse';
+    toast.innerHTML = `✅ ${count} booster(s) guardado(s) no seu inventário!`;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.remove();
+    }, 3000);
+    
     loadData();
   }
   

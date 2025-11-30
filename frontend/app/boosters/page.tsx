@@ -504,7 +504,7 @@ export default function BoostersPage() {
                 <HolographicCard
                   key={pack.id}
                   rarity="epic"
-                  onClick={() => handleOpenBooster(pack.id)}
+                  onClick={() => handleOpen(pack.id)}
                   className="w-full"
                 >
                   <div className="relative">
@@ -528,7 +528,7 @@ export default function BoostersPage() {
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleOpenBooster(pack.id);
+                          handleOpen(pack.id);
                         }}
                         className="w-full shadow-2xl"
                       >

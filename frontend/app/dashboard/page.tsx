@@ -221,7 +221,17 @@ function DashboardCard({ title, value, icon, href }: { title: string; value: str
       className="bg-black/40 backdrop-blur-md border-2 border-[#00F0FF]/30 rounded-lg p-6 hover:border-[#00F0FF]/60 transition cursor-pointer group"
     >
       {isImage ? (
-        <img src={icon} alt={title} className="w-16 h-16 mb-2 group-hover:scale-110 transition-transform object-contain mix-blend-lighten" />
+        <div className="w-16 h-16 mb-2 group-hover:scale-110 transition-transform relative bg-transparent">
+          <img 
+            src={icon} 
+            alt={title} 
+            className="w-full h-full object-contain"
+            style={{ 
+              mixBlendMode: 'screen',
+              filter: 'brightness(1.2) contrast(1.1)'
+            }}
+          />
+        </div>
       ) : (
         <div className="text-4xl mb-2 group-hover:scale-110 transition-transform">{icon}</div>
       )}

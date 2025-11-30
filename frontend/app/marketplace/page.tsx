@@ -9,6 +9,9 @@ import GlitchButton from '@/components/UI/GlitchButton';
 import TextGlitch from '@/components/Effects/TextGlitch';
 import HolographicCard from '@/components/UI/HolographicCard';
 import { cardAudio } from '@/lib/cardAudio';
+import { TrendingCards } from '@/components/Marketplace/TrendingCards';
+import { FloorPriceCard } from '@/components/Marketplace/FloorPriceCard';
+import { MarketFilters } from '@/components/Marketplace/MarketFilters';
 
 interface CardBase {
   id: string;
@@ -49,7 +52,11 @@ export default function MarketplacePage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [listings, setListings] = useState<MarketListing[]>([]);
+  const [filteredListings, setFilteredListings] = useState<MarketListing[]>([]);
   const [loading, setLoading] = useState(true);
+  const [trendingCards, setTrendingCards] = useState<any[]>([]);
+  const [floorPrices, setFloorPrices] = useState<Record<string, number | null>>({});
+  const [filters, setFilters] = useState<any>({});
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -59,20 +66,73 @@ export default function MarketplacePage() {
 
   useEffect(() => {
     if (user) {
-      loadListings();
+      loadMarketData();
     }
   }, [user]);
 
-  const loadListings = async () => {
+  useEffect(() => {
+    applyFilters();
+  }, [listings, filters]);
+
+  const loadMarketData = async () => {
     try {
+      // 1. Listings
       const response = await api.get('/market/listings');
       const data = unwrap<{ listings: MarketListing[] }>(response);
       setListings(data?.listings || []);
+
+      // 2. Trending cards
+      try {
+        const trendingResponse = await api.get('/market/trending?period=24h&limit=6');
+        setTrendingCards(trendingResponse.data.data || []);
+      } catch (err) {
+        console.error('Error loading trending:', err);
+      }
+
+      // 3. Analytics (floor prices)
+      try {
+        const analyticsResponse = await api.get('/market/analytics?period=24h');
+        setFloorPrices(analyticsResponse.data.data.floor_prices || {});
+      } catch (err) {
+        console.error('Error loading analytics:', err);
+      }
     } catch (error) {
       console.error('Erro ao carregar marketplace:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const applyFilters = () => {
+    let filtered = [...listings];
+
+    // Filtrar por raridade
+    if (filters.rarity) {
+      filtered = filtered.filter((l) => {
+        const ci = l.card_instance || l.cards_instances;
+        return ci?.card_base?.rarity === filters.rarity;
+      });
+    }
+
+    // Filtrar por preço
+    if (filters.minPrice) {
+      filtered = filtered.filter((l) => (l.price_brl || l.price || 0) >= filters.minPrice);
+    }
+    if (filters.maxPrice) {
+      filtered = filtered.filter((l) => (l.price_brl || l.price || 0) <= filters.maxPrice);
+    }
+
+    // Ordenar
+    const sortBy = filters.sortBy || 'date_desc';
+    if (sortBy === 'price_asc') {
+      filtered.sort((a, b) => (a.price_brl || a.price || 0) - (b.price_brl || b.price || 0));
+    } else if (sortBy === 'price_desc') {
+      filtered.sort((a, b) => (b.price_brl || b.price || 0) - (a.price_brl || a.price || 0));
+    } else if (sortBy === 'date_desc') {
+      filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    }
+
+    setFilteredListings(filtered);
   };
 
   const handleBuy = async (listingId: string, price: number) => {
@@ -82,11 +142,15 @@ export default function MarketplacePage() {
       await api.post(`/market/listings/${listingId}/buy`);
       cardAudio.playSuccessChime();
       alert('Carta comprada com sucesso! 🎉');
-      loadListings();
+      loadMarketData();
     } catch (error: any) {
       cardAudio.playErrorBuzz();
       alert(error.response?.data?.message || 'Erro ao comprar carta. Verifique seu saldo.');
     }
+  };
+
+  const handleCardClick = (cardId: string) => {
+    router.push(`/marketplace/${cardId}`);
   };
 
   if (authLoading || !user) {
@@ -121,14 +185,49 @@ export default function MarketplacePage() {
 
         {loading ? (
           <div className="text-center text-gray-400 py-12">Carregando cartas...</div>
-        ) : listings.length === 0 ? (
-          <div className="bg-gray-800 rounded-lg p-12 text-center">
-            <p className="text-gray-400 text-lg mb-4">Nenhuma carta disponível no momento</p>
-            <p className="text-gray-500">Seja o primeiro a listar uma carta!</p>
-          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {listings.map((listing) => {
+          <>
+            {/* Trending Cards */}
+            {trendingCards.length > 0 && (
+              <TrendingCards 
+                cards={trendingCards} 
+                period="24h"
+                onCardClick={handleCardClick}
+              />
+            )}
+
+            {/* Floor Prices */}
+            {Object.keys(floorPrices).length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                  <span>💎</span> FLOOR PRICES
+                </h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {Object.entries(floorPrices).map(([rarity, price]) => (
+                    <FloorPriceCard key={rarity} rarity={rarity} price={price} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Filtros */}
+            <div className="mb-6">
+              <MarketFilters onFilterChange={setFilters} initialFilters={filters} />
+            </div>
+
+            {/* Results Count */}
+            <div className="mb-4 text-gray-400">
+              Mostrando {filteredListings.length} {filteredListings.length === 1 ? 'carta' : 'cartas'}
+            </div>
+
+            {filteredListings.length === 0 ? (
+              <div className="bg-gray-800 rounded-lg p-12 text-center">
+                <p className="text-gray-400 text-lg mb-4">Nenhuma carta encontrada</p>
+                <p className="text-gray-500">Tente ajustar os filtros</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredListings.map((listing) => {
               const ci = listing.card_instance || listing.cards_instances;
               const card = ci?.card_base;
               const rarityColors: Record<string, string> = {
@@ -194,8 +293,10 @@ export default function MarketplacePage() {
                   </div>
                 </HolographicCard>
               );
-            })}
-          </div>
+                })}
+              </div>
+            )}
+          </>
         )}
       </main>
     </div>

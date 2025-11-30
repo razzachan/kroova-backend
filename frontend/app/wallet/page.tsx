@@ -30,6 +30,21 @@ export default function WalletPage() {
   const [loading, setLoading] = useState(true);
   const [depositAmount, setDepositAmount] = useState<number>(5);
   const [preview, setPreview] = useState<{ net_amount_brl: number; fee_brl: number; fee_applied: boolean } | null>(null);
+  const [resendingEmail, setResendingEmail] = useState(false);
+
+  const emailVerified = user?.email_confirmed_at ? true : false;
+
+  const resendVerificationEmail = async () => {
+    setResendingEmail(true);
+    try {
+      await api.post('/wallet/resend-verification');
+      alert('Email de verificação reenviado! Verifique sua caixa de entrada e spam.');
+    } catch (error: any) {
+      alert(error.response?.data?.message || 'Erro ao reenviar email');
+    } finally {
+      setResendingEmail(false);
+    }
+  };
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -99,6 +114,30 @@ export default function WalletPage() {
           </div>
         </div>
       </nav>
+
+      {/* AVISO: EMAIL NÃO VERIFICADO */}
+      {!emailVerified && (
+        <div className="bg-gradient-to-r from-red-900/50 to-orange-900/50 border-l-4 border-red-500 p-4">
+          <div className="container mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <div>
+                <p className="text-white font-semibold">Email não verificado</p>
+                <p className="text-gray-300 text-sm">Você precisa verificar seu email para realizar saques.</p>
+              </div>
+            </div>
+            <button
+              onClick={resendVerificationEmail}
+              disabled={resendingEmail}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition disabled:opacity-50"
+            >
+              {resendingEmail ? 'Enviando...' : 'Reenviar Email'}
+            </button>
+          </div>
+        </div>
+      )}
 
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-white mb-6">

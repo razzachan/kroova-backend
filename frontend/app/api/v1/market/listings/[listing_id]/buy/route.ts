@@ -130,7 +130,7 @@ export async function POST(
       .update({
         status: 'sold',
         buyer_id: user.id,
-        sold_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       })
       .eq('id', listingId);
 

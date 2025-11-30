@@ -157,9 +157,9 @@ export default function HolographicCard({
         willChange: 'transform',
       }}
     >
-      {/* Depth shadow layers */}
+      {/* Depth shadow layers - apenas sombra de profundidade */}
       <div
-        className="absolute inset-0 rounded-lg opacity-50 blur-xl"
+        className="absolute inset-0 rounded-lg opacity-30 blur-2xl -z-10"
         style={{
           background: `radial-gradient(circle at 50% 50%, ${
             rarity === 'godmode' ? '#FFC700' :
@@ -171,105 +171,8 @@ export default function HolographicCard({
         }}
       />
 
-      {/* Container transparente - apenas para estrutura */}
-      <div
-        className="relative"
-        style={{
-          transform: 'translateZ(0)',
-        }}
-      >
-        {/* Holographic shine overlay */}
-        <div
-          className={cn(
-            'absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-300 rounded-lg',
-            isHovered && 'opacity-100'
-          )}
-          style={{
-            background: `linear-gradient(135deg, ${
-              rarity === 'godmode' ? 'rgba(255,199,0,0.4), rgba(255,0,109,0.4)' :
-              rarity === 'legendary' ? 'rgba(255,0,109,0.3), rgba(255,199,0,0.3)' :
-              rarity === 'epic' ? 'rgba(139,92,246,0.2), rgba(139,92,246,0.4)' :
-              rarity === 'rare' ? 'rgba(0,240,255,0.2), rgba(0,240,255,0.4)' :
-              'rgba(156,163,175,0.2), rgba(156,163,175,0.4)'
-            })`,
-            transform: `translateX(${rotation.y * 2}px) translateY(${rotation.x * 2}px)`,
-            mixBlendMode: 'screen',
-          }}
-        />
-
-        {/* Scan lines */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-20"
-          style={{
-            backgroundImage: 'repeating-linear-gradient(0deg, transparent 0px, rgba(255,255,255,0.03) 1px, transparent 2px, transparent 4px)',
-          }}
-        />
-
-        {/* Breathing glow animation */}
-        <div
-          className={cn(
-            'absolute inset-0 pointer-events-none opacity-30',
-            'transition-opacity duration-1000',
-            isHovered && 'animate-pulse'
-          )}
-          style={{
-            background: `radial-gradient(circle at center, ${
-              rarity === 'godmode' ? 'rgba(255,199,0,0.3)' :
-              rarity === 'legendary' ? 'rgba(255,0,109,0.3)' :
-              rarity === 'epic' ? 'rgba(139,92,246,0.2)' :
-              rarity === 'rare' ? 'rgba(0,240,255,0.2)' : 'rgba(156,163,175,0.1)'
-            }, transparent 70%)`,
-          }}
-        />
-
-        {/* Corner accents */}
-        {['top-left', 'top-right', 'bottom-left', 'bottom-right'].map((corner) => (
-          <div
-            key={corner}
-            className={cn(
-              'absolute w-4 h-4 opacity-50 transition-opacity',
-              isHovered && 'opacity-100',
-              corner.includes('top') ? 'top-0' : 'bottom-0',
-              corner.includes('left') ? 'left-0' : 'right-0'
-            )}
-            style={{
-              borderTop: corner.includes('top') ? '2px solid currentColor' : 'none',
-              borderBottom: corner.includes('bottom') ? '2px solid currentColor' : 'none',
-              borderLeft: corner.includes('left') ? '2px solid currentColor' : 'none',
-              borderRight: corner.includes('right') ? '2px solid currentColor' : 'none',
-              color: rarity === 'godmode' ? '#FFC700' :
-                     rarity === 'legendary' ? '#FF006D' :
-                     rarity === 'epic' ? '#8B5CF6' :
-                     rarity === 'rare' ? '#00F0FF' : '#6B7280',
-            }}
-          />
-        ))}
-
-        {/* Content */}
-        <div className="relative z-10">
-          {children}
-        </div>
-
-        {/* Glitch chromatic aberration effect */}
-        {isHovered && glitchOffset.x !== 0 && (
-          <>
-            <div
-              className="absolute inset-0 pointer-events-none mix-blend-screen opacity-30"
-              style={{
-                transform: 'translateX(-2px)',
-                filter: 'hue-rotate(90deg)',
-              }}
-            />
-            <div
-              className="absolute inset-0 pointer-events-none mix-blend-screen opacity-30"
-              style={{
-                transform: 'translateX(2px)',
-                filter: 'hue-rotate(-90deg)',
-              }}
-            />
-          </>
-        )}
-      </div>
+      {/* Content - APENAS o children, SEM wrappers extras */}
+      {children}
     </div>
   );
 }

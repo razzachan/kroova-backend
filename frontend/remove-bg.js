@@ -26,19 +26,23 @@ async function removeWhiteBackground(filename) {
       .raw()
       .toBuffer({ resolveWithObject: true })
       .then(({ data, info }) => {
-        // Remove pixels brancos/cinzas (RGB > 200)
+        // Remove pixels brancos/cinzas de forma mais agressiva
         for (let i = 0; i < data.length; i += 4) {
           const r = data[i];
           const g = data[i + 1];
           const b = data[i + 2];
           
-          // Se o pixel é branco/cinza claro, torna transparente
-          if (r > 200 && g > 200 && b > 200) {
+          // Se o pixel é branco/cinza claro (mais agressivo)
+          if (r > 150 && g > 150 && b > 150) {
             data[i + 3] = 0; // Alpha = 0 (transparente)
           }
-          // Se o pixel é cinza médio, reduz opacidade
-          else if (r > 150 && g > 150 && b > 150) {
-            data[i + 3] = Math.floor(data[i + 3] * 0.3);
+          // Se o pixel é cinza médio, reduz bastante a opacidade
+          else if (r > 100 && g > 100 && b > 100) {
+            data[i + 3] = Math.floor(data[i + 3] * 0.2);
+          }
+          // Se o pixel é cinza escuro, reduz um pouco
+          else if (r > 70 && g > 70 && b > 70) {
+            data[i + 3] = Math.floor(data[i + 3] * 0.5);
           }
         }
         

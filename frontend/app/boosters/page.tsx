@@ -505,14 +505,14 @@ export default function BoostersPage() {
                   key={pack.id}
                   rarity="epic"
                   onClick={() => handleOpen(pack.id)}
-                  className="w-full overflow-hidden p-0 border-0"
+                  className="w-full"
                 >
                   <div className="relative w-full h-full">
-                    {/* Imagem do booster pack - ocupa tudo */}
+                    {/* Imagem do booster pack - flutuante com borda */}
                     <img 
                       src="/pack-front-ed01.png" 
                       alt="Kroova Booster Pack" 
-                      className="w-full h-full object-cover border-2 border-[#8B5CF6] rounded-lg shadow-[0_0_20px_rgba(139,92,246,0.6)]"
+                      className="w-full h-full object-cover rounded-lg border-2 border-[#8B5CF6] shadow-[0_0_30px_rgba(139,92,246,0.8)]"
                       style={{ minHeight: '350px' }}
                     />
                     

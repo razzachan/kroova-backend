@@ -171,17 +171,9 @@ export default function HolographicCard({
         }}
       />
 
-      {/* Card container with border glow */}
+      {/* Container transparente - apenas para estrutura */}
       <div
-        className={cn(
-          'relative rounded-lg border-2 overflow-hidden',
-          'bg-black/80 backdrop-blur-sm',
-          'transition-all duration-300',
-          colors.border,
-          colors.glow,
-          colors.hoverGlow,
-          isRevealing && 'animate-float'
-        )}
+        className="relative"
         style={{
           transform: 'translateZ(0)',
         }}
@@ -189,7 +181,7 @@ export default function HolographicCard({
         {/* Holographic shine overlay */}
         <div
           className={cn(
-            'absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-300',
+            'absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-300 rounded-lg',
             isHovered && 'opacity-100'
           )}
           style={{

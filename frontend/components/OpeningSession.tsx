@@ -98,7 +98,7 @@ export function OpeningSession({
 
   return (
     <div 
-      className="fixed inset-0 overflow-y-auto"
+      className="fixed inset-0 overflow-y-auto z-[100]"
       style={{
         backgroundImage: 'url(/backgrounds/cards-reveal-bg.png)',
         backgroundSize: 'cover',

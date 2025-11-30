@@ -700,7 +700,7 @@ export default function BoostersPage() {
         {/* Cartas Reveladas (OpeningSession) */}
         {animationStage === 'reveal' && showCards && revealedCards.length > 0 && (
           <>
-            <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[60] flex items-center gap-4">
+            <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[110] flex items-center gap-4">
               <h2 className="text-3xl font-bold text-white drop-shadow-lg">✨ Suas Novas Cartas! ✨</h2>
               <div className="flex items-center gap-2 text-sm bg-black/50 backdrop-blur-sm rounded-lg px-4 py-2 border border-gray-700">
                 <span className="text-gray-300">Modo de flip:</span>
@@ -737,7 +737,7 @@ export default function BoostersPage() {
             />
             
             {/* Action Buttons After Reveal */}
-            <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[60] flex gap-4">
+            <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[110] flex gap-4">
               {/* Se tem mais boosters comprados para abrir */}
               {purchasedBoosters.length > currentBoosterIndex + 1 && (
                 <GlitchButton

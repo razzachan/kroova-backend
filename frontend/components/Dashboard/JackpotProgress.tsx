@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import TextGlitch from '@/components/Effects/TextGlitch';
+import GlitchButton from '@/components/Buttons/GlitchButton';
 
 export default function JackpotProgress() {
   const [communityOpened, setCommunityOpened] = useState(0);
@@ -87,13 +88,14 @@ export default function JackpotProgress() {
         )}
 
         <div className="mt-4 text-center">
-          <a 
-            href="/boosters"
-            className="inline-block px-6 py-2 bg-gradient-to-r from-[#FF006D] to-[#00F0FF] text-white font-bold rounded hover:opacity-80 transition uppercase text-sm tracking-wider"
-            style={{ fontFamily: 'var(--font-geist-mono), monospace' }}
+          <GlitchButton
+            onClick={() => window.location.href = '/boosters'}
+            variant="primary"
+            size="lg"
+            className="w-full"
           >
             ABRIR PACOTE AGORA
-          </a>
+          </GlitchButton>
         </div>
       </div>
     </div>

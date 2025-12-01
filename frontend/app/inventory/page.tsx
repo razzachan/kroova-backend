@@ -286,13 +286,15 @@ export default function InventoryPage() {
         {/* Recycle Bulk Button */}
         {inventory.length >= 25 && (
           <div className="mb-6">
-            <button
+            <GlitchButton
               onClick={() => setShowRecycleBulk(!showRecycleBulk)}
-              className="w-full px-6 py-4 rounded-lg bg-gradient-to-r from-[#A855F7] to-[#FF006D] text-white font-bold uppercase tracking-wider hover:scale-[1.02] transition flex items-center justify-between"
+              variant="success"
+              size="lg"
+              className="w-full flex items-center justify-between"
             >
               <span>♻️ RECICLAR 25 CARTAS E GANHAR 1 BOOSTER</span>
               <span className="text-2xl">{showRecycleBulk ? '▼' : '▶'}</span>
-            </button>
+            </GlitchButton>
           </div>
         )}
 

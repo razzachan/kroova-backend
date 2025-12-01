@@ -43,6 +43,8 @@ export default function InventoryPage() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [listedCards, setListedCards] = useState<string[]>([]);
   const [showListedFilter, setShowListedFilter] = useState<'all' | 'owned' | 'listed'>('owned');
+  const [rarityFilter, setRarityFilter] = useState<string>('all');
+  const [searchFilter, setSearchFilter] = useState<string>('');
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -194,6 +196,56 @@ export default function InventoryPage() {
           )}
         </div>
 
+        {/* Advanced Filters */}
+        {inventory.length > 0 && (
+          <div className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-lg p-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Search */}
+              <div>
+                <label className="block text-gray-400 text-sm mb-2">Buscar</label>
+                <DataStreamInput
+                  type="text"
+                  value={searchFilter}
+                  onChange={(e) => setSearchFilter(e.target.value)}
+                  placeholder="Nome da carta..."
+                  variant="cyan"
+                />
+              </div>
+
+              {/* Rarity Filter */}
+              <div>
+                <label className="block text-gray-400 text-sm mb-2">Raridade</label>
+                <select
+                  value={rarityFilter}
+                  onChange={(e) => setRarityFilter(e.target.value)}
+                  className="w-full bg-black/50 border-2 border-gray-700 rounded-lg px-4 py-2 text-white focus:border-[#00F0FF] focus:outline-none transition"
+                >
+                  <option value="all">Todas</option>
+                  <option value="legendary">Legendary</option>
+                  <option value="viral">Viral</option>
+                  <option value="meme">Meme</option>
+                  <option value="trash">Trash</option>
+                </select>
+              </div>
+
+              {/* Clear Filters */}
+              <div className="flex items-end">
+                <GlitchButton
+                  onClick={() => {
+                    setRarityFilter('all');
+                    setSearchFilter('');
+                  }}
+                  variant="secondary"
+                  size="md"
+                  className="w-full"
+                >
+                  ✖️ Limpar Filtros
+                </GlitchButton>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Recycle Bulk Button */}
         {inventory.length >= 25 && (
           <div className="mb-6">
@@ -242,10 +294,23 @@ export default function InventoryPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {inventory
               .filter(card => {
+                // Filtro de status (owned/listed/all)
                 const isListed = listedCards.includes(card.id);
-                if (showListedFilter === 'owned') return !isListed;
-                if (showListedFilter === 'listed') return isListed;
-                return true; // 'all'
+                if (showListedFilter === 'owned' && isListed) return false;
+                if (showListedFilter === 'listed' && !isListed) return false;
+                
+                // Filtro de raridade
+                if (rarityFilter !== 'all' && card.cards_base?.rarity !== rarityFilter) return false;
+                
+                // Filtro de pesquisa
+                if (searchFilter) {
+                  const searchLower = searchFilter.toLowerCase();
+                  const name = card.cards_base?.name?.toLowerCase() || '';
+                  const displayId = card.cards_base?.display_id?.toLowerCase() || '';
+                  if (!name.includes(searchLower) && !displayId.includes(searchLower)) return false;
+                }
+                
+                return true;
               })
               .map((card) => {
               const baseCard = card.cards_base;

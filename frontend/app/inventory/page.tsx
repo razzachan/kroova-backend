@@ -45,6 +45,7 @@ export default function InventoryPage() {
   const [showListedFilter, setShowListedFilter] = useState<'all' | 'owned' | 'listed'>('owned');
   const [rarityFilter, setRarityFilter] = useState<string>('all');
   const [searchFilter, setSearchFilter] = useState<string>('');
+  const [displayCount, setDisplayCount] = useState(20); // Lazy loading: show 20 at a time
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -57,6 +58,23 @@ export default function InventoryPage() {
       loadInventory();
     }
   }, [user]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Check if user scrolled near bottom (within 500px)
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+        setDisplayCount(prev => prev + 20); // Load 20 more cards
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Reset display count when filters change
+  useEffect(() => {
+    setDisplayCount(20);
+  }, [showListedFilter, rarityFilter, searchFilter]);
 
   const loadInventory = async () => {
     try {
@@ -330,6 +348,7 @@ export default function InventoryPage() {
             </GlitchButton>
           </div>
         ) : (
+          <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {inventory
               .filter(card => {
@@ -351,6 +370,7 @@ export default function InventoryPage() {
                 
                 return true;
               })
+              .slice(0, displayCount) // Lazy loading: show only displayCount cards
               .map((card) => {
               const baseCard = card.cards_base;
               
@@ -479,6 +499,38 @@ export default function InventoryPage() {
               );
             })}
           </div>
+
+          {/* Lazy Loading Indicator */}
+          {(() => {
+            const filteredCards = inventory.filter(card => {
+              const isListed = listedCards.includes(card.id);
+              if (showListedFilter === 'owned' && isListed) return false;
+              if (showListedFilter === 'listed' && !isListed) return false;
+              if (rarityFilter !== 'all' && card.cards_base?.rarity !== rarityFilter) return false;
+              if (searchFilter) {
+                const searchLower = searchFilter.toLowerCase();
+                const name = card.cards_base?.name?.toLowerCase() || '';
+                const displayId = card.cards_base?.display_id?.toLowerCase() || '';
+                if (!name.includes(searchLower) && !displayId.includes(searchLower)) return false;
+              }
+              return true;
+            });
+            
+            if (filteredCards.length > displayCount) {
+              return (
+                <div className="text-center py-8 text-gray-400">
+                  <p className="text-sm">
+                    Mostrando {displayCount} de {filteredCards.length} cartas
+                  </p>
+                  <p className="text-xs mt-2 animate-pulse">
+                    ↓ Role para baixo para carregar mais
+                  </p>
+                </div>
+              );
+            }
+            return null;
+          })()}
+          </>
         )}
       </main>
 

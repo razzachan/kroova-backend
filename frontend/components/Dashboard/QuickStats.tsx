@@ -65,9 +65,9 @@ export default function QuickStats() {
       // Ranking mock (em produção viria da API)
       const ranking = Math.floor(Math.random() * 5000) + 500;
 
-      // Valor do inventário (soma das cartas)
+      // Valor do inventário (soma da liquidez das cartas)
       const totalValue = cardsArr.reduce((sum: number, card: any) => {
-        return sum + (card.market_value_brl || 0);
+        return sum + (card.liquidity_brl || 0);
       }, 0);
 
       setStats({

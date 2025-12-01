@@ -21,10 +21,6 @@ export async function GET(request: NextRequest) {
       global: { headers: { Authorization: `Bearer ${token}` } }
     });
 
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '1000'); // Sem limite prático
-
     // Obter user_id do token
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {
@@ -34,6 +30,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Buscar TODAS as cartas do usuário (sem limite)
     const { data: inventory, error, count } = await supabase
       .from('cards_instances')
       .select(
@@ -44,8 +41,7 @@ export async function GET(request: NextRequest) {
         { count: 'exact' }
       )
       .eq('owner_id', user.id)
-      .order('minted_at', { ascending: false })
-      .range((page - 1) * limit, page * limit - 1);
+      .order('minted_at', { ascending: false });
 
     if (error) {
       return NextResponse.json(

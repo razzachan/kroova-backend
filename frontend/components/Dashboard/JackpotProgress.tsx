@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import TextGlitch from '@/components/Effects/TextGlitch';
-import GlitchButton from '@/components/Buttons/GlitchButton';
+import GlitchButton from '@/components/UI/GlitchButton';
 
 export default function JackpotProgress() {
   const [communityOpened, setCommunityOpened] = useState(0);

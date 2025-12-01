@@ -46,6 +46,8 @@ export async function GET(request: NextRequest) {
     });
 
     if (error) {
+      console.log('[trending] RPC not available, using fallback:', error.message);
+      
       // Fallback: calcular manualmente
       const { data: salesData, error: salesError } = await supabase
         .from('market_sales_history')
@@ -58,7 +60,16 @@ export async function GET(request: NextRequest) {
         .gte('sold_at', cutoffDate.toISOString())
         .order('sold_at', { ascending: true });
 
-      if (salesError) throw salesError;
+      if (salesError) {
+        console.error('[trending] Sales history error:', salesError);
+        // Retornar array vazio se não tiver dados
+        return NextResponse.json({ ok: true, data: [] });
+      }
+
+      // Se não houver dados, retornar vazio
+      if (!salesData || salesData.length === 0) {
+        return NextResponse.json({ ok: true, data: [] });
+      }
 
       // Agrupar por carta e calcular variação
       const cardMap = new Map<string, any>();

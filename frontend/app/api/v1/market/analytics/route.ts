@@ -42,7 +42,25 @@ export async function GET(request: NextRequest) {
       .select('price_brl, rarity')
       .gte('sold_at', cutoffDate.toISOString());
 
-    if (salesError) throw salesError;
+    if (salesError) {
+      console.error('[analytics] Sales history error:', salesError);
+      // Retornar dados vazios se a tabela não existir ainda
+      return NextResponse.json({
+        ok: true,
+        data: {
+          period,
+          overview: {
+            total_volume_brl: 0,
+            total_sales: 0,
+            avg_price_brl: 0,
+            volume_change_pct: 0,
+            sales_change_pct: 0
+          },
+          sales_by_rarity: {},
+          floor_prices: { legendary: null, viral: null, meme: null, trash: null }
+        }
+      });
+    }
 
     const totalSales = salesData?.length || 0;
     const totalVolume = salesData?.reduce((sum, s) => sum + s.price_brl, 0) || 0;

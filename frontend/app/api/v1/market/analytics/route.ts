@@ -59,14 +59,24 @@ export async function GET(request: NextRequest) {
     const floorPrices: Record<string, number | null> = {};
 
     for (const rarity of rarities) {
-      const { data: floorData } = await supabase
+      const { data: floorData, error: floorError } = await supabase
         .from('market_listings')
-        .select('price_brl, cards_instances!inner(base_id, cards_base!inner(rarity))')
+        .select(`
+          price_brl,
+          cards_instances!inner(
+            base_id,
+            cards_base!inner(rarity)
+          )
+        `)
         .eq('status', 'active')
         .eq('cards_instances.cards_base.rarity', rarity)
         .order('price_brl', { ascending: true })
         .limit(1)
-        .single();
+        .maybeSingle();
+
+      if (floorError) {
+        console.error(`[analytics] Floor price error for ${rarity}:`, floorError);
+      }
 
       floorPrices[rarity] = floorData?.price_brl || null;
     }

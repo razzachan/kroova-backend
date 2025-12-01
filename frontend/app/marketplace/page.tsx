@@ -57,6 +57,7 @@ export default function MarketplacePage() {
   const [trendingCards, setTrendingCards] = useState<any[]>([]);
   const [floorPrices, setFloorPrices] = useState<Record<string, number | null>>({});
   const [filters, setFilters] = useState<any>({});
+  const [displayCount, setDisplayCount] = useState(20); // Lazy loading: show 20 at a time
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -73,6 +74,20 @@ export default function MarketplacePage() {
   useEffect(() => {
     applyFilters();
   }, [listings, filters]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+        setDisplayCount(prev => prev + 20);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    setDisplayCount(20); // Reset when filters change
+  }, [filters]);
 
   const loadMarketData = async () => {
     try {
@@ -246,8 +261,9 @@ export default function MarketplacePage() {
                 <p className="text-gray-500">Tente ajustar os filtros</p>
               </div>
             ) : (
+              <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredListings.map((listing) => {
+                {filteredListings.slice(0, displayCount).map((listing) => {
               const ci = listing.card_instance || listing.cards_instances;
               const card = ci?.card_base;
               const rarityColors: Record<string, string> = {
@@ -315,6 +331,19 @@ export default function MarketplacePage() {
               );
                 })}
               </div>
+
+              {/* Lazy Loading Indicator */}
+              {filteredListings.length > displayCount && (
+                <div className="text-center py-8 text-gray-400">
+                  <p className="text-sm">
+                    Mostrando {displayCount} de {filteredListings.length} cartas
+                  </p>
+                  <p className="text-xs mt-2 animate-pulse">
+                    ↓ Role para baixo para carregar mais
+                  </p>
+                </div>
+              )}
+              </>
             )}
           </>
         )}

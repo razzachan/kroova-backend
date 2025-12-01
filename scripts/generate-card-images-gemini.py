@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Kroova Card Image Generator - Vertex AI API
+Kroova Card Image Generator - Google Gemini API (Nano Banana Pro)
 Gera imagens fotorealísticas 4K (3:4 aspect ratio) para todas as 251 cartas ED01
-usando Imagen 4 Ultra Generate via Vertex AI API (Google Cloud)
+usando Imagen 4 via Google Gemini API
 
 🎯 CRITICAL: Each card gets a UNIQUE prompt based on its COMPLETE description
    - Not generic templates, but SPECIFIC visual narratives
@@ -17,7 +17,6 @@ import re
 import json
 import unicodedata
 import argparse
-import base64
 from typing import Dict, List, Optional, Tuple
 from pathlib import Path
 from dotenv import load_dotenv
@@ -26,28 +25,28 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configuration
-VERTEX_API_KEY = os.getenv('VERTEX_API_KEY')
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 SUPABASE_URL = os.getenv('NEXT_PUBLIC_SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY')
 
 # Import after environment is loaded
 try:
+    from google import genai
+    from google.genai import types
     import requests
-    from PIL import Image
-    from io import BytesIO
 except ImportError as e:
     print(f"❌ Missing dependencies: {e}")
-    print("   Install with: pip install requests pillow python-dotenv")
+    print("   Install with: pip install google-genai requests python-dotenv")
     sys.exit(1)
 
-# Vertex AI API (Imagen 4 Ultra Generate) settings
+# Google Gemini API (Imagen 4) settings
 IMAGEN_CONFIG = {
-    'model': 'imagen-4.0-ultra-generate',
+    'model': 'imagen-4.0-ultra-generate-001',  # default model (can be overridden via --model)
+    'number_of_images': 1,
     'aspect_ratio': '3:4',  # Portrait orientation
+    'image_size': '2K',  # Maximum quality (2048px)
+    'person_generation': 'allow_adult',
 }
-
-# Vertex AI usa API key diretamente no URL (não precisa de project_id)
-VERTEX_API_BASE = 'https://aiplatform.googleapis.com/v1/publishers/google/models'
 
 # Branding constants from KROOVA_BRANDING.md
 BRANDING = {
@@ -312,47 +311,36 @@ This is "{name}" - make them VISUALLY UNFORGETTABLE and UNIQUE."""
     return ' '.join(prompt.split())
 
 
-def create_generation(prompt: str, card: Dict, model: str) -> Optional[Dict]:
-    """Generate image using Vertex AI API (Imagen 4 Ultra Generate)"""
+def create_generation(prompt: str, card: Dict, client: genai.Client, model: str) -> Optional[Dict]:
+    """Generate image using Google Gemini API (Imagen 4)"""
     
     try:
-        # Vertex AI endpoint com API key no URL
-        endpoint = f"{VERTEX_API_BASE}/{model}:predict?key={VERTEX_API_KEY}"
-        
-        headers = {
-            'Content-Type': 'application/json'
-        }
-        
-        payload = {
-            'instances': [{
-                'prompt': prompt
-            }],
-            'parameters': {
-                'sampleCount': 1,
-                'aspectRatio': IMAGEN_CONFIG['aspect_ratio']
+        # Some variants (fast/ultra) don't allow adjustable image_size; omit when necessary
+        model_lc = (model or '').lower()
+        config_kwargs = dict(
+            number_of_images=IMAGEN_CONFIG['number_of_images'],
+            aspect_ratio=IMAGEN_CONFIG['aspect_ratio'],
+            person_generation=IMAGEN_CONFIG['person_generation'],
+        )
+        if 'fast' not in model_lc and 'ultra' not in model_lc:
+            config_kwargs['image_size'] = IMAGEN_CONFIG['image_size']
+
+        response = client.models.generate_images(
+            model=model,
+            prompt=prompt,
+            config=types.GenerateImagesConfig(**config_kwargs)
+        )
+
+        if response.generated_images and len(response.generated_images) > 0:
+            image = response.generated_images[0]
+            print(f"  ✅ Image generated successfully")
+            return {
+                'image': image.image,
+                'prompt': prompt,
             }
-        }
-        
-        response = requests.post(endpoint, headers=headers, json=payload, timeout=60)
-        response.raise_for_status()
-        
-        data = response.json()
-        
-        if data.get('predictions') and len(data['predictions']) > 0:
-            # Vertex AI retorna base64 em bytesBase64Encoded
-            image_b64 = data['predictions'][0].get('bytesBase64Encoded')
-            if image_b64:
-                image_bytes = base64.b64decode(image_b64)
-                image = Image.open(BytesIO(image_bytes))
-                
-                print(f"  ✅ Image generated successfully")
-                return {
-                    'image': image,
-                    'prompt': prompt,
-                }
-        
-        print(f"  ❌ No images generated")
-        return None
+        else:
+            print(f"  ❌ No images generated")
+            return None
 
     except Exception as e:
         msg = str(e)
@@ -401,7 +389,7 @@ def update_card_image_url(card_id: str, image_url: str):
         print(f"  ❌ Error updating database: {e}")
 
 
-def generate_card_image(card: Dict, output_dir: Path, model: str, delay: int = 2) -> bool:
+def generate_card_image(card: Dict, output_dir: Path, client: genai.Client, model: str, delay: int = 2) -> bool:
     """Generate image for a single card"""
 
     card_id = card['display_id']
@@ -415,8 +403,8 @@ def generate_card_image(card: Dict, output_dir: Path, model: str, delay: int = 2
     prompt = generate_prompt(card)
     print(f"   Story-based prompt: {prompt[:100]}...")
 
-    # Generate image (synchronous with Vertex AI API)
-    result = create_generation(prompt, card, model)
+    # Generate image (synchronous with Gemini API)
+    result = create_generation(prompt, card, client, model)
     if not result:
         return False
     
@@ -466,21 +454,29 @@ def main():
 
     print("🚀 Kroova Card Image Generator - UNIQUE DESIGN MODE")
     print("=" * 70)
-    print(f"Model: Vertex AI - Imagen 4 Ultra Generate (Google Cloud)")
+    print(f"Model: Google Imagen 4 (Nano Banana Pro)")
     print(f"Aspect Ratio: 3:4 (portrait)")
-    print(f"Quality: Ultra (maximum photorealistic)")
+    print(f"Quality: 2K (maximum photorealistic)")
     print(f"🎯 Each card gets UNIQUE prompt based on its story")
     print("=" * 70)
 
     # Check environment variables
-    if not VERTEX_API_KEY:
-        print("\n❌ ERROR: VERTEX_API_KEY not found")
-        print("   Get your key from Google Cloud Console")
+    if not GOOGLE_API_KEY:
+        print("\n❌ ERROR: GOOGLE_API_KEY not found")
+        print("   Get your key at: https://aistudio.google.com/apikey")
         print("   Set it in .env file or environment variable")
         sys.exit(1)
 
     if not SUPABASE_URL or not SUPABASE_KEY:
         print("\n❌ ERROR: Supabase credentials not found")
+        sys.exit(1)
+
+    # Initialize Gemini client
+    try:
+        client = genai.Client(api_key=GOOGLE_API_KEY)
+        print("✅ Gemini API client initialized")
+    except Exception as e:
+        print(f"❌ Error initializing Gemini client: {e}")
         sys.exit(1)
 
     # Determine output directory (default: scripts/public/cards)
@@ -522,9 +518,12 @@ def main():
     def resolve_model(name: str) -> str:
         name = (name or '').strip().lower()
         aliases = {
-            'generate': 'imagen-4.0-generate',
-            'fast': 'imagen-4.0-fast-generate',
-            'ultra': 'imagen-4.0-ultra-generate',
+            'generate': 'imagen-4.0-generate-001',
+            'imagen-4.0-generate': 'imagen-4.0-generate-001',
+            'fast': 'imagen-4.0-fast-generate-001',
+            'imagen-4.0-fast-generate': 'imagen-4.0-fast-generate-001',
+            'ultra': 'imagen-4.0-ultra-generate-001',
+            'imagen-4.0-ultra-generate': 'imagen-4.0-ultra-generate-001',
         }
         return aliases.get(name, name)
 
@@ -594,7 +593,7 @@ def main():
             # Try current model; on quota switch to next fallback automatically
             while True:
                 try:
-                    if generate_card_image(card, output_dir, current_model, delay=2):
+                    if generate_card_image(card, output_dir, client, current_model, delay=2):
                         successful += 1
                     else:
                         failed += 1

@@ -146,15 +146,33 @@ export default function CardDetailPage({ params }: { params: { card_base_id: str
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Back Button */}
-        <button
-          onClick={() => router.push('/marketplace')}
-          className="mb-6 flex items-center gap-2 text-gray-400 hover:text-[#00F0FF] transition-colors"
-        >
-          <span>←</span> Voltar ao Marketplace
-        </button>
+    <div className="min-h-screen bg-black">
+      <nav className="bg-black/40 backdrop-blur-md border-b border-[#00F0FF]/30">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <a href="/dashboard" className="flex items-center gap-3">
+            <img src="/logo_icon_transparent.png" alt="KROUVA" className="w-10 h-10 rounded-lg object-contain" style={{ boxShadow: '0 0 20px rgba(0, 240, 255, 0.6), 0 0 40px rgba(255, 0, 109, 0.4)', border: '2px solid rgba(0, 240, 255, 0.3)' }} />
+            <span className="text-2xl font-bold text-white tracking-wider" style={{ fontFamily: 'var(--font-geist-mono), monospace', letterSpacing: '0.1em' }}>KROUVA</span>
+          </a>
+          <div className="flex items-center gap-4">
+            <a href="/dashboard" className="text-gray-300 hover:text-[#00F0FF] transition">Dashboard</a>
+            <a href="/marketplace" className="text-[#00F0FF] font-semibold">Marketplace</a>
+            <a href="/marketplace/analytics" className="text-gray-300 hover:text-[#00F0FF] transition">📊 Analytics</a>
+            <a href="/marketplace/my-listings" className="text-gray-300 hover:text-[#00F0FF] transition">💼 Minhas Vendas</a>
+            <a href="/boosters" className="text-gray-300 hover:text-[#00F0FF] transition">Boosters</a>
+            <a href="/wallet" className="text-gray-300 hover:text-[#00F0FF] transition">Wallet</a>
+          </div>
+        </div>
+      </nav>
+
+      <main className="text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Back Button */}
+          <button
+            onClick={() => router.push('/marketplace')}
+            className="mb-6 flex items-center gap-2 text-gray-400 hover:text-[#00F0FF] transition-colors"
+          >
+            <span>←</span> Voltar ao Marketplace
+          </button>
 
         {/* Header */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
@@ -315,7 +333,8 @@ export default function CardDetailPage({ params }: { params: { card_base_id: str
             </div>
           )}
         </div>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

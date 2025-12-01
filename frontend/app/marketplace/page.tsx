@@ -172,6 +172,8 @@ export default function MarketplacePage() {
           <div className="flex items-center gap-4">
             <a href="/dashboard" className="text-gray-300 hover:text-[#00F0FF] transition">Dashboard</a>
             <a href="/marketplace" className="text-[#00F0FF] font-semibold">Marketplace</a>
+            <a href="/marketplace/analytics" className="text-gray-300 hover:text-[#00F0FF] transition">📊 Analytics</a>
+            <a href="/marketplace/my-listings" className="text-gray-300 hover:text-[#00F0FF] transition">💼 Minhas Vendas</a>
             <a href="/boosters" className="text-gray-300 hover:text-[#00F0FF] transition">Boosters</a>
             <a href="/wallet" className="text-gray-300 hover:text-[#00F0FF] transition">Wallet</a>
           </div>
@@ -179,9 +181,27 @@ export default function MarketplacePage() {
       </nav>
 
       <main className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-white mb-6">
-          <TextGlitch delay={300}>🛒 TRADING HUB</TextGlitch>
-        </h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-white">
+            <TextGlitch delay={300}>🛒 TRADING HUB</TextGlitch>
+          </h1>
+          <div className="flex gap-3">
+            <GlitchButton
+              variant="secondary"
+              size="md"
+              onClick={() => router.push('/marketplace/analytics')}
+            >
+              📊 Ver Analytics
+            </GlitchButton>
+            <GlitchButton
+              variant="secondary"
+              size="md"
+              onClick={() => router.push('/marketplace/my-listings')}
+            >
+              💼 Minhas Vendas
+            </GlitchButton>
+          </div>
+        </div>
 
         {loading ? (
           <div className="text-center text-gray-400 py-12">Carregando cartas...</div>

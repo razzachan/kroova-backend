@@ -54,12 +54,7 @@ export async function GET(request: NextRequest) {
       ok: true,
       data: {
         cards: inventory || [],
-        pagination: {
-          page,
-          limit,
-          total: count || 0,
-          totalPages: Math.ceil((count || 0) / limit),
-        },
+        total: count || 0,
       },
     });
   } catch (error: any) {

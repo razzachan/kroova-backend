@@ -70,7 +70,12 @@ export default function InventoryPage() {
       try {
         const listingsResponse = await api.get('/market/my-listings?status=active');
         const listings = listingsResponse.data?.data?.listings || [];
-        const listedIds = listings.map((l: any) => l.card?.instance_id || l.card_instance_id).filter(Boolean);
+        console.log('[inventory] Listings carregados:', listings); // Debug
+        const listedIds = listings.map((l: any) => {
+          // Tenta pegar o card_instance_id de várias formas possíveis
+          return l.card_instance_id || l.card?.instance_id || l.cards_instances?.id;
+        }).filter(Boolean);
+        console.log('[inventory] IDs listados:', listedIds); // Debug
         setListedCards(listedIds);
       } catch (listError) {
         console.warn('Não foi possível carregar listings:', listError);
@@ -198,33 +203,40 @@ export default function InventoryPage() {
 
         {/* Advanced Filters */}
         {inventory.length > 0 && (
-          <div className="bg-gray-900/50 backdrop-blur-md border border-gray-800 rounded-lg p-4 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-md border-2 border-gray-800 rounded-lg p-6 mb-6 relative overflow-hidden">
+            {/* Efeito de fundo */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#00F0FF]/5 to-[#FF006D]/5 animate-pulse" />
+            
+            <div className="relative grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Search */}
               <div>
-                <label className="block text-gray-400 text-sm mb-2">Buscar</label>
+                <label className="block text-[#00F0FF] text-sm font-bold mb-2 uppercase tracking-wider">
+                  🔍 Buscar Carta
+                </label>
                 <DataStreamInput
                   type="text"
                   value={searchFilter}
                   onChange={(e) => setSearchFilter(e.target.value)}
-                  placeholder="Nome da carta..."
+                  placeholder="Digite o nome..."
                   variant="cyan"
                 />
               </div>
 
               {/* Rarity Filter */}
               <div>
-                <label className="block text-gray-400 text-sm mb-2">Raridade</label>
+                <label className="block text-[#FF006D] text-sm font-bold mb-2 uppercase tracking-wider">
+                  ✨ Raridade
+                </label>
                 <select
                   value={rarityFilter}
                   onChange={(e) => setRarityFilter(e.target.value)}
-                  className="w-full bg-black/50 border-2 border-gray-700 rounded-lg px-4 py-2 text-white focus:border-[#00F0FF] focus:outline-none transition"
+                  className="w-full bg-black/70 border-2 border-[#FF006D]/50 rounded-lg px-4 py-3 text-white font-semibold focus:border-[#FF006D] focus:outline-none focus:ring-2 focus:ring-[#FF006D]/30 transition-all cursor-pointer hover:border-[#FF006D]"
                 >
-                  <option value="all">Todas</option>
-                  <option value="legendary">Legendary</option>
-                  <option value="viral">Viral</option>
-                  <option value="meme">Meme</option>
-                  <option value="trash">Trash</option>
+                  <option value="all">Todas as Raridades</option>
+                  <option value="legendary">👑 Legendary</option>
+                  <option value="viral">⚡ Viral</option>
+                  <option value="meme">😂 Meme</option>
+                  <option value="trash">🗑️ Trash</option>
                 </select>
               </div>
 
@@ -235,14 +247,37 @@ export default function InventoryPage() {
                     setRarityFilter('all');
                     setSearchFilter('');
                   }}
-                  variant="secondary"
+                  variant="danger"
                   size="md"
                   className="w-full"
                 >
-                  ✖️ Limpar Filtros
+                  LIMPAR FILTROS
                 </GlitchButton>
               </div>
             </div>
+            
+            {/* Results count */}
+            {(rarityFilter !== 'all' || searchFilter) && (
+              <div className="mt-4 pt-4 border-t border-gray-800">
+                <p className="text-gray-400 text-sm">
+                  Mostrando <span className="text-[#00F0FF] font-bold">
+                    {inventory.filter(card => {
+                      const isListed = listedCards.includes(card.id);
+                      if (showListedFilter === 'owned' && isListed) return false;
+                      if (showListedFilter === 'listed' && !isListed) return false;
+                      if (rarityFilter !== 'all' && card.cards_base?.rarity !== rarityFilter) return false;
+                      if (searchFilter) {
+                        const searchLower = searchFilter.toLowerCase();
+                        const name = card.cards_base?.name?.toLowerCase() || '';
+                        const displayId = card.cards_base?.display_id?.toLowerCase() || '';
+                        if (!name.includes(searchLower) && !displayId.includes(searchLower)) return false;
+                      }
+                      return true;
+                    }).length}
+                  </span> de <span className="text-white font-bold">{inventory.length}</span> cartas
+                </p>
+              </div>
+            )}
           </div>
         )}
 

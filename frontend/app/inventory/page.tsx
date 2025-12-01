@@ -64,6 +64,8 @@ export default function InventoryPage() {
       const invResponse = await api.get('/inventory');
       const data = unwrap<{ cards: CardInstance[] }>(invResponse);
       const allCards = data.cards || [];
+      console.log('[inventory] Total de cartas recebidas da API:', allCards.length); // DEBUG
+      console.log('[inventory] Primeiras 3 cartas:', allCards.slice(0, 3)); // DEBUG
       setInventory(allCards);
       
       // Tenta carregar listings, mas não quebra se falhar

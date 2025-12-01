@@ -57,22 +57,68 @@ export async function GET(request: NextRequest) {
       .from('market_listings')
       .select(`
         id,
+        card_instance_id,
         price_brl,
         status,
         created_at,
         updated_at,
-        buyer_id,
-        cards_instances!inner(
-          id,
-          cards_base!inner(id, name, rarity, image_url)
-        )
+        buyer_id
       `)
       .eq('seller_id', user.id)
       .eq('status', status)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
-    if (listingsError) throw listingsError;
+    if (listingsError) {
+      console.error('[my-listings] Listings error:', listingsError);
+      throw listingsError;
+    }
+
+    // Buscar dados das cartas separadamente
+    const formattedListings = [];
+    
+    if (listings && listings.length > 0) {
+      for (const listing of listings) {
+        try {
+          // Buscar card instance
+          const { data: cardInstance } = await supabase
+            .from('cards_instances')
+            .select('id, base_id')
+            .eq('id', listing.card_instance_id)
+            .single();
+
+          if (!cardInstance) continue;
+
+          // Buscar card base
+          const { data: cardBase } = await supabase
+            .from('cards_base')
+            .select('id, name, rarity, image_url')
+            .eq('id', cardInstance.base_id)
+            .single();
+
+          if (!cardBase) continue;
+
+          formattedListings.push({
+            id: listing.id,
+            card_instance_id: listing.card_instance_id,
+            price_brl: listing.price_brl,
+            status: listing.status,
+            listed_at: listing.created_at,
+            updated_at: listing.updated_at,
+            card: {
+              instance_id: cardInstance.id,
+              base_id: cardBase.id,
+              name: cardBase.name,
+              rarity: cardBase.rarity,
+              image_url: cardBase.image_url
+            }
+          });
+        } catch (cardError) {
+          console.error('[my-listings] Error loading card data:', cardError);
+          // Continua sem essa carta
+        }
+      }
+    }
 
     // Calcular earnings (se status = sold)
     let earnings = null;
@@ -102,22 +148,6 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Formatar resposta
-    const formattedListings = listings?.map((listing: any) => ({
-      id: listing.id,
-      price_brl: listing.price_brl,
-      status: listing.status,
-      listed_at: listing.created_at,
-      updated_at: listing.updated_at,
-      card: {
-        instance_id: listing.cards_instances.id,
-        base_id: listing.cards_instances.cards_base.id,
-        name: listing.cards_instances.cards_base.name,
-        rarity: listing.cards_instances.cards_base.rarity,
-        image_url: listing.cards_instances.cards_base.image_url
-      }
-    }));
-
     return NextResponse.json({
       ok: true,
       data: {
@@ -126,7 +156,7 @@ export async function GET(request: NextRequest) {
         pagination: {
           limit,
           offset,
-          total: listings?.length || 0
+          total: formattedListings.length
         }
       }
     });

@@ -41,6 +41,8 @@ export default function InventoryPage() {
   const [salePrice, setSalePrice] = useState<string>('');
   const [showRecycleBulk, setShowRecycleBulk] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [listedCards, setListedCards] = useState<string[]>([]);
+  const [showListedFilter, setShowListedFilter] = useState<'all' | 'owned' | 'listed'>('owned');
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -56,9 +58,20 @@ export default function InventoryPage() {
 
   const loadInventory = async () => {
     try {
-      const response = await api.get('/inventory');
-      const data = unwrap<{ cards: CardInstance[] }>(response);
-      setInventory(data.cards || []);
+      const [invResponse, listingsResponse] = await Promise.all([
+        api.get('/inventory'),
+        api.get('/market/my-listings?status=active')
+      ]);
+      
+      const data = unwrap<{ cards: CardInstance[] }>(invResponse);
+      const allCards = data.cards || [];
+      
+      // Pegar IDs das cartas listadas
+      const listings = listingsResponse.data?.data?.listings || [];
+      const listedIds = listings.map((l: any) => l.card?.instance_id || l.card_instance_id).filter(Boolean);
+      
+      setListedCards(listedIds);
+      setInventory(allCards);
     } catch (error) {
       console.error('Erro ao carregar inventário:', error);
     } finally {
@@ -93,6 +106,32 @@ export default function InventoryPage() {
     }
   };
 
+  const handleCancelListing = async (cardInstanceId: string) => {
+    if (!confirm('Cancelar venda desta carta?')) return;
+
+    try {
+      // Buscar o listing_id desta carta
+      const response = await api.get('/market/my-listings?status=active');
+      const listings = response.data?.data?.listings || [];
+      const listing = listings.find((l: any) => 
+        (l.card?.instance_id || l.card_instance_id) === cardInstanceId
+      );
+
+      if (!listing) {
+        alert('Anúncio não encontrado');
+        return;
+      }
+
+      await api.delete(`/market/listings/${listing.id}`);
+      cardAudio.playSuccessChime();
+      alert('Venda cancelada com sucesso!');
+      loadInventory();
+    } catch (error: any) {
+      cardAudio.playErrorBuzz();
+      alert(error.response?.data?.message || 'Erro ao cancelar venda');
+    }
+  };
+
   if (authLoading || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 flex items-center justify-center">
@@ -120,9 +159,45 @@ export default function InventoryPage() {
       </nav>
 
       <main className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-white mb-6">
-          <TextGlitch delay={300}>🃏 VAULT</TextGlitch>
-        </h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold text-white">
+            <TextGlitch delay={300}>🃏 VAULT</TextGlitch>
+          </h1>
+          
+          {/* Filter Buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowListedFilter('owned')}
+              className={`px-4 py-2 rounded-lg font-semibold transition ${
+                showListedFilter === 'owned'
+                  ? 'bg-[#00F0FF] text-black'
+                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+              }`}
+            >
+              💎 Disponíveis ({inventory.filter(c => !listedCards.includes(c.id)).length})
+            </button>
+            <button
+              onClick={() => setShowListedFilter('listed')}
+              className={`px-4 py-2 rounded-lg font-semibold transition ${
+                showListedFilter === 'listed'
+                  ? 'bg-[#FF006D] text-white'
+                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+              }`}
+            >
+              🏪 No Marketplace ({listedCards.length})
+            </button>
+            <button
+              onClick={() => setShowListedFilter('all')}
+              className={`px-4 py-2 rounded-lg font-semibold transition ${
+                showListedFilter === 'all'
+                  ? 'bg-[#FFC700] text-black'
+                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+              }`}
+            >
+              📊 Todas ({inventory.length})
+            </button>
+          </div>
+        </div>
 
         {/* Recycle Bulk Button */}
         {inventory.length >= 25 && (
@@ -170,7 +245,14 @@ export default function InventoryPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {inventory.map((card) => {
+            {inventory
+              .filter(card => {
+                const isListed = listedCards.includes(card.id);
+                if (showListedFilter === 'owned') return !isListed;
+                if (showListedFilter === 'listed') return isListed;
+                return true; // 'all'
+              })
+              .map((card) => {
               const baseCard = card.cards_base;
               
               // Mapear raridades do banco para o HolographicCard
@@ -269,6 +351,20 @@ export default function InventoryPage() {
                           </GlitchButton>
                         </div>
                       </div>
+                    ) : listedCards.includes(card.id) ? (
+                      <div className="mt-4 space-y-2">
+                        <div className="bg-[#FF006D]/20 border border-[#FF006D] rounded-lg p-2 text-center">
+                          <p className="text-[#FF006D] text-sm font-bold">🏪 NO MARKETPLACE</p>
+                        </div>
+                        <GlitchButton
+                          onClick={() => handleCancelListing(card.id)}
+                          variant="danger"
+                          size="md"
+                          className="w-full"
+                        >
+                          ❌ CANCELAR VENDA
+                        </GlitchButton>
+                      </div>
                     ) : (
                       <GlitchButton
                         onClick={() => setSellingCard(card.id)}
@@ -276,7 +372,7 @@ export default function InventoryPage() {
                         size="md"
                         className="w-full mt-4"
                       >
-                        VENDER
+                        💰 VENDER
                       </GlitchButton>
                     )}
                   </div>

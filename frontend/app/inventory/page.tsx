@@ -58,20 +58,22 @@ export default function InventoryPage() {
 
   const loadInventory = async () => {
     try {
-      const [invResponse, listingsResponse] = await Promise.all([
-        api.get('/inventory'),
-        api.get('/market/my-listings?status=active')
-      ]);
-      
+      // Sempre carrega inventário primeiro
+      const invResponse = await api.get('/inventory');
       const data = unwrap<{ cards: CardInstance[] }>(invResponse);
       const allCards = data.cards || [];
-      
-      // Pegar IDs das cartas listadas
-      const listings = listingsResponse.data?.data?.listings || [];
-      const listedIds = listings.map((l: any) => l.card?.instance_id || l.card_instance_id).filter(Boolean);
-      
-      setListedCards(listedIds);
       setInventory(allCards);
+      
+      // Tenta carregar listings, mas não quebra se falhar
+      try {
+        const listingsResponse = await api.get('/market/my-listings?status=active');
+        const listings = listingsResponse.data?.data?.listings || [];
+        const listedIds = listings.map((l: any) => l.card?.instance_id || l.card_instance_id).filter(Boolean);
+        setListedCards(listedIds);
+      } catch (listError) {
+        console.warn('Não foi possível carregar listings:', listError);
+        setListedCards([]); // Continua sem listings
+      }
     } catch (error) {
       console.error('Erro ao carregar inventário:', error);
     } finally {
@@ -159,44 +161,37 @@ export default function InventoryPage() {
       </nav>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <h1 className="text-3xl font-bold text-white">
             <TextGlitch delay={300}>🃏 VAULT</TextGlitch>
           </h1>
           
           {/* Filter Buttons */}
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowListedFilter('owned')}
-              className={`px-4 py-2 rounded-lg font-semibold transition ${
-                showListedFilter === 'owned'
-                  ? 'bg-[#00F0FF] text-black'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-              }`}
-            >
-              💎 Disponíveis ({inventory.filter(c => !listedCards.includes(c.id)).length})
-            </button>
-            <button
-              onClick={() => setShowListedFilter('listed')}
-              className={`px-4 py-2 rounded-lg font-semibold transition ${
-                showListedFilter === 'listed'
-                  ? 'bg-[#FF006D] text-white'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-              }`}
-            >
-              🏪 No Marketplace ({listedCards.length})
-            </button>
-            <button
-              onClick={() => setShowListedFilter('all')}
-              className={`px-4 py-2 rounded-lg font-semibold transition ${
-                showListedFilter === 'all'
-                  ? 'bg-[#FFC700] text-black'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-              }`}
-            >
-              📊 Todas ({inventory.length})
-            </button>
-          </div>
+          {inventory.length > 0 && (
+            <div className="flex gap-3">
+              <GlitchButton
+                onClick={() => setShowListedFilter('owned')}
+                variant={showListedFilter === 'owned' ? 'primary' : 'secondary'}
+                size="md"
+              >
+                💎 Disponíveis ({inventory.filter(c => !listedCards.includes(c.id)).length})
+              </GlitchButton>
+              <GlitchButton
+                onClick={() => setShowListedFilter('listed')}
+                variant={showListedFilter === 'listed' ? 'primary' : 'secondary'}
+                size="md"
+              >
+                🏪 No Marketplace ({listedCards.length})
+              </GlitchButton>
+              <GlitchButton
+                onClick={() => setShowListedFilter('all')}
+                variant={showListedFilter === 'all' ? 'primary' : 'secondary'}
+                size="md"
+              >
+                📊 Todas ({inventory.length})
+              </GlitchButton>
+            </div>
+          )}
         </div>
 
         {/* Recycle Bulk Button */}

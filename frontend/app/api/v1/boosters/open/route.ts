@@ -3,9 +3,6 @@ import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'edge';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
 // =====================================================
 // 3-LAYER SYSTEM: RARIDADE × SKIN × GODMODE × PRICE
 // =====================================================
@@ -110,6 +107,12 @@ function decideJackpotPayout(
 export async function POST(request: NextRequest) {
   try {
     console.log('[OPEN] POST iniciado');
+    
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    
+    console.log('[OPEN] Env vars:', { hasUrl: !!supabaseUrl, hasKey: !!anonKey });
+    
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       console.error('[OPEN] No token provided');

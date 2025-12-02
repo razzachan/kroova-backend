@@ -145,6 +145,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Buscar opening
+    console.log('[OPEN] Buscando opening:', opening_id);
     const { data: opening, error: openingError } = await supabaseAdmin
       .from('booster_openings')
       .select('*, booster_pack:booster_packs!inner(pack_name, edition_id, theme, price_brl)')
@@ -153,11 +154,14 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (openingError || !opening) {
+      console.error('[OPEN] Erro ao buscar opening:', openingError);
       return NextResponse.json(
         { ok: false, error: { code: 'NOT_FOUND', message: 'Opening not found' } },
         { status: 404 }
       );
     }
+
+    console.log('[OPEN] Opening encontrado:', { id: opening.id, pack: opening.booster_pack.pack_name, booster_type_id: opening.booster_type_id });
 
     if (opening.opened_at) {
       return NextResponse.json(
@@ -263,7 +267,8 @@ export async function POST(request: NextRequest) {
       if (isGodmode) godmodeAwarded = true;
 
       // Buscar card aleatória dessa raridade DO POOL DESTE PACK
-      const { data: poolCards } = await supabaseAdmin
+      console.log(`[OPEN] Buscando cartas ${rarity} do pack ${opening.booster_type_id}`);
+      const { data: poolCards, error: poolError } = await supabaseAdmin
         .from('pack_card_pools')
         .select(`
           card_base_id,
@@ -272,9 +277,17 @@ export async function POST(request: NextRequest) {
         .eq('pack_id', opening.booster_type_id)
         .eq('cards_base.rarity', rarity);
 
+      if (poolError) {
+        console.error(`[OPEN] Erro ao buscar pool:`, poolError);
+        throw new Error(`Erro no pool: ${poolError.message}`);
+      }
+
       if (!poolCards || poolCards.length === 0) {
+        console.warn(`[OPEN] Nenhuma carta ${rarity} encontrada no pack ${opening.booster_type_id}`);
         continue; // Skip se não tiver cartas dessa raridade no pool deste pack
       }
+
+      console.log(`[OPEN] Encontradas ${poolCards.length} cartas ${rarity}`);
 
       const randomPoolCard = poolCards[Math.floor(Math.random() * poolCards.length)];
       const randomCard: any = randomPoolCard.cards_base;

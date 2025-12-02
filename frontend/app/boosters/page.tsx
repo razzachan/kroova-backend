@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { unwrap } from '@/lib/unwrap';
-import { PityBar } from '@/components/PityBar';
+import { PityProgressDual } from '@/components/PityProgressDual';
+import { CristalPity } from '@/components/CristalPity';
+import { PityExplosion } from '@/components/PityExplosion';
 import { OpeningSession } from '@/components/OpeningSession';
 // import { VaultMilestonesPanel } from '@/components/VaultMilestonesPanel'; // Removido até implementação backend
 import { cardAudio, triggerHaptic } from '@/lib/cardAudio';
@@ -49,8 +51,12 @@ export default function BoostersPage() {
   const [showCards, setShowCards] = useState(false);
   const [flipMode, setFlipMode] = useState<'interactive' | 'auto'>('interactive');
   const [quantityByBooster, setQuantityByBooster] = useState<Record<string, number>>({});
-  const [pityCount, setPityCount] = useState(0);
-  const [pityMax, setPityMax] = useState(180);
+  
+  // ✨ DUAL PITY SYSTEM
+  const [pityLegendary, setPityLegendary] = useState({ current: 0, max: 20 });
+  const [pityGodmode, setPityGodmode] = useState({ current: 0, max: 150 });
+  const [pityExplosion, setPityExplosion] = useState<'legendary' | 'godmode' | null>(null);
+  
   const [openedCount, setOpenedCount] = useState(0);
   const [showCheckpoint, setShowCheckpoint] = useState(false);
   const [checkpointTop, setCheckpointTop] = useState<Card[]>([]);
@@ -137,11 +143,10 @@ export default function BoostersPage() {
   async function loadData() {
     try {
       // 🚀 Carrega tudo em paralelo para reduzir latência
-      const [boostersRes, walletRes, sealedRes, pityRes] = await Promise.allSettled([
+      const [boostersRes, walletRes, sealedRes] = await Promise.allSettled([
         api.get('/boosters'),
         api.get('/wallet'),
-        api.get('/boosters/sealed'),
-        api.get('/boosters/pity?edition_id=ED01')
+        api.get('/boosters/sealed')
       ]);
 
       // Boosters
@@ -149,9 +154,20 @@ export default function BoostersPage() {
         setBoosters(unwrap(boostersRes.value.data));
       }
 
-      // Wallet
+      // Wallet (+ pity counters)
       if (walletRes.status === 'fulfilled') {
-        setBalance(unwrap(walletRes.value.data).balance_brl);
+        const walletData = unwrap(walletRes.value.data);
+        setBalance(walletData.balance_brl);
+        
+        // ✨ Carrega pity counters do wallet
+        setPityLegendary({
+          current: walletData.pity_legendary_counter || 0,
+          max: 20
+        });
+        setPityGodmode({
+          current: walletData.pity_godmode_counter || 0,
+          max: 150
+        });
       }
 
       // Sealed packs
@@ -161,17 +177,6 @@ export default function BoostersPage() {
       } else {
         console.warn('Sealed packs endpoint not available yet');
         setSealedPacks([]);
-      }
-
-      // Pity counter
-      if (pityRes.status === 'fulfilled') {
-        const pityData = unwrap(pityRes.value.data);
-        setPityCount(pityData.pity_count || 0);
-        setPityMax(pityData.max || 180);
-      } else {
-        console.warn('Pity endpoint not available, using defaults');
-        setPityCount(0);
-        setPityMax(180);
       }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
@@ -247,10 +252,18 @@ export default function BoostersPage() {
       const res = await api.post('/boosters/open', { opening_id: openingId });
       const data = unwrap(res.data);
 
+      // ✨ DETECTA PITY TRIGGER
+      if (data.pity_triggered && data.pity_type) {
+        setPityExplosion(data.pity_type); // 'legendary' ou 'godmode'
+      }
+
       // Start pack animation sequence
       setPendingCards(data.cards);
       setAnimationStage('pack');
       setOpening(null); // Hide loading spinner
+      
+      // Recarrega wallet para atualizar counters (após backend resetar)
+      await loadData();
       
     } catch (error) {
       console.error('Erro ao abrir booster:', error);
@@ -432,9 +445,22 @@ export default function BoostersPage() {
           </div>
         </div>
 
-        {/* Pity Bar */}
-        <div className="mb-8">
-          <PityBar current={pityCount} max={pityMax} edition="ED01" />
+        {/* Dual Pity System */}
+        <div className="mb-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Crystal evolutivo */}
+          <div className="flex items-center justify-center">
+            <CristalPity 
+              averageProgress={(pityLegendary.current / pityLegendary.max * 100 + pityGodmode.current / pityGodmode.max * 100) / 2} 
+            />
+          </div>
+          
+          {/* Dual progress bars */}
+          <div className="lg:col-span-2">
+            <PityProgressDual 
+              legendary={pityLegendary}
+              godmode={pityGodmode}
+            />
+          </div>
         </div>
 
         {/* Vault Milestones - REMOVIDO temporariamente até implementação backend */}
@@ -811,6 +837,14 @@ export default function BoostersPage() {
         )}
       </div>
       </div>
+      
+      {/* ✨ PITY EXPLOSION OVERLAY */}
+      {pityExplosion && (
+        <PityExplosion 
+          type={pityExplosion}
+          onComplete={() => setPityExplosion(null)}
+        />
+      )}
     </div>
   );
 }

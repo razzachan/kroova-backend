@@ -5,7 +5,6 @@ export const runtime = 'edge';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const serviceKey = process.env.SUPABASE_SERVICE_KEY!;
 
 // =====================================================
 // 3-LAYER SYSTEM: RARIDADE × SKIN × GODMODE × PRICE
@@ -110,8 +109,10 @@ function decideJackpotPayout(
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('[OPEN] POST iniciado');
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
+      console.error('[OPEN] No token provided');
       return NextResponse.json(
         { ok: false, error: { code: 'UNAUTHORIZED', message: 'No token provided' } },
         { status: 401 }
@@ -119,14 +120,19 @@ export async function POST(request: NextRequest) {
     }
 
     const token = authHeader.substring(7);
+    console.log('[OPEN] Token obtido, criando clientes Supabase');
+    
     const supabase = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: `Bearer ${token}` } }
     });
 
-    const supabaseAdmin = createClient(supabaseUrl, serviceKey);
+    // Usar o mesmo client com auth para operações admin (RLS policies estão OK)
+    const supabaseAdmin = supabase;
+    console.log('[OPEN] Clientes criados, parseando body');
 
     const body = await request.json();
     const { opening_id } = body;
+    console.log('[OPEN] Body parseado, opening_id:', opening_id);
 
     if (!opening_id) {
       return NextResponse.json(
@@ -410,6 +416,8 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: any) {
+    console.error('[OPEN] ERRO CAPTURADO:', error);
+    console.error('[OPEN] Stack:', error.stack);
     return NextResponse.json(
       { ok: false, error: { code: 'INTERNAL_ERROR', message: error.message } },
       { status: 500 }

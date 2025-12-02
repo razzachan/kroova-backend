@@ -262,18 +262,19 @@ export async function POST(request: NextRequest) {
       const isGodmode = boosterHasGodmode && !godmodeAwarded && i === 0;
       if (isGodmode) godmodeAwarded = true;
 
-      // Buscar card aleatória dessa raridade
-      const { data: cards } = await supabaseAdmin
-        .from('cards_base')
-        .select('id, name, rarity, image_url, display_id')
-        .eq('rarity', rarity)
-        .eq('edition_id', editionId);
+      // Buscar card aleatória dessa raridade DO POOL DESTE PACK
+      const { data: poolCards } = await supabaseAdmin
+        .from('pack_card_pools')
+        .select('card_base_id, cards_base!inner(id, name, rarity, image_url, display_id)')
+        .eq('pack_id', opening.booster_type_id)
+        .eq('cards_base.rarity', rarity);
 
-      if (!cards || cards.length === 0) {
-        continue; // Skip se não tiver cartas dessa raridade
+      if (!poolCards || poolCards.length === 0) {
+        continue; // Skip se não tiver cartas dessa raridade no pool deste pack
       }
 
-      const randomCard = cards[Math.floor(Math.random() * cards.length)];
+      const randomPoolCard = poolCards[Math.floor(Math.random() * poolCards.length)];
+      const randomCard = randomPoolCard.cards_base;
 
       // Calcular liquidez final (3-layer)
       const baseLiquidityValue = baseLiquidity[rarity] || 0.01;

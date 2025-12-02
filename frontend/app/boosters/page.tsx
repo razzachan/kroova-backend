@@ -17,13 +17,23 @@ import TextGlitch from '@/components/Effects/TextGlitch';
 import HolographicCard from '@/components/UI/HolographicCard';
 import BoosterCard3D from '@/components/UI/BoosterCard3D';
 
+// Mapeamento de pack_id para imagem do booster
+const PACK_IMAGES: Record<string, string> = {
+  'ED01_ALPHA': '/assets/booster-packs/pack-front-ed01-alpha.png',
+  'ED01_BETA': '/assets/booster-packs/pack-front-ed01-beta.png',
+  'ED01_GAMMA': '/assets/booster-packs/pack-front-ed01-gamma.png',
+};
+
 interface BoosterType {
-  id: string;
+  id: string; // Agora é o pack_id (ED01_ALPHA, ED01_BETA, ED01_GAMMA)
+  pack_id: string; // Redundante mas mantemos para compatibilidade
+  pack_name: string;
   name: string;
   price_brl: number;
   rarity_distribution: Record<string, number>;
   cards_per_booster: number;
   edition_id: string;
+  theme?: string;
 }
 
 interface Card {
@@ -105,8 +115,9 @@ export default function BoostersPage() {
       await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Pegar o booster mais barato (Básico)
-      const boostersRes = await api.get('/boosters');
-      const allBoosters = unwrap(boostersRes.data);
+      const boostersRes = await api.get('/booster-packs?edition=ED01');
+      const response = unwrap(boostersRes.data);
+      const allBoosters = response.packs;
       const basicBooster = allBoosters.sort((a: BoosterType, b: BoosterType) => a.price_brl - b.price_brl)[0];
 
       if (!basicBooster) {
@@ -144,14 +155,15 @@ export default function BoostersPage() {
     try {
       // 🚀 Carrega tudo em paralelo para reduzir latência
       const [boostersRes, walletRes, sealedRes] = await Promise.allSettled([
-        api.get('/boosters'),
+        api.get('/booster-packs?edition=ED01'),
         api.get('/wallet'),
         api.get('/boosters/sealed')
       ]);
 
       // Boosters
       if (boostersRes.status === 'fulfilled') {
-        setBoosters(unwrap(boostersRes.value.data));
+        const response = unwrap(boostersRes.value.data);
+        setBoosters(response.packs || []);
       }
 
       // Wallet (+ pity counters)
@@ -562,8 +574,8 @@ export default function BoostersPage() {
                     >
                       {/* Imagem do booster pack - SEM bordas, efeito 3D puro */}
                       <img 
-                        src="/pack-front-ed01.png" 
-                        alt="Kroova Booster Pack" 
+                        src={PACK_IMAGES[pack.booster_type_id] || PACK_IMAGES['ED01_ALPHA']} 
+                        alt={`${pack.booster_types?.name || 'Booster'} Pack`} 
                         className="w-full h-auto object-contain"
                         style={{ minHeight: '380px' }}
                       />
@@ -580,67 +592,84 @@ export default function BoostersPage() {
           {boosters.map((booster) => (
             <div
               key={booster.id}
-              className="bg-gray-800 rounded-lg p-6 border-2 border-gray-700 hover:border-blue-500 transition"
+              className="bg-gray-800/60 backdrop-blur-sm rounded-lg overflow-hidden border-2 border-gray-700 hover:border-blue-500 transition group"
             >
-              <h3 className="text-2xl font-bold mb-2">{booster.name}</h3>
-              <p className="text-gray-400 mb-4">
-                {booster.cards_per_booster} cartas • {booster.edition_id}
-              </p>
-              <div className="flex items-center gap-2 mb-4">
-                <label className="text-sm text-gray-300">Quantidade</label>
-                <input
-                  type="number"
-                  min={1}
-                  max={100}
-                  value={quantityByBooster[booster.id] || 1}
-                  onChange={(e) => setQuantityByBooster(prev => ({ ...prev, [booster.id]: Math.max(1, Math.min(100, Number(e.target.value) || 1)) }))}
-                  className="w-20 bg-gray-700 text-white rounded px-2 py-1 border border-gray-600"
+              {/* Imagem do Pack */}
+              <div className="relative h-80 bg-gray-900/50 flex items-center justify-center overflow-hidden">
+                <img 
+                  src={PACK_IMAGES[booster.id] || PACK_IMAGES['ED01_ALPHA']} 
+                  alt={booster.pack_name || booster.name}
+                  className="h-full w-auto object-contain transform group-hover:scale-105 transition-transform duration-300"
                 />
-                <button
-                  onClick={() => setQuantityByBooster(prev => ({ ...prev, [booster.id]: 5 }))}
-                  className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded border border-gray-600"
-                  style={{
-                    transition: 'transform 0.1s ease-out',
-                    willChange: 'transform',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'scale(1.05) translateZ(0)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1) translateZ(0)';
-                  }}
-                >x5</button>
+                {booster.theme && (
+                  <div className="absolute top-2 left-2 bg-black/70 text-xs text-white px-2 py-1 rounded">
+                    {booster.theme}
+                  </div>
+                )}
               </div>
 
-              <div className="mb-4">
-                <p className="text-sm text-gray-400 mb-2">Distribuição de Raridades:</p>
-                <div className="space-y-1 text-sm">
-                  {Object.entries(booster.rarity_distribution).map(([rarity, percent]) => (
-                    <div key={rarity} className="flex justify-between">
-                      <span className={getRarityColor(rarity)}>{rarity}</span>
-                      <span>{percent}%</span>
-                    </div>
-                  ))}
+              {/* Informações do Pack */}
+              <div className="p-6">
+                <h3 className="text-2xl font-bold mb-2">{booster.pack_name || booster.name}</h3>
+                <p className="text-gray-400 mb-4">
+                  5 cartas • {booster.edition_id}
+                </p>
+                <div className="flex items-center gap-2 mb-4">
+                  <label className="text-sm text-gray-300">Quantidade</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={100}
+                    value={quantityByBooster[booster.id] || 1}
+                    onChange={(e) => setQuantityByBooster(prev => ({ ...prev, [booster.id]: Math.max(1, Math.min(100, Number(e.target.value) || 1)) }))}
+                    className="w-20 bg-gray-700 text-white rounded px-2 py-1 border border-gray-600"
+                  />
+                  <button
+                    onClick={() => setQuantityByBooster(prev => ({ ...prev, [booster.id]: 5 }))}
+                    className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded border border-gray-600"
+                    style={{
+                      transition: 'transform 0.1s ease-out',
+                      willChange: 'transform',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.05) translateZ(0)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'scale(1) translateZ(0)';
+                    }}
+                  >x5</button>
                 </div>
-              </div>
 
-              <GlitchButton
-                onClick={() => {
-                  console.log('🖱️ Button clicked!', { boosterId: booster.id, quantity: quantityByBooster[booster.id] || 1 });
-                  handlePurchase(booster.id, quantityByBooster[booster.id] || 1);
-                }}
-                disabled={purchasing === booster.id || opening !== null || balance < booster.price_brl}
-                variant={balance < booster.price_brl ? 'danger' : 'primary'}
-                size="lg"
-                isLoading={purchasing === booster.id}
-                className="w-full"
-              >
-                {purchasing === booster.id
-                  ? 'PROCESSANDO'
-                  : balance < booster.price_brl
-                  ? 'SALDO INSUFICIENTE'
-                  : `COMPRAR - R$ ${booster.price_brl.toFixed(2)}`}
-              </GlitchButton>
+                <div className="mb-4">
+                  <p className="text-sm text-gray-400 mb-2">Distribuição de Raridades:</p>
+                  <div className="space-y-1 text-sm">
+                    {Object.entries(booster.rarity_distribution || {}).map(([rarity, percent]) => (
+                      <div key={rarity} className="flex justify-between">
+                        <span className={getRarityColor(rarity)}>{rarity}</span>
+                        <span>{percent}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <GlitchButton
+                  onClick={() => {
+                    console.log('🖱️ Button clicked!', { boosterId: booster.id, quantity: quantityByBooster[booster.id] || 1 });
+                    handlePurchase(booster.id, quantityByBooster[booster.id] || 1);
+                  }}
+                  disabled={purchasing === booster.id || opening !== null || balance < booster.price_brl}
+                  variant={balance < booster.price_brl ? 'danger' : 'primary'}
+                  size="lg"
+                  isLoading={purchasing === booster.id}
+                  className="w-full"
+                >
+                  {purchasing === booster.id
+                    ? 'PROCESSANDO'
+                    : balance < booster.price_brl
+                    ? 'SALDO INSUFICIENTE'
+                    : `COMPRAR - R$ ${booster.price_brl.toFixed(2)}`}
+                </GlitchButton>
+              </div>
             </div>
           ))}
         </div>

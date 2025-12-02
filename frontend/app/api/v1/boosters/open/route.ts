@@ -147,7 +147,7 @@ export async function POST(request: NextRequest) {
     // 2. Buscar opening
     const { data: opening, error: openingError } = await supabaseAdmin
       .from('booster_openings')
-      .select('*, booster_type:booster_types(*)')
+      .select('*, booster_pack:booster_packs!inner(pack_name, edition_id, theme, price_brl)')
       .eq('id', opening_id)
       .eq('user_id', user.id)
       .single();
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 3. Buscar edition config
-    const boosterType = opening.booster_type;
+    const boosterType = opening.booster_pack;
     const editionId = boosterType.edition_id || 'ED01';
 
     const { data: editionConfig, error: editionError } = await supabaseAdmin

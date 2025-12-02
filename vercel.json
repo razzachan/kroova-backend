@@ -1,14 +1,8 @@
 {
-  "buildCommand": "cd frontend && npm run build",
-  "devCommand": "cd frontend && npm run dev",
-  "installCommand": "cd frontend && npm install",
-  "framework": "nextjs",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/.next",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./frontend",
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/frontend/$1"
-    }
-  ]
+  "installCommand": "echo 'Skipping root install'",
+  "framework": null,
+  "devCommand": "cd frontend && npm run dev"
 }

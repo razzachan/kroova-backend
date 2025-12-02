@@ -1,0 +1,30 @@
+# Backend NestJS (não deve ser deployado no Vercel)
+src/
+dist/
+nest-cli.json
+tsconfig.build.json
+
+# Supabase (já está no cloud)
+supabase/
+
+# Scripts Python
+scripts/
+*.py
+
+# Arquivos SQL
+*.sql
+
+# Node modules do backend
+node_modules/
+
+# Documentação e testes
+*.md
+!frontend/**/*.md
+reports/
+sims/
+
+# Configs do backend
+.env
+.env.local
+.env.staging.template
+.env.production.template

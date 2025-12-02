@@ -277,8 +277,7 @@ export async function POST(request: NextRequest) {
       }
 
       const randomPoolCard = poolCards[Math.floor(Math.random() * poolCards.length)];
-      // @ts-ignore - Supabase retorna objeto nested
-      const randomCard = randomPoolCard.cards_base;
+      const randomCard: any = randomPoolCard.cards_base;
 
       // Calcular liquidez final (3-layer)
       const baseLiquidityValue = baseLiquidity[rarity] || 0.01;

@@ -15,6 +15,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const edition = searchParams.get('edition') || 'ED01';
 
+    console.log('[GET /booster-packs] Starting...');
+    console.log('[GET /booster-packs] supabaseUrl:', supabaseUrl);
+    console.log('[GET /booster-packs] supabaseKey exists:', !!supabaseServiceKey);
+    console.log('[GET /booster-packs] edition:', edition);
+
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Busca packs com estatísticas
@@ -25,10 +30,12 @@ export async function GET(request: NextRequest) {
       .eq('is_active', true)
       .order('pack_id', { ascending: true });
 
+    console.log('[GET /booster-packs] Query result:', { packs: packs?.length, error });
+
     if (error) {
       console.error('[GET /booster-packs] Database error:', error);
       return NextResponse.json(
-        { ok: false, error: { code: 'DATABASE_ERROR', message: error.message } },
+        { ok: false, error: { code: 'DATABASE_ERROR', message: error.message, details: error } },
         { status: 500 }
       );
     }

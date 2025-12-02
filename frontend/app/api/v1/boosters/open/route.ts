@@ -104,6 +104,11 @@ function decideJackpotPayout(
   }
 }
 
+export async function GET(request: NextRequest) {
+  console.log('[OPEN] GET health check');
+  return NextResponse.json({ ok: true, message: 'Route is working', timestamp: new Date().toISOString() });
+}
+
 export async function POST(request: NextRequest) {
   try {
     console.log('[OPEN] POST iniciado');

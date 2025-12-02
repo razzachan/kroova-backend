@@ -165,15 +165,20 @@ export default function BoostersPage() {
       ]);
 
       // Boosters
+      console.log('🔍 boostersRes:', boostersRes);
       if (boostersRes.status === 'fulfilled') {
         const response = unwrap(boostersRes.value.data);
+        console.log('🔍 response:', response);
         const packsWithId = (response.packs || []).map((pack: any) => ({
           ...pack,
           id: pack.pack_id, // Mapeia pack_id para id para compatibilidade
           name: pack.pack_name,
           cards_per_booster: 5
         }));
+        console.log('🔍 packsWithId:', packsWithId);
         setBoosters(packsWithId);
+      } else {
+        console.error('❌ Erro ao carregar boosters:', boostersRes.reason);
       }
 
       // Wallet (+ pity counters)

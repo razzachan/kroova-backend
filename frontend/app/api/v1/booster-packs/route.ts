@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 export const runtime = 'edge';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!; // Usar anon key que já funciona
 
 /**
  * GET /api/v1/booster-packs?edition=ED01
@@ -17,10 +17,10 @@ export async function GET(request: NextRequest) {
 
     console.log('[GET /booster-packs] Starting...');
     console.log('[GET /booster-packs] supabaseUrl:', supabaseUrl);
-    console.log('[GET /booster-packs] supabaseKey exists:', !!supabaseServiceKey);
+    console.log('[GET /booster-packs] supabaseKey exists:', !!supabaseKey);
     console.log('[GET /booster-packs] edition:', edition);
 
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Busca packs com estatísticas
     const { data: packs, error } = await supabase

@@ -44,23 +44,25 @@ export async function POST(request: NextRequest) {
 
     console.log('[PURCHASE] Looking for booster_type_id:', booster_type_id);
 
-    // 1. Buscar booster type
+    // 1. Buscar booster pack
     const { data: boosterType, error: boosterError } = await supabaseAdmin
-      .from('booster_types')
+      .from('booster_packs')
       .select('*')
-      .eq('id', booster_type_id)
+      .eq('pack_id', booster_type_id)
+      .eq('is_active', true)
       .single();
 
-    console.log('[PURCHASE] Booster type result:', { boosterType, boosterError });
+    console.log('[PURCHASE] Booster pack result:', { boosterType, boosterError });
 
     if (boosterError || !boosterType) {
-      // List all available booster types for debugging
+      // List all available booster packs for debugging
       const { data: allTypes } = await supabaseAdmin
-        .from('booster_types')
-        .select('id, name')
+        .from('booster_packs')
+        .select('pack_id, pack_name')
+        .eq('is_active', true)
         .limit(5);
       
-      console.log('[PURCHASE] Available booster types:', allTypes);
+      console.log('[PURCHASE] Available booster packs:', allTypes);
       
       return NextResponse.json(
         { ok: false, error: { code: 'NOT_FOUND', message: `Booster type not found. ID received: ${booster_type_id}` } },
@@ -123,7 +125,7 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
         type: 'booster_purchase',
         amount_brl: -totalPrice,
-        description: `Compra: ${quantity}x ${boosterType.name}`,
+        description: `Compra: ${quantity}x ${boosterType.pack_name}`,
         metadata: { booster_type_id, quantity }
       });
 

@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 export const runtime = 'edge';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!; // Usar anon key
 
 /**
  * GET /api/v1/boosters/sealed
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const token = authHeader.replace('Bearer ', '');
 
     // Cria cliente Supabase com o token do usuário
-    const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+    const supabase = createClient(supabaseUrl, supabaseKey, {
       global: {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     // Busca boosters não abertos (opened_at = null)
     const { data: sealedPacks, error } = await supabase
       .from('booster_openings')
-      .select('id, booster_type_id, purchased_at, booster_types(name, edition_id)')
+      .select('id, booster_type_id, purchased_at, booster_packs!inner(pack_name, edition_id)')
       .eq('user_id', user.id)
       .is('opened_at', null)
       .order('purchased_at', { ascending: false });

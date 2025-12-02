@@ -726,6 +726,19 @@ export default function BoostersPage() {
         {/* Cartas Reveladas (OpeningSession) */}
         {animationStage === 'reveal' && showCards && revealedCards.length > 0 && (
           <>
+            {/* Background fixo para sessão de flip */}
+            <div 
+              className="fixed inset-0 z-[100]"
+              style={{
+                backgroundImage: 'url(/kroova-background.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundAttachment: 'fixed'
+              }}
+            >
+              <div className="absolute inset-0 bg-black/60" />
+            </div>
+
             <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[110] flex items-center gap-4">
               <h2 className="text-3xl font-bold text-white drop-shadow-lg">✨ Suas Novas Cartas! ✨</h2>
               <div className="flex items-center gap-2 text-sm bg-black/50 backdrop-blur-sm rounded-lg px-4 py-2 border border-gray-700">

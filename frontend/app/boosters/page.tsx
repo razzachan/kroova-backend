@@ -117,7 +117,11 @@ export default function BoostersPage() {
       // Pegar o booster mais barato (Básico)
       const boostersRes = await api.get('/booster-packs?edition=ED01');
       const response = unwrap(boostersRes.data);
-      const allBoosters = response.packs;
+      const allBoosters = response.packs.map((pack: any) => ({
+        ...pack,
+        id: pack.pack_id,
+        name: pack.pack_name
+      }));
       const basicBooster = allBoosters.sort((a: BoosterType, b: BoosterType) => a.price_brl - b.price_brl)[0];
 
       if (!basicBooster) {
@@ -163,7 +167,13 @@ export default function BoostersPage() {
       // Boosters
       if (boostersRes.status === 'fulfilled') {
         const response = unwrap(boostersRes.value.data);
-        setBoosters(response.packs || []);
+        const packsWithId = (response.packs || []).map((pack: any) => ({
+          ...pack,
+          id: pack.pack_id, // Mapeia pack_id para id para compatibilidade
+          name: pack.pack_name,
+          cards_per_booster: 5
+        }));
+        setBoosters(packsWithId);
       }
 
       // Wallet (+ pity counters)

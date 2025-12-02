@@ -265,7 +265,10 @@ export async function POST(request: NextRequest) {
       // Buscar card aleatória dessa raridade DO POOL DESTE PACK
       const { data: poolCards } = await supabaseAdmin
         .from('pack_card_pools')
-        .select('card_base_id, cards_base!inner(id, name, rarity, image_url, display_id)')
+        .select(`
+          card_base_id,
+          cards_base!inner(id, name, rarity, image_url, display_id)
+        `)
         .eq('pack_id', opening.booster_type_id)
         .eq('cards_base.rarity', rarity);
 
@@ -274,6 +277,7 @@ export async function POST(request: NextRequest) {
       }
 
       const randomPoolCard = poolCards[Math.floor(Math.random() * poolCards.length)];
+      // @ts-ignore - Supabase retorna objeto nested
       const randomCard = randomPoolCard.cards_base;
 
       // Calcular liquidez final (3-layer)

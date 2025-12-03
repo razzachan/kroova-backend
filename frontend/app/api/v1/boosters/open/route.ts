@@ -185,13 +185,22 @@ export async function POST(request: NextRequest) {
     
     console.log(`[OPEN-V2] 10. Geradas ${generatedCards.length} cartas`);
     
+    if (generatedCards.length === 0) {
+      console.error('[OPEN-V2] ERRO: Nenhuma carta foi gerada!');
+      return NextResponse.json({
+        ok: false,
+        error: { code: 'NO_CARDS_GENERATED', message: 'Nenhuma carta foi gerada' }
+      }, { status: 500 });
+    }
+    
     // Marcar como aberto
     await supabase
       .from('booster_openings')
       .update({ opened_at: new Date().toISOString() })
       .eq('id', opening_id);
     
-    console.log('[OPEN-V2] 11. Retornando cartas reais');
+    console.log('[OPEN-V2] 11. Retornando', generatedCards.length, 'cartas');
+    console.log('[OPEN-V2] Primeira carta:', generatedCards[0]);
     return NextResponse.json({
       ok: true,
       data: {

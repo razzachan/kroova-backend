@@ -83,14 +83,39 @@ export async function POST(request: NextRequest) {
     }
     console.log('[OPEN-V2] 8. Not opened yet, OK');
     
-    // TEMPORÁRIO: Retornar sucesso sem gerar cartas
-    console.log('[OPEN-V2] 9. Retornando sucesso temporário');
+    // Gerar 5 cartas MOCK para testar
+    console.log('[OPEN-V2] 9. Gerando cartas mock');
+    const mockCards = [];
+    for (let i = 0; i < 5; i++) {
+      mockCards.push({
+        id: `mock-${i}`,
+        base_id: `base-${i}`,
+        skin: 'default',
+        is_godmode: false,
+        liquidity_brl: 0.10,
+        card: {
+          name: `Carta Mock ${i + 1}`,
+          rarity: 'meme',
+          image_url: 'https://via.placeholder.com/300x420',
+          display_id: `MOCK-${i + 1}`
+        }
+      });
+    }
+    
+    // Marcar como aberto
+    await supabase
+      .from('booster_openings')
+      .update({ opened_at: new Date().toISOString() })
+      .eq('id', opening_id);
+    
+    console.log('[OPEN-V2] 10. Retornando cartas mock');
     return NextResponse.json({
       ok: true,
       data: {
         opening_id,
-        message: 'Opening encontrado, geração de cartas desabilitada temporariamente',
-        pack: opening.booster_pack.pack_name
+        cards: mockCards,
+        pity_counter: 0,
+        godmode_awarded: false
       }
     });
     

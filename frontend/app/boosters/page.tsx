@@ -61,6 +61,8 @@ export default function BoostersPage() {
   const [showCards, setShowCards] = useState(false);
   const [flipMode, setFlipMode] = useState<'interactive' | 'auto'>('interactive');
   const [quantityByBooster, setQuantityByBooster] = useState<Record<string, number>>({});
+  const [selectedTier, setSelectedTier] = useState<number | null>(null);
+  const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
   
   // ✨ DUAL PITY SYSTEM
   const [pityLegendary, setPityLegendary] = useState({ current: 0, max: 20 });
@@ -516,7 +518,7 @@ export default function BoostersPage() {
                   <div key={i} className="bg-gray-900 rounded-lg p-2">
                     <img src={c.card?.image_url || (c as any).image_url} alt={c.card?.name || (c as any).name} className="rounded object-contain mix-blend-lighten" />
                     <div className="text-xs mt-1">{c.card?.name || (c as any).name}</div>
-                    <div className="text-[11px] text-gray-500">R$ {(c.liquidity_brl || 0).toFixed(3)}</div>
+                    <div className="text-[11px] text-gray-500">R$ {(c.liquidity_brl || 0).toFixed(2)}</div>
                   </div>
                 ))}
               </div>
@@ -603,90 +605,168 @@ export default function BoostersPage() {
         )}
 
         {/* Grid de Boosters */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {boosters.map((booster) => (
-            <div
-              key={booster.id}
-              className="bg-gray-800/60 backdrop-blur-sm rounded-lg overflow-hidden border-2 border-gray-700 hover:border-blue-500 transition group"
-            >
-              {/* Imagem do Pack */}
-              <div className="relative h-80 bg-gray-900/50 flex items-center justify-center overflow-hidden">
-                <img 
-                  src={PACK_IMAGES[booster.id] || PACK_IMAGES['ED01_ALPHA']} 
-                  alt={booster.pack_name || booster.name}
-                  className="h-full w-auto object-contain transform group-hover:scale-105 transition-transform duration-300"
-                />
-                {booster.theme && (
-                  <div className="absolute top-2 left-2 bg-black/70 text-xs text-white px-2 py-1 rounded">
-                    {booster.theme}
-                  </div>
-                )}
-              </div>
+        <div className="mb-12">
+          {/* Seletor de Tier */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <TextGlitch delay={100}>ESCOLHA SUA TIER</TextGlitch>
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {[
+                { price: 0.50, name: 'Básico', color: 'from-gray-600 to-gray-800' },
+                { price: 1.00, name: 'Padrão', color: 'from-green-600 to-green-800' },
+                { price: 2.00, name: 'Premium', color: 'from-blue-600 to-blue-800' },
+                { price: 5.00, name: 'Elite', color: 'from-purple-600 to-purple-800' },
+                { price: 10.00, name: 'Whale', color: 'from-yellow-600 to-yellow-800' }
+              ].map((tier) => (
+                <button
+                  key={tier.price}
+                  onClick={() => {
+                    setSelectedTier(tier.price);
+                    setSelectedVariant(null);
+                  }}
+                  className={`relative p-6 rounded-lg border-2 transition-all ${
+                    selectedTier === tier.price
+                      ? 'border-[#00F0FF] scale-105'
+                      : 'border-gray-700 hover:border-gray-500'
+                  } bg-gradient-to-br ${tier.color}`}
+                >
+                  <div className="text-xl font-bold mb-2">{tier.name}</div>
+                  <div className="text-2xl font-bold text-[#00F0FF]">R$ {tier.price.toFixed(2)}</div>
+                  {selectedTier === tier.price && (
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-[#00F0FF] rounded-full flex items-center justify-center">
+                      ✓
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
 
-              {/* Informações do Pack */}
-              <div className="p-6">
-                <h3 className="text-2xl font-bold mb-2">{booster.pack_name || booster.name}</h3>
-                <p className="text-gray-400 mb-4">
-                  5 cartas • {booster.edition_id}
-                </p>
-                <div className="flex items-center gap-2 mb-4">
-                  <label className="text-sm text-gray-300">Quantidade</label>
+          {/* Seletor de Variante */}
+          {selectedTier !== null && (
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                <TextGlitch delay={200}>ESCOLHA SUA VARIANTE</TextGlitch>
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {boosters
+                  .filter(b => b.price_brl === selectedTier)
+                  .map((booster) => (
+                    <div
+                      key={booster.id}
+                      onClick={() => setSelectedVariant(booster.id)}
+                      className={`cursor-pointer bg-gray-800/60 backdrop-blur-sm rounded-lg overflow-hidden border-2 transition-all ${
+                        selectedVariant === booster.id
+                          ? 'border-[#00F0FF] scale-105'
+                          : 'border-gray-700 hover:border-blue-500'
+                      } group`}
+                    >
+                      <div className="relative h-64 bg-gray-900/50 flex items-center justify-center overflow-hidden">
+                        <img 
+                          src={PACK_IMAGES[booster.id] || PACK_IMAGES['ED01_ALPHA']} 
+                          alt={booster.pack_name || booster.name}
+                          className="h-full w-auto object-contain transform group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {selectedVariant === booster.id && (
+                          <div className="absolute top-2 right-2 w-8 h-8 bg-[#00F0FF] rounded-full flex items-center justify-center text-black font-bold">
+                            ✓
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-4">
+                        <h3 className="text-xl font-bold mb-2">{booster.pack_name || booster.name}</h3>
+                        <div className="text-sm text-gray-400 mb-3">
+                          <p className="mb-1">5 cartas • {booster.edition_id}</p>
+                          <p className="text-xs">Distribuição:</p>
+                          <div className="grid grid-cols-2 gap-1 text-xs mt-1">
+                            {Object.entries(booster.rarity_distribution || {}).map(([rarity, percent]) => (
+                              <div key={rarity} className="flex justify-between">
+                                <span className={getRarityColor(rarity)}>{rarity}</span>
+                                <span>{percent}%</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {/* Controles de Compra */}
+          {selectedVariant && (
+            <div className="bg-gray-800/80 backdrop-blur-sm rounded-lg p-6 border-2 border-[#00F0FF]">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <label className="text-lg font-bold text-gray-300">Quantidade:</label>
                   <input
                     type="number"
                     min={1}
                     max={100}
-                    value={quantityByBooster[booster.id] || 1}
-                    onChange={(e) => setQuantityByBooster(prev => ({ ...prev, [booster.id]: Math.max(1, Math.min(100, Number(e.target.value) || 1)) }))}
-                    className="w-20 bg-gray-700 text-white rounded px-2 py-1 border border-gray-600"
+                    value={quantityByBooster[selectedVariant] || 1}
+                    onChange={(e) => setQuantityByBooster(prev => ({ 
+                      ...prev, 
+                      [selectedVariant]: Math.max(1, Math.min(100, Number(e.target.value) || 1)) 
+                    }))}
+                    className="w-24 bg-gray-700 text-white text-center text-xl rounded px-3 py-2 border-2 border-gray-600 focus:border-[#00F0FF] focus:outline-none"
                   />
-                  <button
-                    onClick={() => setQuantityByBooster(prev => ({ ...prev, [booster.id]: 5 }))}
-                    className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded border border-gray-600"
-                    style={{
-                      transition: 'transform 0.1s ease-out',
-                      willChange: 'transform',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.05) translateZ(0)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1) translateZ(0)';
-                    }}
-                  >x5</button>
-                </div>
-
-                <div className="mb-4">
-                  <p className="text-sm text-gray-400 mb-2">Distribuição de Raridades:</p>
-                  <div className="space-y-1 text-sm">
-                    {Object.entries(booster.rarity_distribution || {}).map(([rarity, percent]) => (
-                      <div key={rarity} className="flex justify-between">
-                        <span className={getRarityColor(rarity)}>{rarity}</span>
-                        <span>{percent}%</span>
-                      </div>
+                  <div className="flex gap-2">
+                    {[5, 10, 20].map(qty => (
+                      <button
+                        key={qty}
+                        onClick={() => setQuantityByBooster(prev => ({ ...prev, [selectedVariant]: qty }))}
+                        className="text-sm bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded border border-gray-600 transition"
+                      >
+                        x{qty}
+                      </button>
                     ))}
                   </div>
                 </div>
-
-                <GlitchButton
-                  onClick={() => {
-                    console.log('🖱️ Button clicked!', { boosterId: booster.id, quantity: quantityByBooster[booster.id] || 1 });
-                    handlePurchase(booster.id, quantityByBooster[booster.id] || 1);
-                  }}
-                  disabled={purchasing === booster.id || opening !== null || balance < booster.price_brl}
-                  variant={balance < booster.price_brl ? 'danger' : 'primary'}
-                  size="lg"
-                  isLoading={purchasing === booster.id}
-                  className="w-full"
-                >
-                  {purchasing === booster.id
-                    ? 'PROCESSANDO'
-                    : balance < booster.price_brl
-                    ? 'SALDO INSUFICIENTE'
-                    : `COMPRAR - R$ ${booster.price_brl.toFixed(2)}`}
-                </GlitchButton>
+                
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <div className="text-sm text-gray-400">Total:</div>
+                    <div className="text-2xl font-bold text-[#00F0FF]">
+                      R$ {(
+                        (boosters.find(b => b.id === selectedVariant)?.price_brl || 0) * 
+                        (quantityByBooster[selectedVariant] || 1)
+                      ).toFixed(2)}
+                    </div>
+                  </div>
+                  
+                  <GlitchButton
+                    onClick={() => {
+                      const booster = boosters.find(b => b.id === selectedVariant);
+                      if (booster) {
+                        handlePurchase(booster.id, quantityByBooster[selectedVariant] || 1);
+                      }
+                    }}
+                    disabled={
+                      purchasing === selectedVariant || 
+                      opening !== null || 
+                      balance < (boosters.find(b => b.id === selectedVariant)?.price_brl || 0) * (quantityByBooster[selectedVariant] || 1)
+                    }
+                    variant={
+                      balance < (boosters.find(b => b.id === selectedVariant)?.price_brl || 0) * (quantityByBooster[selectedVariant] || 1)
+                        ? 'danger' 
+                        : 'primary'
+                    }
+                    size="lg"
+                    isLoading={purchasing === selectedVariant}
+                    className="px-8"
+                  >
+                    {purchasing === selectedVariant
+                      ? 'PROCESSANDO'
+                      : balance < (boosters.find(b => b.id === selectedVariant)?.price_brl || 0) * (quantityByBooster[selectedVariant] || 1)
+                      ? 'SALDO INSUFICIENTE'
+                      : 'COMPRAR AGORA'}
+                  </GlitchButton>
+                </div>
               </div>
             </div>
-          ))}
+          )}
         </div>
 
         {/* Animação de Abertura */}

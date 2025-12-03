@@ -154,7 +154,7 @@ export default function QuickStats() {
         <div className="relative z-10">
           <div className="text-sm text-gray-400 mb-2 uppercase tracking-wider font-semibold">Valor do Inventário</div>
           <div className="text-2xl font-bold text-white">
-            R$ {stats.inventoryValue.toFixed(3)}
+            R$ {stats.inventoryValue.toFixed(2)}
           </div>
           <div className="text-xs text-gray-500 mt-1">
             {stats.inventoryValue > 0 ? (

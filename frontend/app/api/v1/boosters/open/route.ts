@@ -120,21 +120,41 @@ export async function POST(request: NextRequest) {
       
       console.log(`[OPEN-V2] Carta ${i + 1}: raridade ${selectedRarity}`);
       
-      // Buscar cartas daquela raridade DO POOL DESTE PACK
+      // Buscar IDs das cartas daquela raridade DO POOL DESTE PACK
       const { data: poolCards, error: poolError } = await supabase
         .from('pack_card_pools')
-        .select('card_base_id, cards_base!inner(id, name, rarity, image_url, display_id)')
-        .eq('pack_id', opening.booster_type_id)
-        .eq('cards_base.rarity', selectedRarity);
+        .select('card_base_id')
+        .eq('pack_id', opening.booster_type_id);
       
-      if (poolError || !poolCards || poolCards.length === 0) {
-        console.error(`[OPEN-V2] Erro ao buscar pool ${selectedRarity}:`, poolError);
-        continue; // Pular esta carta
+      if (poolError) {
+        console.error(`[OPEN-V2] Erro ao buscar pool:`, poolError);
+        throw new Error(`Pool error: ${poolError.message}`);
       }
       
-      // Selecionar carta aleatória do pool
-      const randomPoolCard = poolCards[Math.floor(Math.random() * poolCards.length)];
-      const randomCard: any = randomPoolCard.cards_base;
+      if (!poolCards || poolCards.length === 0) {
+        console.error(`[OPEN-V2] Pool vazio para pack ${opening.booster_type_id}`);
+        throw new Error(`Pool vazio para ${opening.booster_type_id}`);
+      }
+      
+      console.log(`[OPEN-V2] Pool tem ${poolCards.length} cartas`);
+      
+      // Agora buscar as cartas base dessa raridade
+      const cardIds = poolCards.map(p => p.card_base_id);
+      const { data: cardsBase, error: cardsError } = await supabase
+        .from('cards_base')
+        .select('id, name, rarity, image_url, display_id')
+        .in('id', cardIds)
+        .eq('rarity', selectedRarity);
+      
+      if (cardsError || !cardsBase || cardsBase.length === 0) {
+        console.error(`[OPEN-V2] Erro ao buscar cartas ${selectedRarity}:`, cardsError);
+        continue; // Pular esta carta se não encontrar
+      }
+      
+      console.log(`[OPEN-V2] Encontradas ${cardsBase.length} cartas ${selectedRarity}`);
+      
+      // Selecionar carta aleatória
+      const randomCard = cardsBase[Math.floor(Math.random() * cardsBase.length)];
       
       // Criar instância da carta
       const { data: cardInstance, error: instanceError } = await supabase

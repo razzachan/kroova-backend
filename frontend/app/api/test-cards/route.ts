@@ -3,75 +3,61 @@ import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'edge';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
   
-  const supabase = createClient(supabaseUrl, anonKey);
+  // Pegar token do header (mesmo jeito que o booster opening)
+  const authHeader = request.headers.get('authorization');
+  const token = authHeader?.replace('Bearer ', '');
   
-  // Testar query EXATA do booster opening
-  const tests = [];
+  if (!token) {
+    return NextResponse.json({ ok: false, error: 'No token' });
+  }
   
-  // Teste 1: Query geral
-  const test1 = await supabase
-    .from('cards_base')
-    .select('id, name, rarity, image_url, display_id')
-    .eq('edition_id', 'ED01')
-    .limit(10);
-  
-  tests.push({
-    name: 'Query geral',
-    count: test1.data?.length || 0,
-    error: test1.error
+  const supabase = createClient(supabaseUrl, anonKey, {
+    global: { headers: { Authorization: `Bearer ${token}` } }
   });
   
-  // Teste 2: Query com rarity=trash
-  const test2 = await supabase
+  // Verificar usuário
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    return NextResponse.json({ ok: false, error: 'Not authenticated' });
+  }
+  
+  // Pegar uma carta trash qualquer
+  const { data: card } = await supabase
     .from('cards_base')
-    .select('id, name, rarity, image_url, display_id')
+    .select('id')
     .eq('edition_id', 'ED01')
     .eq('rarity', 'trash')
-    .limit(50);
+    .limit(1)
+    .single();
   
-  tests.push({
-    name: 'Query rarity=trash',
-    count: test2.data?.length || 0,
-    error: test2.error,
-    sample: test2.data?.[0]
-  });
+  if (!card) {
+    return NextResponse.json({ ok: false, error: 'No card found' });
+  }
   
-  // Teste 3: Query com rarity=meme
-  const test3 = await supabase
-    .from('cards_base')
-    .select('id, name, rarity, image_url, display_id')
-    .eq('edition_id', 'ED01')
-    .eq('rarity', 'meme')
-    .limit(50);
-  
-  tests.push({
-    name: 'Query rarity=meme',
-    count: test3.data?.length || 0,
-    error: test3.error,
-    sample: test3.data?.[0]
-  });
-  
-  // Teste 4: Query com rarity=viral
-  const test4 = await supabase
-    .from('cards_base')
-    .select('id, name, rarity, image_url, display_id')
-    .eq('edition_id', 'ED01')
-    .eq('rarity', 'viral')
-    .limit(50);
-  
-  tests.push({
-    name: 'Query rarity=viral',
-    count: test4.data?.length || 0,
-    error: test4.error,
-    sample: test4.data?.[0]
-  });
+  // Tentar inserir em cards_instances (TESTE)
+  const { data: instance, error: instanceError } = await supabase
+    .from('cards_instances')
+    .insert({
+      base_id: card.id,
+      owner_id: user.id,
+      edition_id: 'ED01',
+      skin: 'default',
+      is_godmode: false,
+      liquidity_brl: 0.10
+    })
+    .select()
+    .single();
   
   return NextResponse.json({
-    ok: true,
-    tests
+    ok: !instanceError,
+    user_id: user.id,
+    card_id: card.id,
+    instance: instance,
+    error: instanceError
   });
 }

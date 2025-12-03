@@ -516,7 +516,7 @@ export default function BoostersPage() {
                   <div key={i} className="bg-gray-900 rounded-lg p-2">
                     <img src={c.card?.image_url || (c as any).image_url} alt={c.card?.name || (c as any).name} className="rounded object-contain mix-blend-lighten" />
                     <div className="text-xs mt-1">{c.card?.name || (c as any).name}</div>
-                    <div className="text-[11px] text-gray-500">R$ {(c.liquidity_brl || 0).toFixed(2)}</div>
+                    <div className="text-[11px] text-gray-500">R$ {(c.liquidity_brl || 0).toFixed(3)}</div>
                   </div>
                 ))}
               </div>

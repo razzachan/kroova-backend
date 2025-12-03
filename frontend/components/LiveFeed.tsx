@@ -168,7 +168,7 @@ export function LiveFeed() {
                   
                   <div className="flex items-center justify-between">
                     <span className="text-[#FFC700] font-bold text-sm">
-                      R$ {reveal.amount_brl.toFixed(2)}
+                      R$ {reveal.amount_brl.toFixed(3)}
                     </span>
                     {isRare && (
                       <span className="text-xs text-[#FF006D] font-semibold animate-pulse">

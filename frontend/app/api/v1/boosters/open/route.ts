@@ -127,11 +127,11 @@ export async function POST(request: NextRequest) {
       
       console.log(`[OPEN-V2] Carta ${i + 1}: raridade ${selectedRarity}`);
       
-      // Buscar cartas (usar supabaseAdmin - cards_base é pública)
+      // Buscar cartas com base_liquidity_brl (usar supabaseAdmin - cards_base é pública)
       console.log(`[OPEN-V2] Buscando cartas ${selectedRarity} da edição ${opening.booster_pack.edition_id}`);
       let { data: cardsBase, error: cardsError } = await supabaseAdmin
         .from('cards_base')
-        .select('id, name, rarity, image_url, display_id')
+        .select('id, name, rarity, image_url, display_id, base_liquidity_brl')
         .eq('edition_id', opening.booster_pack.edition_id)
         .eq('rarity', selectedRarity)
         .limit(50);
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
         console.warn(`[OPEN-V2] Nenhuma carta ${selectedRarity} encontrada, buscando QUALQUER raridade...`);
         const fallbackQuery = await supabaseAdmin
           .from('cards_base')
-          .select('id, name, rarity, image_url, display_id')
+          .select('id, name, rarity, image_url, display_id, base_liquidity_brl')
           .eq('edition_id', opening.booster_pack.edition_id)
           .limit(50);
         
@@ -172,6 +172,28 @@ export async function POST(request: NextRequest) {
       const randomCard = cardsBase[Math.floor(Math.random() * cardsBase.length)];
       debugLogs.push(`Carta selecionada: ${randomCard.name} (${randomCard.id})`);
       
+      // Calcular liquidez base (NÃO multiplicar por price_multiplier)
+      const baseLiquidity = randomCard.base_liquidity_brl || 0.01;
+      
+      // Sortear skin (80% default 1x, 15% premium 1.5x, 5% ghost 3x)
+      const skinRoll = Math.random();
+      let skinType = 'default';
+      let skinMultiplier = 1.0;
+      
+      if (skinRoll < 0.05) {
+        skinType = 'ghost';
+        skinMultiplier = 3.0;
+      } else if (skinRoll < 0.20) {
+        skinType = 'premium';
+        skinMultiplier = 1.5;
+      }
+      
+      // Liquidez final = base × skin (SEM price_multiplier - RTP 70% fixo para todos)
+      const finalLiquidity = baseLiquidity * skinMultiplier;
+      
+      debugLogs.push(`Liquidez: R$ ${baseLiquidity.toFixed(4)} × ${skinMultiplier}x = R$ ${finalLiquidity.toFixed(4)}`);
+      console.log(`[OPEN-V2] Liquidez: R$ ${baseLiquidity.toFixed(4)} × ${skinMultiplier}x = R$ ${finalLiquidity.toFixed(4)}`);
+      
       // Criar instância da carta (usar supabaseAdmin para bypass RLS)
       const { data: cardInstance, error: instanceError } = await supabaseAdmin
         .from('cards_instances')
@@ -179,9 +201,9 @@ export async function POST(request: NextRequest) {
           base_id: randomCard.id,
           owner_id: user.id,
           edition_id: opening.booster_pack.edition_id,
-          skin: 'default',
+          skin: skinType,
           is_godmode: false,
-          liquidity_brl: 0.10
+          liquidity_brl: finalLiquidity
         })
         .select()
         .single();
@@ -197,9 +219,9 @@ export async function POST(request: NextRequest) {
       generatedCards.push({
         id: cardInstance.id,
         base_id: randomCard.id,
-        skin: 'default',
+        skin: skinType,
         is_godmode: false,
-        liquidity_brl: 0.10,
+        liquidity_brl: finalLiquidity,
         card: {
           name: randomCard.name,
           rarity: randomCard.rarity,

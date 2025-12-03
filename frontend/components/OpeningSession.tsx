@@ -184,7 +184,7 @@ export function OpeningSession({
             <div className="mt-2 text-xs text-gray-300 animate-fadeIn">
               <div className="flex items-center justify-between">
                 <span className="font-semibold">{card.name}</span>
-                <span className="text-[11px] px-2 py-0.5 rounded bg-gray-800 border border-gray-700">R$ {(card.liquidity_brl || 0).toFixed(2)}</span>
+                <span className="text-[11px] px-2 py-0.5 rounded bg-gray-800 border border-gray-700">R$ {(card.liquidity_brl || 0).toFixed(3)}</span>
               </div>
               <div className="text-[11px] text-gray-500">{card.skin || 'default'} • {card.rarity}</div>
             </div>

@@ -225,14 +225,14 @@ export default function CardDetailPage({ params }: { params: { card_base_id: str
                 <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-800">
                   <p className="text-xs text-gray-400 mb-1">Floor Price</p>
                   <p className="text-2xl font-bold text-[#00F0FF]">
-                    {stats.floor_price !== null ? `R$ ${stats.floor_price.toFixed(2)}` : 'N/A'}
+                    {stats.floor_price !== null ? `R$ ${stats.floor_price.toFixed(3)}` : 'N/A'}
                   </p>
                 </div>
 
                 <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-800">
                   <p className="text-xs text-gray-400 mb-1">Última Venda</p>
                   <p className="text-2xl font-bold text-[#FF006D]">
-                    {stats.last_sale_price !== null ? `R$ ${stats.last_sale_price.toFixed(2)}` : 'N/A'}
+                    {stats.last_sale_price !== null ? `R$ ${stats.last_sale_price.toFixed(3)}` : 'N/A'}
                   </p>
                 </div>
 
@@ -248,7 +248,7 @@ export default function CardDetailPage({ params }: { params: { card_base_id: str
 
                 <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-800">
                   <p className="text-xs text-gray-400 mb-1">Preço Médio</p>
-                  <p className="text-2xl font-bold text-white">R$ {stats.avg_price.toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-white">R$ {stats.avg_price.toFixed(3)}</p>
                 </div>
 
                 <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-800">
@@ -317,7 +317,7 @@ export default function CardDetailPage({ params }: { params: { card_base_id: str
                   <div className="flex items-center gap-4">
                     <div>
                       <p className="text-2xl font-bold text-[#00F0FF]">
-                        R$ {listing.price_brl.toFixed(2)}
+                        R$ {listing.price_brl.toFixed(3)}
                       </p>
                       <p className="text-sm text-gray-400">
                         Vendedor: @{listing.seller?.username || 'anonymous'}

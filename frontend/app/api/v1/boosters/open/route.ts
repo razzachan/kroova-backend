@@ -113,42 +113,24 @@ export async function POST(request: NextRequest) {
       
       console.log(`[OPEN-V2] Carta ${i + 1}: raridade ${selectedRarity}`);
       
-      // Buscar IDs das cartas daquela raridade DO POOL DESTE PACK
-      console.log(`[OPEN-V2] Buscando pool para pack_id: ${opening.booster_type_id}`);
-      const { data: poolCards, error: poolError } = await supabase
-        .from('pack_card_pools')
-        .select('card_base_id')
-        .eq('pack_id', opening.booster_type_id);
-      
-      if (poolError) {
-        console.error(`[OPEN-V2] Erro ao buscar pool:`, poolError);
-        throw new Error(`Pool error: ${poolError.message}`);
-      }
-      
-      if (!poolCards || poolCards.length === 0) {
-        console.error(`[OPEN-V2] Pool vazio para pack ${opening.booster_type_id}!`);
-        throw new Error(`Pool vazio para ${opening.booster_type_id}`);
-      }
-      
-      console.log(`[OPEN-V2] Pool tem ${poolCards.length} cartas totais`);
-      
-      // Agora buscar as cartas base dessa raridade
-      const cardIds = poolCards.map(p => p.card_base_id);
-      console.log(`[OPEN-V2] Buscando cartas ${selectedRarity} entre ${cardIds.length} IDs`);
+      // TEMPORÁRIO: Buscar direto da edição sem filtrar por pack
+      // (para testar se o problema é com o .in() de 251 IDs)
+      console.log(`[OPEN-V2] Buscando cartas ${selectedRarity} da edição ${opening.booster_pack.edition_id}`);
       const { data: cardsBase, error: cardsError } = await supabase
         .from('cards_base')
         .select('id, name, rarity, image_url, display_id')
-        .in('id', cardIds)
-        .eq('rarity', selectedRarity);
+        .eq('edition_id', opening.booster_pack.edition_id)
+        .eq('rarity', selectedRarity)
+        .limit(50); // Limitar para evitar retornar muitas
       
       if (cardsError) {
         console.error(`[OPEN-V2] Erro ao buscar cartas ${selectedRarity}:`, cardsError);
-        continue; // Pular esta carta se der erro
+        continue;
       }
       
       if (!cardsBase || cardsBase.length === 0) {
-        console.warn(`[OPEN-V2] Nenhuma carta ${selectedRarity} encontrada no pool, pulando...`);
-        continue; // Pular esta carta se não encontrar
+        console.warn(`[OPEN-V2] Nenhuma carta ${selectedRarity} encontrada, pulando...`);
+        continue;
       }
       
       console.log(`[OPEN-V2] Encontradas ${cardsBase.length} cartas ${selectedRarity}`);

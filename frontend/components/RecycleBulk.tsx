@@ -164,7 +164,7 @@ export default function RecycleBulk({ cards, onSuccess }: RecycleBulkProps) {
           onClick={() => setSelectedCards(new Set())}
           disabled={selectedCards.size === 0 || recycling}
           variant="secondary"
-          glitchIntensity={0.3}
+          glitchIntensity="subtle"
         >
           LIMPAR SELEÇÃO
         </GlitchButton>
@@ -173,7 +173,7 @@ export default function RecycleBulk({ cards, onSuccess }: RecycleBulkProps) {
           onClick={handleRecycle}
           disabled={!canRecycle || recycling}
           variant="primary"
-          glitchIntensity={0.5}
+          glitchIntensity="medium"
           className="flex-1"
         >
           {recycling ? 'RECICLANDO...' : `RECICLAR ${REQUIRED_CARDS} CARTAS`}

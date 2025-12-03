@@ -83,24 +83,94 @@ export async function POST(request: NextRequest) {
     }
     console.log('[OPEN-V2] 8. Not opened yet, OK');
     
-    // Gerar 5 cartas MOCK para testar
-    console.log('[OPEN-V2] 9. Gerando cartas mock');
-    const mockCards = [];
+    // Buscar config da edição
+    const editionId = opening.booster_pack.edition_id;
+    const { data: editionConfig } = await supabase
+      .from('edition_configs')
+      .select('rarity_distribution')
+      .eq('id', editionId)
+      .single();
+    
+    if (!editionConfig) {
+      return NextResponse.json(
+        { ok: false, error: { code: 'CONFIG_NOT_FOUND', message: 'Edition config not found' } },
+        { status: 500 }
+      );
+    }
+    
+    console.log('[OPEN-V2] 9. Edition config OK, gerando 5 cartas');
+    
+    // Gerar 5 cartas baseado na distribuição de raridade
+    const generatedCards = [];
+    const rarityDist = editionConfig.rarity_distribution;
+    
     for (let i = 0; i < 5; i++) {
-      mockCards.push({
-        id: `mock-${i}`,
-        base_id: `base-${i}`,
+      // Selecionar raridade baseado na distribuição
+      const rand = Math.random() * 100;
+      let cumulative = 0;
+      let selectedRarity = 'trash';
+      
+      for (const [rarity, prob] of Object.entries(rarityDist)) {
+        cumulative += (prob as number);
+        if (rand < cumulative) {
+          selectedRarity = rarity;
+          break;
+        }
+      }
+      
+      console.log(`[OPEN-V2] Carta ${i + 1}: raridade ${selectedRarity}`);
+      
+      // Buscar cartas daquela raridade DO POOL DESTE PACK
+      const { data: poolCards, error: poolError } = await supabase
+        .from('pack_card_pools')
+        .select('card_base_id, cards_base!inner(id, name, rarity, image_url, display_id)')
+        .eq('pack_id', opening.booster_type_id)
+        .eq('cards_base.rarity', selectedRarity);
+      
+      if (poolError || !poolCards || poolCards.length === 0) {
+        console.error(`[OPEN-V2] Erro ao buscar pool ${selectedRarity}:`, poolError);
+        continue; // Pular esta carta
+      }
+      
+      // Selecionar carta aleatória do pool
+      const randomPoolCard = poolCards[Math.floor(Math.random() * poolCards.length)];
+      const randomCard: any = randomPoolCard.cards_base;
+      
+      // Criar instância da carta
+      const { data: cardInstance, error: instanceError } = await supabase
+        .from('cards_instances')
+        .insert({
+          base_id: randomCard.id,
+          owner_id: user.id,
+          edition_id: editionId,
+          skin: 'default',
+          is_godmode: false,
+          liquidity_brl: 0.10
+        })
+        .select()
+        .single();
+      
+      if (instanceError || !cardInstance) {
+        console.error('[OPEN-V2] Erro ao criar instância:', instanceError);
+        continue;
+      }
+      
+      generatedCards.push({
+        id: cardInstance.id,
+        base_id: randomCard.id,
         skin: 'default',
         is_godmode: false,
         liquidity_brl: 0.10,
         card: {
-          name: `Carta Mock ${i + 1}`,
-          rarity: 'meme',
-          image_url: 'https://via.placeholder.com/300x420',
-          display_id: `MOCK-${i + 1}`
+          name: randomCard.name,
+          rarity: randomCard.rarity,
+          image_url: randomCard.image_url,
+          display_id: randomCard.display_id
         }
       });
     }
+    
+    console.log(`[OPEN-V2] 10. Geradas ${generatedCards.length} cartas`);
     
     // Marcar como aberto
     await supabase
@@ -108,12 +178,12 @@ export async function POST(request: NextRequest) {
       .update({ opened_at: new Date().toISOString() })
       .eq('id', opening_id);
     
-    console.log('[OPEN-V2] 10. Retornando cartas mock');
+    console.log('[OPEN-V2] 11. Retornando cartas reais');
     return NextResponse.json({
       ok: true,
       data: {
         opening_id,
-        cards: mockCards,
+        cards: generatedCards,
         pity_counter: 0,
         godmode_awarded: false
       }

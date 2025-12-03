@@ -73,6 +73,8 @@ export async function POST(request: NextRequest) {
       );
     }
     console.log('[OPEN-V2] 7. Opening OK:', opening.id);
+    console.log('[OPEN-V2] Edition ID:', opening.booster_pack.edition_id);
+    console.log('[OPEN-V2] Pack name:', opening.booster_pack.pack_name);
     
     if (opening.opened_at) {
       console.error('[OPEN-V2] 8. Already opened');

@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { unwrap } from '@/lib/unwrap';
 import { cardAudio } from '@/lib/cardAudio';
 import GlitchButton from '@/components/UI/GlitchButton';
+import RecycleSuccessModal from '@/components/RecycleSuccessModal';
 
 interface Card {
   id: string;
@@ -30,6 +32,9 @@ interface RecycleBulkProps {
 export default function RecycleBulk({ cards, onSuccess }: RecycleBulkProps) {
   const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set());
   const [recycling, setRecycling] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [rewardData, setRewardData] = useState<any>(null);
+  const router = useRouter();
 
   const REQUIRED_CARDS = 25;
   const canRecycle = selectedCards.size === REQUIRED_CARDS;
@@ -64,9 +69,8 @@ export default function RecycleBulk({ cards, onSuccess }: RecycleBulkProps) {
 
       const data = unwrap(res);
       cardAudio.playSuccessChime();
-      alert(
-        `🎉 ${data.cards_recycled} cartas recicladas! Você ganhou 1 booster: ${data.reward.booster_name}`
-      );
+      setRewardData(data);
+      setShowSuccessModal(true);
       setSelectedCards(new Set());
       if (onSuccess) onSuccess();
     } catch (error: any) {
@@ -184,6 +188,23 @@ export default function RecycleBulk({ cards, onSuccess }: RecycleBulkProps) {
         <p className="text-center text-yellow-400 text-sm mt-4">
           ⚠️ Você precisa ter pelo menos {REQUIRED_CARDS} cartas no inventário
         </p>
+      )}
+
+      {/* Success Modal */}
+      {rewardData && (
+        <RecycleSuccessModal
+          isOpen={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+          cardsRecycled={rewardData.cards_recycled}
+          rewardBooster={{
+            booster_id: rewardData.reward.booster_id,
+            booster_name: rewardData.reward.booster_name,
+            booster_description: rewardData.reward.booster_description
+          }}
+          onOpenBooster={() => {
+            router.push('/collection?openBooster=' + rewardData.reward.booster_id);
+          }}
+        />
       )}
     </div>
   );

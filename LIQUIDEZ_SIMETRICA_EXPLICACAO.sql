@@ -1,0 +1,18 @@
+
+-- Documentação: Sistema de Liquidez Simétrico
+-- 
+-- As cartas têm base_liquidity_brl calibrada para RTP ~30% em boosters Básico (mult 1x)
+-- 
+-- Ao abrir boosters mais caros, o backend DEVE multiplicar a liquidez pelo price_multiplier:
+--   drop_value = card.base_liquidity_brl × skin_multiplier × booster.price_multiplier
+-- 
+-- Isso garante RTP simétrico (~30%) independente do preço do booster, como slots machines.
+-- 
+-- Exemplo:
+--   Carta Trash: base_liquidity_brl = R$ 0.005
+--   
+--   Básico (R$ 0.50, mult 1x):  R$ 0.005 × 1  = R$ 0.005
+--   Padrão (R$ 1.00, mult 2x):  R$ 0.005 × 2  = R$ 0.010
+--   Premium (R$ 2.00, mult 4x): R$ 0.005 × 4  = R$ 0.020
+--   Elite (R$ 5.00, mult 10x):  R$ 0.005 × 10 = R$ 0.050
+--   Whale (R$ 10, mult 20x):    R$ 0.005 × 20 = R$ 0.100

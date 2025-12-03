@@ -15,6 +15,7 @@
     "axios": "^1.13.2",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.25",
     "howler": "^2.2.4",
     "jsonwebtoken": "^9.0.2",
     "next": "16.0.4",

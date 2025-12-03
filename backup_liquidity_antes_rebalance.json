@@ -1,0 +1,2198 @@
+[
+  {
+    "id": "e1c09d52-1d5d-44a9-b87a-59ed98cb811e",
+    "name": "Canon Break",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "e3935a94-f6ce-49c2-b6fd-26901ffeac86",
+    "name": "ViewerUm",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "a7877dde-f5cc-47ce-8876-f218c1d8e053",
+    "name": "PopupHell",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "d73578e1-c356-4cd8-b0a0-12ea03a129c9",
+    "name": "Desenrola+",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "c83c9eb5-c8f9-435c-a6d8-03ee6c96d8af",
+    "name": "LogoFail",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "948f2d70-a318-4512-9277-9778675b5bce",
+    "name": "IdeiaViral",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "7f989c91-bb4f-4fcf-aa2c-63a973283d7a",
+    "name": "Cringe Pil",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "1886423d-9cf8-4ae4-8cf9-69982b251d3b",
+    "name": "NichoEsqc",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "6e812f86-42ef-4c2b-a8f5-4fc7e68852aa",
+    "name": "Totem Sus",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "6a168c00-c5f2-42cf-8da4-2a52fe433fa9",
+    "name": "LiveMute",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "24162c57-6e83-43a3-9331-9d0daaf0d436",
+    "name": "CopyVerg",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "9069fc2f-df45-45e8-ac61-ea55dc3004b0",
+    "name": "RageFarmer",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "7e440b99-e8e5-47e6-b516-4c8416f69105",
+    "name": "Influ Mito",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "b3164df6-1af9-4022-a79b-b1f909b9e340",
+    "name": "Streamerzão",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "03d7086d-0cb4-4d53-9dd8-862f53a68d9d",
+    "name": "Sneed Feed",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "e67a860c-a27b-4c92-b9de-098bb5f48152",
+    "name": "AudioFail",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "04782c2a-ea9d-4ff5-a6bc-5b38f1ced269",
+    "name": "RetweetSec",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "6eea2ecc-712e-4e45-b8ea-5592982cf930",
+    "name": "EventoCance",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "6cbae594-f146-491c-9348-c0850280f36e",
+    "name": "ListaEsq",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "6b3b7fbd-4c32-4d72-9a26-64b7a008c8f2",
+    "name": "BolaEco",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "2945b272-a263-45aa-973c-cb539999f7a8",
+    "name": "Ghostfluênc",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "5c0418d2-aa27-42b1-bada-c082bf83ac61",
+    "name": "CancelFraco",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "3655d141-6f15-4d0f-82a6-c37b335f6ceb",
+    "name": "ResenhaBot",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "4a545feb-93d4-452d-b46f-f37f72d486cd",
+    "name": "GhostPost",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "d079103e-0ef8-49f8-b48e-8695fb073dd0",
+    "name": "CriptoRekt",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "1698350b-7a10-4927-ba19-499099f2dbd8",
+    "name": "CoachBluff",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "61a347ec-0ff8-4630-bd06-481acdf3e996",
+    "name": "GifPesado",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "1bbf3138-c4f6-4528-93a7-5ab2ce09b4ac",
+    "name": "LikeBot",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "43d2c71e-870f-4f41-907d-f30a29dd248a",
+    "name": "MetaGado",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "2ed2169a-90b1-46fc-a439-a8164e63ddde",
+    "name": "QuoteVazio",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "756bff68-2b3e-455a-bb1f-f00d340a5734",
+    "name": "PlugDrop",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "50730724-5279-4a6b-87bc-06452c1bcc03",
+    "name": "HypeGone",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "923c93e3-ae80-4171-9e34-e52f312e8048",
+    "name": "HashtagSpam",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "14afab15-aaf6-4bb4-b3f5-15e6ca67cb15",
+    "name": "FakeGuru",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "02981e96-f824-401b-9173-3c32cad0b2c1",
+    "name": "FonteCringe",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "83ceb045-76eb-459b-a393-daf55c85bf62",
+    "name": "AlgoIgnor",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "6a811d66-772d-433d-a487-c3d11f81f7ee",
+    "name": "PromoCrash",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "5ac0de60-71f8-45c6-badf-b045ffe3d436",
+    "name": "Limit Panic",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "3860b09e-da76-476d-bd06-2f3068af2a91",
+    "name": "FollowFake",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "7a2e4135-5ef2-415b-8e67-ff32aef265e4",
+    "name": "MetaErrada",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "916866f7-5213-4cbd-a2b2-8e47f8e9de5c",
+    "name": "LinkQueb",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "6323104f-40f9-4c08-809c-a3f726b8b92d",
+    "name": "FiltroFake",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "322e7ca6-0eb1-4ff1-a35f-e9f7afecdd40",
+    "name": "Rent Free",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "24f9dc96-4fa6-453e-b7c0-00daf077fcf4",
+    "name": "LiveDeserta",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "3dc77cef-1379-414f-872f-a217701a312e",
+    "name": "TemplateGen",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "71b57605-a16b-482f-9551-b5e42cfb01c0",
+    "name": "LinkShady",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "088461b3-075c-469c-855f-21540c5c63cf",
+    "name": "TrendLate",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "7658258c-1759-4e87-bdb3-1e210bd9fefa",
+    "name": "IconeCópia",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "63a8349c-ab5f-4ff4-afe6-b0b7fc2f1d6d",
+    "name": "Cope King",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "35412eb4-ff11-45d5-9538-6396bf0a4910",
+    "name": "SaveVazio",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "589975dd-33df-4f6d-b69d-f801ec73fcf9",
+    "name": "Krouva, o Guardião",
+    "rarity": "godmode",
+    "liquidity": 2500.0
+  },
+  {
+    "id": "48a81eea-cac7-4193-a333-6352c27fbdc0",
+    "name": "ThumbFalso",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "82322902-cd59-4505-a7c0-caaca087070d",
+    "name": "CapaFalsa",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "2b3593cb-032e-46d9-819f-055681c0c8bb",
+    "name": "SubBeg",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "4d9be322-e42b-4e17-8985-e4c648d05a1f",
+    "name": "Dilate Pro",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "00330bd1-22da-4f30-b419-d0aabf726b2f",
+    "name": "EmojiFlood",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "848c09f3-6e47-4ddb-9c0a-282b16cf9f2b",
+    "name": "BotReply",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "05b7dc7c-1bad-423b-b12f-b9dc13791aac",
+    "name": "ViralFail",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "349bcb62-0fbc-45b6-a8b9-5fac2007ff3b",
+    "name": "LoopMental",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "899c0e3d-5c2e-4a9d-831f-7b8fbc8a3ec8",
+    "name": "QRMorto",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "86aaf797-572e-4cc2-a53e-d96b1c1398ae",
+    "name": "ExpireConte",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "259a0666-a65c-4306-8bb2-6f6f3b3e6b32",
+    "name": "ViewCount0",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "01892ef3-99b1-4e6f-8295-1f64735a7a6d",
+    "name": "LiveDesert",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "77c9bf54-084e-4349-bb15-ab2f1960b5db",
+    "name": "SpaceFraco",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "50f463ea-ebc2-4de3-a809-4ef644c68046",
+    "name": "FormFake",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "64f85e80-7d9d-43c9-9a63-8d080b06866d",
+    "name": "RageBait",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "7f3c9f6f-7fc2-4a95-bc20-035b40cada18",
+    "name": "PropSurda",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "4d71ac97-ffe8-451e-b08f-a86cfac52a46",
+    "name": "ClipeCópia",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "7b631f81-05e5-4891-880a-7f0192df2fe7",
+    "name": "DuoZero",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "58fb49c8-b274-472b-90b3-cc69685a5fff",
+    "name": "RaidFail",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "39da45e4-6229-4e3c-bdeb-99603bb270c7",
+    "name": "WebinárVão",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "0d75df3a-c893-495d-aab2-7d5db09bb705",
+    "name": "PinEterno",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "245fcadb-3887-4baa-9d72-ea76e3e9e01b",
+    "name": "BanInjusto",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "766fd0dc-ef3c-45bd-b3a0-e514c7498304",
+    "name": "BotãoLike",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "3231aba9-2deb-467d-b8de-83755e7730c2",
+    "name": "ErroFatal",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "4d684d85-4e5b-415a-acb9-fd843ec0525c",
+    "name": "CópiaNota",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "3b7758de-9007-4fac-85a0-34c877036060",
+    "name": "BioPromessa",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "2072400b-bb26-4769-8930-670ebc94ca3d",
+    "name": "MemeLixo",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "8681cbdc-1e5c-4cc4-b781-a4cbc389b4d0",
+    "name": "GrindGhost",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "7b8faa0f-05e1-4b2c-bb89-841755874568",
+    "name": "ThreadSeco",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "2648654c-3c38-4b1a-91f0-66a4dd0f4b49",
+    "name": "HypeZero",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "81d663ef-c24a-4231-8e88-592256ac3a12",
+    "name": "BaitGuloso",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "1e82eb1b-0ebd-486c-ac9f-27b0ba2b610b",
+    "name": "BotFollow",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "3766aad5-2db3-4ee1-a6c6-7af44ffb106c",
+    "name": "GhostReader",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "7db60994-d639-4bd5-a2aa-0bf642acb456",
+    "name": "PlaylistBot",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "4c2828ac-c457-477e-bc4d-1eb1020c2d8c",
+    "name": "Seethe Lord",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "58193c17-a62e-42a4-be33-1d04961c9b98",
+    "name": "PatchFail",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "472e1876-15a8-422e-be36-8acb04b75e24",
+    "name": "ExpoPretens",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "30553b76-daa6-41ab-9ba3-48949d05f3c5",
+    "name": "SelfEterno",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "c6d1a2dc-0292-47aa-a04b-0394c5fb0b10",
+    "name": "Guerreiro Novato",
+    "rarity": "trash",
+    "liquidity": 5.0
+  },
+  {
+    "id": "950e613c-6f0d-474f-b41e-bb482f665eee",
+    "name": "Arqueiro Ágil",
+    "rarity": "trash",
+    "liquidity": 5.0
+  },
+  {
+    "id": "3342ec96-9ec7-4801-ae2b-e3fce7cf7411",
+    "name": "Mago Aprendiz",
+    "rarity": "meme",
+    "liquidity": 10.0
+  },
+  {
+    "id": "03350050-24f0-4118-93ea-23a6e8ed11cf",
+    "name": "Golpe Rápido",
+    "rarity": "meme",
+    "liquidity": 10.0
+  },
+  {
+    "id": "f6a4e730-54d7-4e3c-86dd-c5a93ac61674",
+    "name": "Feiticeira das Sombras",
+    "rarity": "viral",
+    "liquidity": 50.0
+  },
+  {
+    "id": "05dfa626-b170-4a42-b9a8-39033b296d83",
+    "name": "InfluFake",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "83f07e3a-2913-41a0-b3ac-bd0ab57dd39b",
+    "name": "Escudo de Luz",
+    "rarity": "meme",
+    "liquidity": 10.0
+  },
+  {
+    "id": "1cd8c707-fda1-46a2-9d21-58c4c506038a",
+    "name": "BioLink",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "c9916613-6b9d-4d1f-bef6-795b5ab65b40",
+    "name": "Cavaleiro do Reino",
+    "rarity": "viral",
+    "liquidity": 50.0
+  },
+  {
+    "id": "d73e5f7e-41ea-4708-95dc-52ae343957f7",
+    "name": "Espada Flamejante",
+    "rarity": "viral",
+    "liquidity": 50.0
+  },
+  {
+    "id": "b94cf475-4531-4ee3-b3b3-c1a561a84c66",
+    "name": "Dragão Ancião",
+    "rarity": "legendary",
+    "liquidity": 250.0
+  },
+  {
+    "id": "86625ca9-ab93-4bf9-9217-84fbaf1439f6",
+    "name": "Portal Dimensional",
+    "rarity": "legendary",
+    "liquidity": 250.0
+  },
+  {
+    "id": "53c935ef-1a6e-451d-a13f-a4c993f6f7b4",
+    "name": "HashDead",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "351cfb00-6c1f-4111-bda2-5bf13bcfb8bc",
+    "name": "BurnFalse",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "32822f67-140b-44dd-a925-155e41c58c03",
+    "name": "TempBobo",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "854c5a9b-87e1-44ab-910a-d7d1edb9fd27",
+    "name": "GigaFake",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "136fa0a0-6ab1-474b-a102-ec258e623f25",
+    "name": "UpdateBug",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "012c481d-7fd6-4e5c-8151-8f2301457988",
+    "name": "ReelsLoop",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "5661336b-0968-450f-a03c-7f7c9a1fba7a",
+    "name": "BugIgnorado",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "27f4e329-0088-4dcd-ae6b-d6eea495ac6c",
+    "name": "Tio do Zap",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "0f83c3a8-d9da-4148-be93-ddd3dd531276",
+    "name": "Zé Digital",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "6946ed38-3497-4173-99bb-cab807e1f9ee",
+    "name": "CursoFail",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "4e397968-ee3c-4390-afb6-7ef9362eb933",
+    "name": "RetweetBot",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "33837748-49f2-4fdc-85c6-a4d739d52ca9",
+    "name": "StatusGhost",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "8ec69495-cc75-493b-9461-7e1259240699",
+    "name": "NotifGhost",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "3f3958cd-1d23-4fe0-a902-a1fe5b172d40",
+    "name": "InfluWannab",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "73d2c3ef-19c5-474b-b149-53739f81f5da",
+    "name": "Rei do Pix",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "70cd9e90-58af-4827-a0ed-1fdee9fefafb",
+    "name": "Rei Reels",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "79ac4d66-f201-4655-88cf-8159e6265b68",
+    "name": "Feed King",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "2db49169-574e-4cc9-ad7d-334dcb939457",
+    "name": "BetZeroum",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "8b0ad768-e8de-49f3-84c2-595ba19d7438",
+    "name": "Shorts Lord",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "8c639028-8f51-4e16-b54b-c9aabeb64ac8",
+    "name": "SpamLord",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "303af7ed-513f-469f-bdc8-2787fcf86444",
+    "name": "RaidBot",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "48fd6e5d-bf52-44ab-814e-3d4cb7c18459",
+    "name": "SkyMentira",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "74532836-91f1-4bae-ad47-857a4927f09c",
+    "name": "TrapQueen",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "88eeb7c0-77d2-48db-a071-7a8b83a6253c",
+    "name": "MetaZumbi",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "89fa2791-7469-4cee-a404-02f4908293f0",
+    "name": "ViraFail",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "b02deb48-f6f3-4860-8ef7-64b76e119cb0",
+    "name": "BioClichê",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "666fcb93-a268-4bc8-a2b1-f447fb0df9d0",
+    "name": "DoomScroll",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "671760a3-5e73-4f6e-96a4-cb17a2dfbfe1",
+    "name": "PixOrfão",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "188086a0-69b5-4f56-8b92-ca3e23feca49",
+    "name": "Degen Hour",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "320eb52c-61d9-413c-8fa7-8b09853cd020",
+    "name": "DropFlip",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "253ea834-105c-40f1-bf26-0cfb1adb96b3",
+    "name": "ManutInf",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "2e8c5eef-9662-4ba1-921d-9760d760bb18",
+    "name": "Quote God",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "2a6fc68c-d3a7-4ff2-8cb0-fdcb9a4ef017",
+    "name": "NGMI Wave",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "830026d6-731f-4391-b756-a9017939260f",
+    "name": "NPC Dialog",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "710cd241-1ce7-434a-b217-7a1120d19a4e",
+    "name": "BaitMaster",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "54cc705e-ad23-4339-810f-001ffa30a76d",
+    "name": "HODL Mestre",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "1446247a-b94e-4a9e-8004-1b8fc6b91b66",
+    "name": "PlayVício",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "67b15106-466d-48af-866b-93175747515c",
+    "name": "Sigma Prime",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "5359cf04-d03d-4597-99de-249c7f6000ec",
+    "name": "Ohio Boss",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "77b5ffec-c466-4608-80ee-787699e9a4f1",
+    "name": "LurkShadow",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "2566c5c3-4374-4c25-b17a-008054b0664c",
+    "name": "GrindFake",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "5ca1c481-1c6e-4d32-86a2-7d8820ec800f",
+    "name": "Pulso Viral",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "6370785b-7969-4ded-bdb6-578347288990",
+    "name": "Backrooms",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "79282c9a-2cda-474d-9a38-6713ae155ac6",
+    "name": "Liminal One",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "0ac6d126-88f2-4353-bc48-9d7db9a41f1c",
+    "name": "Bot Master",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "8b7df402-9ab0-445b-bb4c-496500865415",
+    "name": "SideQuest+",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "19a9e919-54d4-476a-a37c-5eaf693de110",
+    "name": "Lore Guard",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "058dd94c-fd40-4eaa-a7fc-e0fdfaec42a3",
+    "name": "PlayViciado",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "7225a059-4c5e-40da-a04c-31768fc7914f",
+    "name": "MoodBoard",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "27e4f5db-82b3-413d-87ef-5fc00b1cfb9c",
+    "name": "CriptoWhale",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "4c0a58fa-34ca-4d2d-b93a-f655893f8614",
+    "name": "Simp Energy",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "58e07351-0d0f-4eaf-b62a-08e2705dbdda",
+    "name": "Ratio This",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "29851f37-b5f7-4865-8574-6aaa9509f3f7",
+    "name": "HustleLarp",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "8893ef27-ef27-406b-bc40-5a8487f0c071",
+    "name": "Touch Base",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "66191cf4-1be7-486b-9a97-fba5fdb7dd60",
+    "name": "DropShipper",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "228bd9e5-e88a-4923-a370-04505a6040af",
+    "name": "BuzzKill",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "1b23f7ab-0899-4fe4-ae6c-c087b0b90023",
+    "name": "TradeRekt",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "6d91d384-b09d-4f95-85ab-55100c6cd707",
+    "name": "SigmaBluff",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "3ca99e2d-ed90-4eee-819f-28356c991702",
+    "name": "FakeProof",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "0b89fccd-888d-4d07-b999-92b43053dcb7",
+    "name": "TrendSurfer",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "04d9c266-43d2-496d-b49e-d437032bb71b",
+    "name": "TrendQueima",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "4df35fe0-4902-4342-95c0-770fd4b2b477",
+    "name": "CópiaPura",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "2459a5ab-e76d-4159-b6e5-66b271d38821",
+    "name": "BuzzHunter",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "17cb1547-6d96-4498-90e6-85b9d578f0cf",
+    "name": "BotCursor",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "2ebe7525-5d1a-44f5-adab-e39b6acb8829",
+    "name": "ShillLost",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "32ab8e41-e4d0-42b9-864a-ee6597f5987a",
+    "name": "TikRaiz",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "4449d663-2503-418a-a4f3-b6ca383a7573",
+    "name": "CapLock",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "69b7814a-cf6e-4d62-8f57-c93e609c8956",
+    "name": "TikStar",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "1999a889-6cd9-4725-af1f-84bc1badccf2",
+    "name": "SkinInvest",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "38e41a7a-1b2d-4fd1-835a-025ddfd11015",
+    "name": "AutoReply",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "7613b4bf-8be6-4822-a4ef-e69ab30f27f5",
+    "name": "NotifFlood",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "8b140c66-c7d5-4de2-a9e5-37d8cfa9368d",
+    "name": "Pancadão Go",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "8e214bbc-08b5-4f59-a599-299b0487a62f",
+    "name": "Odd Run",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "2f90914a-ba1f-4cd7-9237-2ae3a0ada616",
+    "name": "Portal Love",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "31858770-2766-4771-963c-2a8a5a47af22",
+    "name": "Fatal Race",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "7f9538b9-a9c4-4d61-a83a-7502101b9a28",
+    "name": "Edit Track",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "7b5113e0-749f-4df9-ad16-47f552636b68",
+    "name": "TrendExplos",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "3297ec0e-9ff0-435c-83c8-fe71c92bda5e",
+    "name": "ShillLegend",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "5cd52503-d60c-4317-9b86-53d68a65a2c3",
+    "name": "Hell Deploy",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "48fc67d8-dabf-447a-b0f5-58a8f6133c4a",
+    "name": "Flex Prime",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "73e893c8-c529-43b1-b2db-882df9245c22",
+    "name": "ViewAddic",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "660530dc-cc0e-47c0-b20f-eb3fd45e95ba",
+    "name": "CancelWave",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "8808dc22-1666-4f2b-9434-312f53fa63c8",
+    "name": "AlgoFodido",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "543b9a1c-f40f-4cac-827c-35f5be32fe09",
+    "name": "IACopyGod",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "67bdbda7-9e23-4c8d-b743-02dfed51d44c",
+    "name": "Polêmica BR",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  },
+  {
+    "id": "42069f52-1510-42b5-8146-217c2b0a97df",
+    "name": "Duo Cinema",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "316f17a5-9459-45cc-8867-1973ed6c8a4b",
+    "name": "Boom Sertão",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "3f3f0eb9-6f28-4ed2-8f10-6e9f3457b5da",
+    "name": "Wed Dance",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "64627fc2-32d6-4f2c-94fa-fc9efb7d6b33",
+    "name": "MetaChaos",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "3545ffec-8c2a-458d-8744-edac5abe5d20",
+    "name": "HustleMito",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "11d019f7-c369-42cf-961a-a61f18c97275",
+    "name": "BurnoutKing",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "9c9dba7f-573c-4781-a170-80e367e29e57",
+    "name": "AfiliZero",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "4975d074-5711-451f-aff2-71f1fbff11c1",
+    "name": "Gas War Vet",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "2d7fd0bd-69d7-44df-939e-aae27e94f845",
+    "name": "Onda Funk",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "339dd603-2a11-4ff0-8881-c37c07d33cbf",
+    "name": "DropKing",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "70842476-bca4-4915-a538-0ac3d649afd3",
+    "name": "Dream Nexus",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  },
+  {
+    "id": "2d51c680-30d5-4d97-939d-c0d56937dc5f",
+    "name": "MemeDealer",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "4ee6aeca-614c-4623-af5c-2b84f0dfaeec",
+    "name": "ImpulsoShop",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "454f8196-d4d7-42f0-bc6d-3879a86fc811",
+    "name": "Pump Lord",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "7430c0d5-7a23-42c4-bd00-489c7ada97fd",
+    "name": "HashtagMort",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "71f6cc3b-7671-4173-8b60-ee094c5e854b",
+    "name": "Game Throne",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  },
+  {
+    "id": "8a708107-eb1f-4cf8-8282-99cb55fd3879",
+    "name": "Philanthro+",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  },
+  {
+    "id": "5af55b14-8e60-4dd6-956f-17b07e878e98",
+    "name": "Never Gonna",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  },
+  {
+    "id": "179410d4-5d6f-4dcf-a31d-e974bbfe7fe4",
+    "name": "AlgoRoi",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  },
+  {
+    "id": "62f7f9b0-2d21-4bfe-8694-812139342f73",
+    "name": "FeedVazio",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "581ca707-d132-4543-b7f7-7148132342f2",
+    "name": "Revolta Pro",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  },
+  {
+    "id": "24118a28-0814-49e6-8d04-7c9fdab4b244",
+    "name": "Check Drama",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "4a61f7aa-270b-4195-887d-927124d5d732",
+    "name": "Meta Prime",
+    "rarity": "godmode",
+    "liquidity": 1.0
+  },
+  {
+    "id": "f3fd981a-4a08-4262-b18b-008a648325f8",
+    "name": "Apocalipse",
+    "rarity": "godmode",
+    "liquidity": 2500.0
+  },
+  {
+    "id": "90a579a8-77d5-4ab3-b92e-d8c6dd8d6e88",
+    "name": "Schizo Pos",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "3d964378-ebca-4fb5-8a59-32b7615c40f8",
+    "name": "Janny Free",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "70d3d674-6003-4491-b65f-a508807963ce",
+    "name": "MentorBluff",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "01becbe2-d5d8-435c-9ce7-267e2dd52b09",
+    "name": "SigmaMeme",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "420389f5-b9c7-4f89-a1d6-6fb61ca1c2f2",
+    "name": "TrapEngaje",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "440a0dc3-ae11-4322-b5dc-2b6a84d96ae4",
+    "name": "SpaceVazio",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "20a34bff-ff6e-417b-8cd2-898139256f82",
+    "name": "ScrollZumbi",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "347d6f69-fc74-4ab5-8cb5-cf2916a53e0a",
+    "name": "CrowdNone",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "5332c391-70a0-4bba-97cc-d3a195ac7749",
+    "name": "Pedrão Mem",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "9043a94a-681d-4319-884b-21368db4fe8d",
+    "name": "CancelFodas",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "44164c92-3790-4a86-baa7-3b54b46ce2d4",
+    "name": "WAGMI Vibe",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "617f1055-d106-4a4a-ba23-7a4410b187aa",
+    "name": "GamerLost",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "148f27a4-af55-4977-af0b-c2b61f3bc28f",
+    "name": "RageProfit",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "9262e423-b26f-40ce-b30a-6cfd8fb729ab",
+    "name": "TikFlopado",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "9305740c-c7e6-4925-9983-a45db7ad4e05",
+    "name": "StoryExp",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "9b27e0e4-63ec-4ff2-94d7-d4a982fb822d",
+    "name": "Mestre Clip",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "9b0fc095-64b8-40e4-acec-42ed6827ba64",
+    "name": "BotArmy",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "a005068b-a43a-499e-a858-6100472e229b",
+    "name": "TrendMorto",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "98f17c01-8475-4650-9f8c-1ed055b9547d",
+    "name": "ViewCarol",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "a0c6945d-2554-4316-a9c1-7a9d84a87d9e",
+    "name": "ThreadUnfin",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "998bf37c-80d5-4482-b153-95463890496b",
+    "name": "VapeDev",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "99593425-8e2a-4586-8f44-87b3622e2452",
+    "name": "Copypasta L",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "a05e4373-a311-450f-8686-345781e1fc5b",
+    "name": "Shake Roxo",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "a08860a6-0c8b-4b79-8978-5ba95cf8a139",
+    "name": "CarrosselVz",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "a208808a-97f2-466a-b748-89c739660c35",
+    "name": "SorteioFake",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "98b9780d-138b-4e6c-9444-280238ec7a86",
+    "name": "PlaySolo",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "a5e4fdd3-19e6-4467-a0c2-43df560fb025",
+    "name": "Mon Catch",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "a614d6d9-731c-4c24-af65-bb86afc40893",
+    "name": "TrendCorpse",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "99c011fb-0f57-4de8-ba84-143226eb434f",
+    "name": "Conspira++",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  },
+  {
+    "id": "99d225b1-09da-41c5-9c13-00742fde0ab0",
+    "name": "MemeQuente",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "95a60eeb-736c-480f-8141-1c37342d7d3c",
+    "name": "NFTOrfã",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "985ba410-6381-4625-afd5-d83abb2e2e8b",
+    "name": "RaidKing",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "9fc28e78-7a48-46f2-8da1-3e47016b2c84",
+    "name": "TagInútil",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "a23ebc12-1a12-472e-8c68-eaaf71019a49",
+    "name": "Space Rec",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "994e90ac-7a18-4909-b979-b7a077b8aa3e",
+    "name": "Pisadinha+",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "a6d021ba-33af-4920-b919-e9c01f9fb4ba",
+    "name": "BurnSaint",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  },
+  {
+    "id": "a95d5f7d-8429-4627-b87d-b6c297a46ae9",
+    "name": "RugPull",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "ae058829-7e9a-46de-bb85-57038d291181",
+    "name": "CloutFarmer",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "b1e343b6-0363-44b7-a371-0be56a1ad6c1",
+    "name": "DescVazia",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "a805e84a-aa4b-430f-aedb-521bcba060c0",
+    "name": "ViewBought",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "a9337878-48f0-4d93-a8ad-afb192e823ae",
+    "name": "HypeStorm",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "afd25ee0-1a88-4ce1-a5f2-ba68b543e2b0",
+    "name": "AlfaPretnd",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "ac71d733-de44-42e6-9416-912981ca0c81",
+    "name": "BoicoFrac",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "a85aa45a-ca34-4c80-89a0-2fb996b9e0f3",
+    "name": "CarreiraVap",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "ad7b0fab-462b-424e-b980-86351f75d213",
+    "name": "PinPregui",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "a9914d58-1bf3-48bb-9a0a-cacd76882040",
+    "name": "TrapSocial",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "a99b37d0-49cd-49bd-9e0d-cbac68fd563d",
+    "name": "ReelCringe",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "aa32b9c5-5dee-4c4f-9dbe-da68bab3aac9",
+    "name": "DuetFlop",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "ad0e9eb3-1396-4d56-a550-7473635833cd",
+    "name": "ParaSempre",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "aed61c0e-e9ff-4d5e-9ac6-1de5ae0aad0b",
+    "name": "EngajaBot",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "ad796f41-1cfc-4e77-bc78-8150f00e6012",
+    "name": "PromFake",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "ae287403-9cef-49cf-975c-66c9cff61d9c",
+    "name": "DicaNada",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "b15e26d3-7711-4bc2-a3bd-81c5e00e8188",
+    "name": "TrapClick",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "a89ecba2-ff17-47cf-9c2c-ef98a139701b",
+    "name": "ColabGhost",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "b0f6067c-65fd-4636-b064-0bda4ff4f15f",
+    "name": "TradeNoob",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "ad0dc183-5c13-4e02-8693-8c5f5bbccb97",
+    "name": "GigEscrav",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "b1310a11-2b87-4ed5-8140-865e38ba7d0c",
+    "name": "DropVoid",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "c2274228-8d65-4252-be83-0dc298af05cd",
+    "name": "BurnZumbi",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "c56fe492-a3a5-4d9a-ba64-02ef23d5a98d",
+    "name": "Croco Trader",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  },
+  {
+    "id": "c480dece-4be7-46c3-860c-7b91f15a3b37",
+    "name": "SubPerdido",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "be736656-cede-4d30-8b41-4f1cd059ff9f",
+    "name": "PlayEmpty",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "b9245c06-110b-4154-a04f-73e7e83187c8",
+    "name": "Mald Master",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "c5606a0e-e727-4b43-bd64-8057e11f3741",
+    "name": "TagNinguém",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "bdea5b21-710c-4b49-a1db-69655166b9c5",
+    "name": "CriptoMax",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "c4730c40-2142-4fd5-9b6f-b0eba055442c",
+    "name": "AlgoTrap",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "c171083f-22ec-4980-9f33-323bfbf31c09",
+    "name": "BuzzVazio",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "bc2fb4ca-30f0-4e93-854b-9a152f987089",
+    "name": "Touch Grass",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "c6db227b-186c-4685-b6a1-48f30e3bf72a",
+    "name": "BannerGen",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "c1c7f856-8aed-42fb-9084-60e46ac4e236",
+    "name": "BioPoser",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "b75c637f-1346-4b2d-966d-63a622cb6722",
+    "name": "PinOrfã",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "b3f0c558-a6c3-4d9a-aa42-5716e78fae73",
+    "name": "Baile Pro",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "c04316f5-4b9c-4684-88d0-bef20dec59c3",
+    "name": "CollabGhost",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "b852ceac-3447-4a2e-ba36-f9059daed1b3",
+    "name": "ViralBug",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "c1c82478-cce9-4333-834c-44ab214477b6",
+    "name": "PixFlexer",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "bb8b2d57-99c4-4e3d-a3e5-e0a31b13c8b7",
+    "name": "EmojiSpam",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "c138fc58-6d24-41c2-a4fd-2cb9d262d718",
+    "name": "PinOrphan",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "b7f07048-9a87-4d85-bc0e-10eab3aa7714",
+    "name": "Diamond H",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "be758707-3fd5-4520-87dd-eb3322620fc5",
+    "name": "Rug Surviv",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "ca59d638-ddf7-48da-ba2f-b3b839952e46",
+    "name": "CancelSurv",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "c93f3194-208c-4c88-a06a-0a6e908ca5b1",
+    "name": "NFTCopeiro",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "d40974ec-500e-4fdf-a453-c5a2638013d4",
+    "name": "Ogre Prime",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  },
+  {
+    "id": "d4749d41-c5f0-4ee3-be32-b42029fa6e96",
+    "name": "Marks Crown",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  },
+  {
+    "id": "ca7b1af5-a8f6-4c84-93af-37b489d932c6",
+    "name": "RaidNulo",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "d47e3f7b-7d7b-4357-80e8-12d69a45318d",
+    "name": "CopyPasteGM",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "cd63348e-3e88-4729-9a4d-96f41f3c3eed",
+    "name": "CancelMaçon",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "cf286939-b26f-413d-990e-0934680d7959",
+    "name": "Based Dept",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "cbd3ac95-5e38-43d9-b1c2-b54cfdc41eb6",
+    "name": "AudioRuim",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "cf4f2be5-2271-405e-b10c-91f93416b175",
+    "name": "FollowTrap",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "d34dd9c9-6794-4a51-95d7-07834b9a44d3",
+    "name": "LevelFraco",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "d1a86cd6-b9f6-4258-a60b-e7e390afd110",
+    "name": "Taxa Meme",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "d06bb5a4-915c-4a7d-8c66-1fe01a4acc9a",
+    "name": "CropErrado",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "cc759199-fa1a-42e2-add0-0b0fd997d39b",
+    "name": "PixPromessa",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "cde096cf-4b0b-4160-ba04-1a69bbf383ca",
+    "name": "Brega Storm",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "d667af2d-3c96-4891-b9fe-b36b1c4208c0",
+    "name": "CloutChase",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "c95c17d5-056d-4d65-a90a-66c2ade40e7d",
+    "name": "Chat Break",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "cb85bd76-c3c7-448c-ab81-086b39282aec",
+    "name": "AI Drama",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "cdcefedc-1f36-4b62-a642-19b067040b5a",
+    "name": "TrendMaker",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "d553f3df-61fa-40a0-8235-471ebb380e70",
+    "name": "RaivaTuite",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "db8955aa-052e-47d5-b491-be3ebed4eea4",
+    "name": "Echo Abraço",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "de32acf1-e752-4d96-be56-27fd9339e4a1",
+    "name": "Corn Boom",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "de647bcb-dcc8-4bd2-a24e-423f13b82e37",
+    "name": "ViewFake",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "e0312ac6-8700-4a9d-a3f5-cc4deb6b256a",
+    "name": "Main Char",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "dffc2f29-ae5f-4e64-af8b-45a08487199e",
+    "name": "DicaSeca",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "d9427f66-b10c-4ed8-bb37-eb98cda95044",
+    "name": "DMSeco",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "e045484c-d924-4ec8-85b0-a9817bd5d167",
+    "name": "MetaEscravo",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "d86cfb32-e986-480a-adff-ed49e5d180f0",
+    "name": "Glow Hard",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "e09911f0-44b3-473b-905f-9e85e5753444",
+    "name": "CacheGhost",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "e0224269-2b34-4f88-9460-c7c183bedffa",
+    "name": "PodVazio",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "e1cced83-192c-477f-be6d-c2e2dce14567",
+    "name": "PixGuru",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "dafd6ad3-f7ad-4b04-830d-2966b1466468",
+    "name": "MemeRobado",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "d8a578bb-820d-4fe3-ad5b-af81c1a96a48",
+    "name": "ServMort",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "d8bb7c22-b30e-4706-b06e-6653d0c6c91d",
+    "name": "Carlão Deep",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "e2480838-ed4a-4fc5-88eb-044523d23c61",
+    "name": "Print Hunt",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "dab0d39a-63cd-4131-a7f9-c86f1520f8bb",
+    "name": "ToxicGuru",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "e11691d3-9ae4-4e58-9685-2e5dbcbc8831",
+    "name": "ProtFollow",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "e2245f36-d09c-4fb1-a8d1-986880b11a57",
+    "name": "Ring Death",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "da4d8371-1f1b-4ccf-8bcf-213971897f4a",
+    "name": "Tech War++",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  },
+  {
+    "id": "e3770eb9-51ce-4ec8-a7b3-fe0d3ac8cede",
+    "name": "Rekt Alert",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "e76ddb13-f859-4a39-b343-b29eb93c730d",
+    "name": "Sinal Dança",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "e8616dcd-2557-47b2-89de-11cfabd91bf2",
+    "name": "CarouMort",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "ea0d1627-f646-4eee-862c-8086d5a0093e",
+    "name": "Paper Hand",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "efaed764-17ba-4288-91fe-32230468040b",
+    "name": "ViraLixo",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "e606d511-0ccc-4c78-8b3e-81ed3103e149",
+    "name": "CoachMin",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "e4460036-d4df-4577-bccf-265dbfc57bbc",
+    "name": "StoryFalso",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "ecde99e6-8896-424d-8a37-3ae029f33b49",
+    "name": "TempUsed",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "e89bc38d-9c08-4aa5-9941-642b90660cba",
+    "name": "MemeOld",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "edfbb846-f392-4f7f-8b88-402871c4696b",
+    "name": "EngajeFome",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "e5be5899-ead4-4c22-8b6f-21b937ad2e38",
+    "name": "Wholesome++",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  },
+  {
+    "id": "e87026bc-5434-4485-8da6-53c22ab62cb7",
+    "name": "Note Scam",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "e4dadf08-703b-4722-81b6-4b09faaf4d03",
+    "name": "ToxicKing",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "eb362d46-713d-43c4-97b0-1e2be808771b",
+    "name": "BaitEterno",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "ea3f65d7-552a-4a22-b76a-f778a1523ad3",
+    "name": "MemeLord",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "e7e34117-2bd9-46d1-af3e-156729b60571",
+    "name": "Ratio King",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "ede721bc-52d9-42ce-916f-6e3a8774d130",
+    "name": "AlgoFalha",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "f206fc15-745c-458f-a66c-d0e52a517db4",
+    "name": "BuzzKiller",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "f22e1d07-5cc4-4ad2-92bc-0c431de4bf4b",
+    "name": "Water Boom",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "ef20a40f-b451-4aab-8802-2752d64fdbad",
+    "name": "Jiggle Max",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "e9f44fb6-80f0-43c1-a206-52fe949d7aee",
+    "name": "PodLord",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "f2cbf5d8-d0af-41c4-a7b4-a1d011d1aec2",
+    "name": "Ape Strong",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "f51c4186-3b56-49ef-8224-1597c008b0ed",
+    "name": "ShopImpulso",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "f531bed7-f0ae-4758-b2f9-a23f2e040eb2",
+    "name": "PodcastVão",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "f60228bc-fa86-4154-afcf-e482e723ed34",
+    "name": "VlogAband",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "f709e654-1d2b-4976-9bfa-fcca3083f8f0",
+    "name": "Green Beam",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  },
+  {
+    "id": "f48e4504-4871-4324-894c-6524a8efe06e",
+    "name": "Warn Upload",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "f68e95ca-5665-4367-a5d2-b644fee7525e",
+    "name": "HashChal",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "fa6918da-0755-4f26-9024-61c0402d5109",
+    "name": "Vibe Max",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "fa62c5a0-a64d-4f2a-a0df-2c49a9f3a8fd",
+    "name": "ScrollMáq",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "fb68b34a-fb46-4a5f-9f85-f04efd1aeee8",
+    "name": "Go Outside",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "f573cdc2-71b1-45d0-8dcc-1a40eb254782",
+    "name": "MetaShift",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "f8da2a26-53fa-4121-899f-5392ce33ad55",
+    "name": "Dip Buyer",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "fb32783b-ded8-4a6c-96e1-1585c3e72207",
+    "name": "Caveira Rir",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "fab2191c-1e9b-43cc-8c0c-5696dea03748",
+    "name": "ThreadNulo",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "fde471d0-fbf8-4091-9ccd-52023c127c6e",
+    "name": "HustleFake",
+    "rarity": "trash",
+    "liquidity": 0.01
+  },
+  {
+    "id": "ffe5d201-3cab-469f-a47c-b91722f7d2c1",
+    "name": "AlgoCrown",
+    "rarity": "viral",
+    "liquidity": 0.1
+  },
+  {
+    "id": "fb472735-976e-4027-abd0-d1a46758b7ba",
+    "name": "Kek Top",
+    "rarity": "meme",
+    "liquidity": 0.03
+  },
+  {
+    "id": "ffc2ef47-25dd-4faa-a0b8-3fab76302310",
+    "name": "CaosDigital",
+    "rarity": "legendary",
+    "liquidity": 0.5
+  }
+]

@@ -3,9 +3,27 @@
 -- Execute TUDO de uma vez no Supabase Dashboard > SQL Editor
 -- ============================================================================
 
--- PARTE 1: Jackpot Hard Cap já foi corrigido via API ✅
+-- PARTE 1: Adicionar coluna pack_id se não existir (versão robusta)
+DO $$ 
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'booster_types' 
+    AND column_name = 'pack_id'
+  ) THEN
+    ALTER TABLE booster_types ADD COLUMN pack_id TEXT;
+    RAISE NOTICE '✅ Coluna pack_id adicionada';
+  ELSE
+    RAISE NOTICE '⚠️ Coluna pack_id já existe';
+  END IF;
+END $$;
 
--- PARTE 2: Limpar boosters obsoletos
+CREATE INDEX IF NOT EXISTS idx_booster_types_pack_id ON booster_types(pack_id);
+
+-- PARTE 2: Jackpot Hard Cap já foi corrigido via API ✅
+
+-- PARTE 3: Limpar boosters obsoletos
 DELETE FROM booster_types WHERE edition_id = 'ED01';
 
 -- PARTE 3: Criar 15 boosters (5 tiers × 3 packs)

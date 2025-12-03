@@ -97,10 +97,15 @@ export async function POST(request: NextRequest) {
     console.log('[OPEN-V2] 9. Gerando 5 cartas com distribuição completa');
     console.log('[OPEN-V2] Raridades disponíveis:', Object.keys(rarityDist));
     
+    // Array para coletar logs de debug
+    const debugLogs: string[] = [];
+    
     // Gerar 5 cartas baseado na distribuição de raridade
     const generatedCards = [];
     
     for (let i = 0; i < 5; i++) {
+      debugLogs.push(`=== Carta ${i + 1} ===`);
+      
       // Selecionar raridade baseado na distribuição
       const rand = Math.random() * 100;
       let cumulative = 0;
@@ -114,6 +119,8 @@ export async function POST(request: NextRequest) {
         }
       }
       
+      debugLogs.push(`Raridade selecionada: ${selectedRarity}`);
+      
       console.log(`[OPEN-V2] Carta ${i + 1}: raridade ${selectedRarity}`);
       
       // TEMPORÁRIO: Buscar direto da edição sem filtrar por pack
@@ -125,10 +132,12 @@ export async function POST(request: NextRequest) {
         .eq('rarity', selectedRarity)
         .limit(50);
       
+      debugLogs.push(`Query resultado: ${cardsBase?.length || 0} cartas, erro: ${cardsError ? JSON.stringify(cardsError) : 'null'}`);
       console.log(`[OPEN-V2] Query result: found ${cardsBase?.length || 0} cards, error:`, cardsError);
       
       // Se não encontrou com a raridade específica, pega qualquer carta
       if (!cardsBase || cardsBase.length === 0) {
+        debugLogs.push(`FALLBACK: Nenhuma carta ${selectedRarity} encontrada`);
         console.warn(`[OPEN-V2] Nenhuma carta ${selectedRarity} encontrada, buscando QUALQUER raridade...`);
         const fallbackQuery = await supabase
           .from('cards_base')
@@ -141,19 +150,23 @@ export async function POST(request: NextRequest) {
       }
       
       if (cardsError) {
+        debugLogs.push(`ERRO na query: ${JSON.stringify(cardsError)}`);
         console.error(`[OPEN-V2] Erro ao buscar cartas:`, cardsError);
         continue;
       }
       
       if (!cardsBase || cardsBase.length === 0) {
+        debugLogs.push(`ERRO: Nenhuma carta encontrada na edição!`);
         console.error(`[OPEN-V2] NENHUMA CARTA ENCONTRADA NA EDIÇÃO!`);
         continue;
       }
       
+      debugLogs.push(`Sucesso: ${cardsBase.length} cartas encontradas`);
       console.log(`[OPEN-V2] Encontradas ${cardsBase.length} cartas (raridade: ${cardsBase[0].rarity})`);
       
       // Selecionar carta aleatória
       const randomCard = cardsBase[Math.floor(Math.random() * cardsBase.length)];
+      debugLogs.push(`Carta selecionada: ${randomCard.name} (${randomCard.id})`);
       
       // Criar instância da carta
       const { data: cardInstance, error: instanceError } = await supabase
@@ -170,9 +183,12 @@ export async function POST(request: NextRequest) {
         .single();
       
       if (instanceError || !cardInstance) {
+        debugLogs.push(`ERRO ao criar instância: ${JSON.stringify(instanceError)}`);
         console.error('[OPEN-V2] Erro ao criar instância:', instanceError);
         continue;
       }
+      
+      debugLogs.push(`Instância criada: ${cardInstance.id}`);
       
       generatedCards.push({
         id: cardInstance.id,
@@ -195,7 +211,11 @@ export async function POST(request: NextRequest) {
       console.error('[OPEN-V2] ERRO: Nenhuma carta foi gerada!');
       return NextResponse.json({
         ok: false,
-        error: { code: 'NO_CARDS_GENERATED', message: 'Nenhuma carta foi gerada' }
+        error: { 
+          code: 'NO_CARDS_GENERATED', 
+          message: 'Nenhuma carta foi gerada',
+          debugLogs // Retornar logs para debug
+        }
       }, { status: 500 });
     }
     

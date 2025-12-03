@@ -14,9 +14,10 @@ export async function POST(request: NextRequest) {
     // Env vars
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
     console.log('[OPEN-V2] 2. Env vars OK');
     
-    // Auth
+    // Auth - usar anonKey para validar usuário
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       console.error('[OPEN-V2] 3. No auth header');
@@ -39,15 +40,18 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Supabase client
+    // Supabase client para auth (com token do usuário)
     const token = authHeader.substring(7);
-    const supabase = createClient(supabaseUrl, anonKey, {
+    const supabaseAuth = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: `Bearer ${token}` } }
     });
-    console.log('[OPEN-V2] 5. Supabase client criado');
     
-    // Get user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    // Supabase client para operações administrativas (bypass RLS)
+    const supabaseAdmin = createClient(supabaseUrl, serviceKey);
+    console.log('[OPEN-V2] 5. Supabase clients criados');
+    
+    // Get user (usando client com auth)
+    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
     if (userError || !user) {
       console.error('[OPEN-V2] 6. User error:', userError);
       return NextResponse.json(
@@ -57,8 +61,8 @@ export async function POST(request: NextRequest) {
     }
     console.log('[OPEN-V2] 6. User OK:', user.id);
     
-    // Buscar opening
-    const { data: opening, error: openingError } = await supabase
+    // Buscar opening (usar supabaseAuth para respeitar RLS do usuário)
+    const { data: opening, error: openingError } = await supabaseAuth
       .from('booster_openings')
       .select('*, booster_pack:booster_packs!inner(pack_name, edition_id)')
       .eq('id', opening_id)
@@ -123,9 +127,9 @@ export async function POST(request: NextRequest) {
       
       console.log(`[OPEN-V2] Carta ${i + 1}: raridade ${selectedRarity}`);
       
-      // TEMPORÁRIO: Buscar direto da edição sem filtrar por pack
+      // Buscar cartas (usar supabaseAdmin - cards_base é pública)
       console.log(`[OPEN-V2] Buscando cartas ${selectedRarity} da edição ${opening.booster_pack.edition_id}`);
-      let { data: cardsBase, error: cardsError } = await supabase
+      let { data: cardsBase, error: cardsError } = await supabaseAdmin
         .from('cards_base')
         .select('id, name, rarity, image_url, display_id')
         .eq('edition_id', opening.booster_pack.edition_id)
@@ -139,7 +143,7 @@ export async function POST(request: NextRequest) {
       if (!cardsBase || cardsBase.length === 0) {
         debugLogs.push(`FALLBACK: Nenhuma carta ${selectedRarity} encontrada`);
         console.warn(`[OPEN-V2] Nenhuma carta ${selectedRarity} encontrada, buscando QUALQUER raridade...`);
-        const fallbackQuery = await supabase
+        const fallbackQuery = await supabaseAdmin
           .from('cards_base')
           .select('id, name, rarity, image_url, display_id')
           .eq('edition_id', opening.booster_pack.edition_id)
@@ -168,8 +172,8 @@ export async function POST(request: NextRequest) {
       const randomCard = cardsBase[Math.floor(Math.random() * cardsBase.length)];
       debugLogs.push(`Carta selecionada: ${randomCard.name} (${randomCard.id})`);
       
-      // Criar instância da carta
-      const { data: cardInstance, error: instanceError } = await supabase
+      // Criar instância da carta (usar supabaseAdmin para bypass RLS)
+      const { data: cardInstance, error: instanceError } = await supabaseAdmin
         .from('cards_instances')
         .insert({
           base_id: randomCard.id,
@@ -219,8 +223,8 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
     
-    // Marcar como aberto
-    await supabase
+    // Marcar como aberto (usar supabaseAdmin)
+    await supabaseAdmin
       .from('booster_openings')
       .update({ opened_at: new Date().toISOString() })
       .eq('id', opening_id);

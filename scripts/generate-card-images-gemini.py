@@ -220,9 +220,10 @@ def generate_prompt(card: Dict) -> str:
     }.get(rarity, 'realistic photo capture')
     
     # Influence → framing/presence (not power level)
-    framing = "fills frame confidently, impossible to ignore" if influence > 75 else \
-              "well-framed subject, naturally draws attention" if influence > 50 else \
-              "partially obscured, blends into background" if influence > 25 else \
+    influence_val = influence if influence is not None else 50  # default médio
+    framing = "fills frame confidently, impossible to ignore" if influence_val > 75 else \
+              "well-framed subject, naturally draws attention" if influence_val > 50 else \
+              "partially obscured, blends into background" if influence_val > 25 else \
               "barely visible, fading into shadows"
     
     # Extract ONLY specific props from description (no anatomy forcing)

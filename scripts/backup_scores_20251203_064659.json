@@ -1,0 +1,2126 @@
+[
+  {
+    "id": "e1c09d52-1d5d-44a9-b87a-59ed98cb811e",
+    "name": "Canon Break",
+    "influence_score": 37,
+    "rarity_score": 37
+  },
+  {
+    "id": "e3935a94-f6ce-49c2-b6fd-26901ffeac86",
+    "name": "ViewerUm",
+    "influence_score": 10,
+    "rarity_score": 10
+  },
+  {
+    "id": "a7877dde-f5cc-47ce-8876-f218c1d8e053",
+    "name": "PopupHell",
+    "influence_score": 40,
+    "rarity_score": 40
+  },
+  {
+    "id": "d73578e1-c356-4cd8-b0a0-12ea03a129c9",
+    "name": "Desenrola+",
+    "influence_score": 35,
+    "rarity_score": 35
+  },
+  {
+    "id": "c83c9eb5-c8f9-435c-a6d8-03ee6c96d8af",
+    "name": "LogoFail",
+    "influence_score": 19,
+    "rarity_score": 19
+  },
+  {
+    "id": "948f2d70-a318-4512-9277-9778675b5bce",
+    "name": "IdeiaViral",
+    "influence_score": 48,
+    "rarity_score": 48
+  },
+  {
+    "id": "7f989c91-bb4f-4fcf-aa2c-63a973283d7a",
+    "name": "Cringe Pil",
+    "influence_score": 55,
+    "rarity_score": 55
+  },
+  {
+    "id": "24162c57-6e83-43a3-9331-9d0daaf0d436",
+    "name": "CopyVerg",
+    "influence_score": 30,
+    "rarity_score": 30
+  },
+  {
+    "id": "1886423d-9cf8-4ae4-8cf9-69982b251d3b",
+    "name": "NichoEsqc",
+    "influence_score": 11,
+    "rarity_score": 11
+  },
+  {
+    "id": "9069fc2f-df45-45e8-ac61-ea55dc3004b0",
+    "name": "RageFarmer",
+    "influence_score": 30,
+    "rarity_score": 30
+  },
+  {
+    "id": "6e812f86-42ef-4c2b-a8f5-4fc7e68852aa",
+    "name": "Totem Sus",
+    "influence_score": 38,
+    "rarity_score": 38
+  },
+  {
+    "id": "6a168c00-c5f2-42cf-8da4-2a52fe433fa9",
+    "name": "LiveMute",
+    "influence_score": 31,
+    "rarity_score": 31
+  },
+  {
+    "id": "04782c2a-ea9d-4ff5-a6bc-5b38f1ced269",
+    "name": "RetweetSec",
+    "influence_score": 15,
+    "rarity_score": 15
+  },
+  {
+    "id": "7e440b99-e8e5-47e6-b516-4c8416f69105",
+    "name": "Influ Mito",
+    "influence_score": 30,
+    "rarity_score": 30
+  },
+  {
+    "id": "b3164df6-1af9-4022-a79b-b1f909b9e340",
+    "name": "Streamerz\u00e3o",
+    "influence_score": 38,
+    "rarity_score": 38
+  },
+  {
+    "id": "03d7086d-0cb4-4d53-9dd8-862f53a68d9d",
+    "name": "Sneed Feed",
+    "influence_score": 46,
+    "rarity_score": 46
+  },
+  {
+    "id": "e67a860c-a27b-4c92-b9de-098bb5f48152",
+    "name": "AudioFail",
+    "influence_score": 31,
+    "rarity_score": 31
+  },
+  {
+    "id": "6eea2ecc-712e-4e45-b8ea-5592982cf930",
+    "name": "EventoCance",
+    "influence_score": 26,
+    "rarity_score": 26
+  },
+  {
+    "id": "6b3b7fbd-4c32-4d72-9a26-64b7a008c8f2",
+    "name": "BolaEco",
+    "influence_score": 27,
+    "rarity_score": 27
+  },
+  {
+    "id": "6cbae594-f146-491c-9348-c0850280f36e",
+    "name": "ListaEsq",
+    "influence_score": 29,
+    "rarity_score": 29
+  },
+  {
+    "id": "2945b272-a263-45aa-973c-cb539999f7a8",
+    "name": "Ghostflu\u00eanc",
+    "influence_score": 33,
+    "rarity_score": 33
+  },
+  {
+    "id": "5c0418d2-aa27-42b1-bada-c082bf83ac61",
+    "name": "CancelFraco",
+    "influence_score": 29,
+    "rarity_score": 29
+  },
+  {
+    "id": "3655d141-6f15-4d0f-82a6-c37b335f6ceb",
+    "name": "ResenhaBot",
+    "influence_score": 12,
+    "rarity_score": 12
+  },
+  {
+    "id": "3860b09e-da76-476d-bd06-2f3068af2a91",
+    "name": "FollowFake",
+    "influence_score": 19,
+    "rarity_score": 19
+  },
+  {
+    "id": "4a545feb-93d4-452d-b46f-f37f72d486cd",
+    "name": "GhostPost",
+    "influence_score": 44,
+    "rarity_score": 44
+  },
+  {
+    "id": "61a347ec-0ff8-4630-bd06-481acdf3e996",
+    "name": "GifPesado",
+    "influence_score": 11,
+    "rarity_score": 11
+  },
+  {
+    "id": "1bbf3138-c4f6-4528-93a7-5ab2ce09b4ac",
+    "name": "LikeBot",
+    "influence_score": 30,
+    "rarity_score": 30
+  },
+  {
+    "id": "43d2c71e-870f-4f41-907d-f30a29dd248a",
+    "name": "MetaGado",
+    "influence_score": 28,
+    "rarity_score": 28
+  },
+  {
+    "id": "916866f7-5213-4cbd-a2b2-8e47f8e9de5c",
+    "name": "LinkQueb",
+    "influence_score": 16,
+    "rarity_score": 16
+  },
+  {
+    "id": "6323104f-40f9-4c08-809c-a3f726b8b92d",
+    "name": "FiltroFake",
+    "influence_score": 15,
+    "rarity_score": 15
+  },
+  {
+    "id": "756bff68-2b3e-455a-bb1f-f00d340a5734",
+    "name": "PlugDrop",
+    "influence_score": 16,
+    "rarity_score": 16
+  },
+  {
+    "id": "50730724-5279-4a6b-87bc-06452c1bcc03",
+    "name": "HypeGone",
+    "influence_score": 20,
+    "rarity_score": 20
+  },
+  {
+    "id": "923c93e3-ae80-4171-9e34-e52f312e8048",
+    "name": "HashtagSpam",
+    "influence_score": 31,
+    "rarity_score": 31
+  },
+  {
+    "id": "14afab15-aaf6-4bb4-b3f5-15e6ca67cb15",
+    "name": "FakeGuru",
+    "influence_score": 19,
+    "rarity_score": 19
+  },
+  {
+    "id": "02981e96-f824-401b-9173-3c32cad0b2c1",
+    "name": "FonteCringe",
+    "influence_score": 24,
+    "rarity_score": 24
+  },
+  {
+    "id": "83ceb045-76eb-459b-a393-daf55c85bf62",
+    "name": "AlgoIgnor",
+    "influence_score": 15,
+    "rarity_score": 15
+  },
+  {
+    "id": "6a811d66-772d-433d-a487-c3d11f81f7ee",
+    "name": "PromoCrash",
+    "influence_score": 12,
+    "rarity_score": 12
+  },
+  {
+    "id": "5ac0de60-71f8-45c6-badf-b045ffe3d436",
+    "name": "Limit Panic",
+    "influence_score": 71,
+    "rarity_score": 71
+  },
+  {
+    "id": "d079103e-0ef8-49f8-b48e-8695fb073dd0",
+    "name": "CriptoRekt",
+    "influence_score": 21,
+    "rarity_score": 21
+  },
+  {
+    "id": "1698350b-7a10-4927-ba19-499099f2dbd8",
+    "name": "CoachBluff",
+    "influence_score": 26,
+    "rarity_score": 26
+  },
+  {
+    "id": "7a2e4135-5ef2-415b-8e67-ff32aef265e4",
+    "name": "MetaErrada",
+    "influence_score": 21,
+    "rarity_score": 21
+  },
+  {
+    "id": "2ed2169a-90b1-46fc-a439-a8164e63ddde",
+    "name": "QuoteVazio",
+    "influence_score": 20,
+    "rarity_score": 20
+  },
+  {
+    "id": "322e7ca6-0eb1-4ff1-a35f-e9f7afecdd40",
+    "name": "Rent Free",
+    "influence_score": 52,
+    "rarity_score": 52
+  },
+  {
+    "id": "24f9dc96-4fa6-453e-b7c0-00daf077fcf4",
+    "name": "LiveDeserta",
+    "influence_score": 17,
+    "rarity_score": 17
+  },
+  {
+    "id": "3dc77cef-1379-414f-872f-a217701a312e",
+    "name": "TemplateGen",
+    "influence_score": 26,
+    "rarity_score": 26
+  },
+  {
+    "id": "71b57605-a16b-482f-9551-b5e42cfb01c0",
+    "name": "LinkShady",
+    "influence_score": 53,
+    "rarity_score": 53
+  },
+  {
+    "id": "088461b3-075c-469c-855f-21540c5c63cf",
+    "name": "TrendLate",
+    "influence_score": 32,
+    "rarity_score": 32
+  },
+  {
+    "id": "7658258c-1759-4e87-bdb3-1e210bd9fefa",
+    "name": "IconeC\u00f3pia",
+    "influence_score": 14,
+    "rarity_score": 14
+  },
+  {
+    "id": "63a8349c-ab5f-4ff4-afe6-b0b7fc2f1d6d",
+    "name": "Cope King",
+    "influence_score": 49,
+    "rarity_score": 49
+  },
+  {
+    "id": "2b3593cb-032e-46d9-819f-055681c0c8bb",
+    "name": "SubBeg",
+    "influence_score": 10,
+    "rarity_score": 10
+  },
+  {
+    "id": "4d9be322-e42b-4e17-8985-e4c648d05a1f",
+    "name": "Dilate Pro",
+    "influence_score": 38,
+    "rarity_score": 38
+  },
+  {
+    "id": "35412eb4-ff11-45d5-9538-6396bf0a4910",
+    "name": "SaveVazio",
+    "influence_score": 17,
+    "rarity_score": 17
+  },
+  {
+    "id": "00330bd1-22da-4f30-b419-d0aabf726b2f",
+    "name": "EmojiFlood",
+    "influence_score": 11,
+    "rarity_score": 11
+  },
+  {
+    "id": "05b7dc7c-1bad-423b-b12f-b9dc13791aac",
+    "name": "ViralFail",
+    "influence_score": 16,
+    "rarity_score": 16
+  },
+  {
+    "id": "48a81eea-cac7-4193-a333-6352c27fbdc0",
+    "name": "ThumbFalso",
+    "influence_score": 35,
+    "rarity_score": 35
+  },
+  {
+    "id": "899c0e3d-5c2e-4a9d-831f-7b8fbc8a3ec8",
+    "name": "QRMorto",
+    "influence_score": 9,
+    "rarity_score": 9
+  },
+  {
+    "id": "82322902-cd59-4505-a7c0-caaca087070d",
+    "name": "CapaFalsa",
+    "influence_score": 19,
+    "rarity_score": 19
+  },
+  {
+    "id": "86aaf797-572e-4cc2-a53e-d96b1c1398ae",
+    "name": "ExpireConte",
+    "influence_score": 30,
+    "rarity_score": 30
+  },
+  {
+    "id": "259a0666-a65c-4306-8bb2-6f6f3b3e6b32",
+    "name": "ViewCount0",
+    "influence_score": 14,
+    "rarity_score": 14
+  },
+  {
+    "id": "848c09f3-6e47-4ddb-9c0a-282b16cf9f2b",
+    "name": "BotReply",
+    "influence_score": 28,
+    "rarity_score": 28
+  },
+  {
+    "id": "349bcb62-0fbc-45b6-a8b9-5fac2007ff3b",
+    "name": "LoopMental",
+    "influence_score": 12,
+    "rarity_score": 12
+  },
+  {
+    "id": "01892ef3-99b1-4e6f-8295-1f64735a7a6d",
+    "name": "LiveDesert",
+    "influence_score": 30,
+    "rarity_score": 30
+  },
+  {
+    "id": "77c9bf54-084e-4349-bb15-ab2f1960b5db",
+    "name": "SpaceFraco",
+    "influence_score": 12,
+    "rarity_score": 12
+  },
+  {
+    "id": "64f85e80-7d9d-43c9-9a63-8d080b06866d",
+    "name": "RageBait",
+    "influence_score": 19,
+    "rarity_score": 19
+  },
+  {
+    "id": "50f463ea-ebc2-4de3-a809-4ef644c68046",
+    "name": "FormFake",
+    "influence_score": 19,
+    "rarity_score": 19
+  },
+  {
+    "id": "58fb49c8-b274-472b-90b3-cc69685a5fff",
+    "name": "RaidFail",
+    "influence_score": 25,
+    "rarity_score": 25
+  },
+  {
+    "id": "1e82eb1b-0ebd-486c-ac9f-27b0ba2b610b",
+    "name": "BotFollow",
+    "influence_score": 17,
+    "rarity_score": 17
+  },
+  {
+    "id": "39da45e4-6229-4e3c-bdeb-99603bb270c7",
+    "name": "Webin\u00e1rV\u00e3o",
+    "influence_score": 11,
+    "rarity_score": 11
+  },
+  {
+    "id": "0d75df3a-c893-495d-aab2-7d5db09bb705",
+    "name": "PinEterno",
+    "influence_score": 16,
+    "rarity_score": 16
+  },
+  {
+    "id": "245fcadb-3887-4baa-9d72-ea76e3e9e01b",
+    "name": "BanInjusto",
+    "influence_score": 14,
+    "rarity_score": 14
+  },
+  {
+    "id": "766fd0dc-ef3c-45bd-b3a0-e514c7498304",
+    "name": "Bot\u00e3oLike",
+    "influence_score": 33,
+    "rarity_score": 33
+  },
+  {
+    "id": "3231aba9-2deb-467d-b8de-83755e7730c2",
+    "name": "ErroFatal",
+    "influence_score": 34,
+    "rarity_score": 34
+  },
+  {
+    "id": "4d684d85-4e5b-415a-acb9-fd843ec0525c",
+    "name": "C\u00f3piaNota",
+    "influence_score": 29,
+    "rarity_score": 29
+  },
+  {
+    "id": "3b7758de-9007-4fac-85a0-34c877036060",
+    "name": "BioPromessa",
+    "influence_score": 19,
+    "rarity_score": 19
+  },
+  {
+    "id": "2072400b-bb26-4769-8930-670ebc94ca3d",
+    "name": "MemeLixo",
+    "influence_score": 32,
+    "rarity_score": 32
+  },
+  {
+    "id": "8681cbdc-1e5c-4cc4-b781-a4cbc389b4d0",
+    "name": "GrindGhost",
+    "influence_score": 31,
+    "rarity_score": 31
+  },
+  {
+    "id": "7b8faa0f-05e1-4b2c-bb89-841755874568",
+    "name": "ThreadSeco",
+    "influence_score": 15,
+    "rarity_score": 15
+  },
+  {
+    "id": "3766aad5-2db3-4ee1-a6c6-7af44ffb106c",
+    "name": "GhostReader",
+    "influence_score": 20,
+    "rarity_score": 20
+  },
+  {
+    "id": "7f3c9f6f-7fc2-4a95-bc20-035b40cada18",
+    "name": "PropSurda",
+    "influence_score": 27,
+    "rarity_score": 27
+  },
+  {
+    "id": "2648654c-3c38-4b1a-91f0-66a4dd0f4b49",
+    "name": "HypeZero",
+    "influence_score": 34,
+    "rarity_score": 34
+  },
+  {
+    "id": "81d663ef-c24a-4231-8e88-592256ac3a12",
+    "name": "BaitGuloso",
+    "influence_score": 30,
+    "rarity_score": 30
+  },
+  {
+    "id": "4d71ac97-ffe8-451e-b08f-a86cfac52a46",
+    "name": "ClipeC\u00f3pia",
+    "influence_score": 11,
+    "rarity_score": 11
+  },
+  {
+    "id": "7b631f81-05e5-4891-880a-7f0192df2fe7",
+    "name": "DuoZero",
+    "influence_score": 31,
+    "rarity_score": 31
+  },
+  {
+    "id": "58193c17-a62e-42a4-be33-1d04961c9b98",
+    "name": "PatchFail",
+    "influence_score": 11,
+    "rarity_score": 11
+  },
+  {
+    "id": "7db60994-d639-4bd5-a2aa-0bf642acb456",
+    "name": "PlaylistBot",
+    "influence_score": 10,
+    "rarity_score": 10
+  },
+  {
+    "id": "4c2828ac-c457-477e-bc4d-1eb1020c2d8c",
+    "name": "Seethe Lord",
+    "influence_score": 53,
+    "rarity_score": 53
+  },
+  {
+    "id": "472e1876-15a8-422e-be36-8acb04b75e24",
+    "name": "ExpoPretens",
+    "influence_score": 20,
+    "rarity_score": 20
+  },
+  {
+    "id": "30553b76-daa6-41ab-9ba3-48949d05f3c5",
+    "name": "SelfEterno",
+    "influence_score": 30,
+    "rarity_score": 30
+  },
+  {
+    "id": "05dfa626-b170-4a42-b9a8-39033b296d83",
+    "name": "InfluFake",
+    "influence_score": 26,
+    "rarity_score": 26
+  },
+  {
+    "id": "351cfb00-6c1f-4111-bda2-5bf13bcfb8bc",
+    "name": "BurnFalse",
+    "influence_score": 26,
+    "rarity_score": 26
+  },
+  {
+    "id": "32822f67-140b-44dd-a925-155e41c58c03",
+    "name": "TempBobo",
+    "influence_score": 32,
+    "rarity_score": 32
+  },
+  {
+    "id": "854c5a9b-87e1-44ab-910a-d7d1edb9fd27",
+    "name": "GigaFake",
+    "influence_score": 21,
+    "rarity_score": 21
+  },
+  {
+    "id": "1cd8c707-fda1-46a2-9d21-58c4c506038a",
+    "name": "BioLink",
+    "influence_score": 13,
+    "rarity_score": 13
+  },
+  {
+    "id": "53c935ef-1a6e-451d-a13f-a4c993f6f7b4",
+    "name": "HashDead",
+    "influence_score": 14,
+    "rarity_score": 14
+  },
+  {
+    "id": "136fa0a0-6ab1-474b-a102-ec258e623f25",
+    "name": "UpdateBug",
+    "influence_score": 22,
+    "rarity_score": 22
+  },
+  {
+    "id": "5661336b-0968-450f-a03c-7f7c9a1fba7a",
+    "name": "BugIgnorado",
+    "influence_score": 29,
+    "rarity_score": 29
+  },
+  {
+    "id": "012c481d-7fd6-4e5c-8151-8f2301457988",
+    "name": "ReelsLoop",
+    "influence_score": 17,
+    "rarity_score": 17
+  },
+  {
+    "id": "0f83c3a8-d9da-4148-be93-ddd3dd531276",
+    "name": "Z\u00e9 Digital",
+    "influence_score": 40,
+    "rarity_score": 40
+  },
+  {
+    "id": "27f4e329-0088-4dcd-ae6b-d6eea495ac6c",
+    "name": "Tio do Zap",
+    "influence_score": 43,
+    "rarity_score": 43
+  },
+  {
+    "id": "6946ed38-3497-4173-99bb-cab807e1f9ee",
+    "name": "CursoFail",
+    "influence_score": 32,
+    "rarity_score": 32
+  },
+  {
+    "id": "4e397968-ee3c-4390-afb6-7ef9362eb933",
+    "name": "RetweetBot",
+    "influence_score": 22,
+    "rarity_score": 22
+  },
+  {
+    "id": "33837748-49f2-4fdc-85c6-a4d739d52ca9",
+    "name": "StatusGhost",
+    "influence_score": 32,
+    "rarity_score": 32
+  },
+  {
+    "id": "8ec69495-cc75-493b-9461-7e1259240699",
+    "name": "NotifGhost",
+    "influence_score": 14,
+    "rarity_score": 14
+  },
+  {
+    "id": "2db49169-574e-4cc9-ad7d-334dcb939457",
+    "name": "BetZeroum",
+    "influence_score": 34,
+    "rarity_score": 34
+  },
+  {
+    "id": "3f3958cd-1d23-4fe0-a902-a1fe5b172d40",
+    "name": "InfluWannab",
+    "influence_score": 49,
+    "rarity_score": 49
+  },
+  {
+    "id": "73d2c3ef-19c5-474b-b149-53739f81f5da",
+    "name": "Rei do Pix",
+    "influence_score": 33,
+    "rarity_score": 33
+  },
+  {
+    "id": "70cd9e90-58af-4827-a0ed-1fdee9fefafb",
+    "name": "Rei Reels",
+    "influence_score": 51,
+    "rarity_score": 51
+  },
+  {
+    "id": "79ac4d66-f201-4655-88cf-8159e6265b68",
+    "name": "Feed King",
+    "influence_score": 49,
+    "rarity_score": 49
+  },
+  {
+    "id": "8b0ad768-e8de-49f3-84c2-595ba19d7438",
+    "name": "Shorts Lord",
+    "influence_score": 33,
+    "rarity_score": 33
+  },
+  {
+    "id": "8c639028-8f51-4e16-b54b-c9aabeb64ac8",
+    "name": "SpamLord",
+    "influence_score": 15,
+    "rarity_score": 15
+  },
+  {
+    "id": "303af7ed-513f-469f-bdc8-2787fcf86444",
+    "name": "RaidBot",
+    "influence_score": 18,
+    "rarity_score": 18
+  },
+  {
+    "id": "48fd6e5d-bf52-44ab-814e-3d4cb7c18459",
+    "name": "SkyMentira",
+    "influence_score": 13,
+    "rarity_score": 13
+  },
+  {
+    "id": "74532836-91f1-4bae-ad47-857a4927f09c",
+    "name": "TrapQueen",
+    "influence_score": 36,
+    "rarity_score": 36
+  },
+  {
+    "id": "88eeb7c0-77d2-48db-a071-7a8b83a6253c",
+    "name": "MetaZumbi",
+    "influence_score": 31,
+    "rarity_score": 31
+  },
+  {
+    "id": "89fa2791-7469-4cee-a404-02f4908293f0",
+    "name": "ViraFail",
+    "influence_score": 34,
+    "rarity_score": 34
+  },
+  {
+    "id": "b02deb48-f6f3-4860-8ef7-64b76e119cb0",
+    "name": "BioClich\u00ea",
+    "influence_score": 33,
+    "rarity_score": 33
+  },
+  {
+    "id": "666fcb93-a268-4bc8-a2b1-f447fb0df9d0",
+    "name": "DoomScroll",
+    "influence_score": 20,
+    "rarity_score": 20
+  },
+  {
+    "id": "671760a3-5e73-4f6e-96a4-cb17a2dfbfe1",
+    "name": "PixOrf\u00e3o",
+    "influence_score": 15,
+    "rarity_score": 15
+  },
+  {
+    "id": "188086a0-69b5-4f56-8b92-ca3e23feca49",
+    "name": "Degen Hour",
+    "influence_score": 50,
+    "rarity_score": 50
+  },
+  {
+    "id": "320eb52c-61d9-413c-8fa7-8b09853cd020",
+    "name": "DropFlip",
+    "influence_score": 40,
+    "rarity_score": 40
+  },
+  {
+    "id": "2e8c5eef-9662-4ba1-921d-9760d760bb18",
+    "name": "Quote God",
+    "influence_score": 46,
+    "rarity_score": 46
+  },
+  {
+    "id": "253ea834-105c-40f1-bf26-0cfb1adb96b3",
+    "name": "ManutInf",
+    "influence_score": 24,
+    "rarity_score": 24
+  },
+  {
+    "id": "710cd241-1ce7-434a-b217-7a1120d19a4e",
+    "name": "BaitMaster",
+    "influence_score": 48,
+    "rarity_score": 48
+  },
+  {
+    "id": "830026d6-731f-4391-b756-a9017939260f",
+    "name": "NPC Dialog",
+    "influence_score": 45,
+    "rarity_score": 45
+  },
+  {
+    "id": "54cc705e-ad23-4339-810f-001ffa30a76d",
+    "name": "HODL Mestre",
+    "influence_score": 43,
+    "rarity_score": 43
+  },
+  {
+    "id": "2a6fc68c-d3a7-4ff2-8cb0-fdcb9a4ef017",
+    "name": "NGMI Wave",
+    "influence_score": 34,
+    "rarity_score": 34
+  },
+  {
+    "id": "1446247a-b94e-4a9e-8004-1b8fc6b91b66",
+    "name": "PlayV\u00edcio",
+    "influence_score": 44,
+    "rarity_score": 44
+  },
+  {
+    "id": "67b15106-466d-48af-866b-93175747515c",
+    "name": "Sigma Prime",
+    "influence_score": 56,
+    "rarity_score": 56
+  },
+  {
+    "id": "5359cf04-d03d-4597-99de-249c7f6000ec",
+    "name": "Ohio Boss",
+    "influence_score": 44,
+    "rarity_score": 44
+  },
+  {
+    "id": "77b5ffec-c466-4608-80ee-787699e9a4f1",
+    "name": "LurkShadow",
+    "influence_score": 29,
+    "rarity_score": 29
+  },
+  {
+    "id": "5ca1c481-1c6e-4d32-86a2-7d8820ec800f",
+    "name": "Pulso Viral",
+    "influence_score": 54,
+    "rarity_score": 54
+  },
+  {
+    "id": "6370785b-7969-4ded-bdb6-578347288990",
+    "name": "Backrooms",
+    "influence_score": 41,
+    "rarity_score": 41
+  },
+  {
+    "id": "79282c9a-2cda-474d-9a38-6713ae155ac6",
+    "name": "Liminal One",
+    "influence_score": 32,
+    "rarity_score": 32
+  },
+  {
+    "id": "2566c5c3-4374-4c25-b17a-008054b0664c",
+    "name": "GrindFake",
+    "influence_score": 31,
+    "rarity_score": 31
+  },
+  {
+    "id": "0ac6d126-88f2-4353-bc48-9d7db9a41f1c",
+    "name": "Bot Master",
+    "influence_score": 46,
+    "rarity_score": 46
+  },
+  {
+    "id": "8b7df402-9ab0-445b-bb4c-496500865415",
+    "name": "SideQuest+",
+    "influence_score": 48,
+    "rarity_score": 48
+  },
+  {
+    "id": "19a9e919-54d4-476a-a37c-5eaf693de110",
+    "name": "Lore Guard",
+    "influence_score": 33,
+    "rarity_score": 33
+  },
+  {
+    "id": "058dd94c-fd40-4eaa-a7fc-e0fdfaec42a3",
+    "name": "PlayViciado",
+    "influence_score": 20,
+    "rarity_score": 20
+  },
+  {
+    "id": "7225a059-4c5e-40da-a04c-31768fc7914f",
+    "name": "MoodBoard",
+    "influence_score": 32,
+    "rarity_score": 32
+  },
+  {
+    "id": "27e4f5db-82b3-413d-87ef-5fc00b1cfb9c",
+    "name": "CriptoWhale",
+    "influence_score": 69,
+    "rarity_score": 69
+  },
+  {
+    "id": "4c0a58fa-34ca-4d2d-b93a-f655893f8614",
+    "name": "Simp Energy",
+    "influence_score": 38,
+    "rarity_score": 38
+  },
+  {
+    "id": "58e07351-0d0f-4eaf-b62a-08e2705dbdda",
+    "name": "Ratio This",
+    "influence_score": 49,
+    "rarity_score": 49
+  },
+  {
+    "id": "32ab8e41-e4d0-42b9-864a-ee6597f5987a",
+    "name": "TikRaiz",
+    "influence_score": 35,
+    "rarity_score": 35
+  },
+  {
+    "id": "29851f37-b5f7-4865-8574-6aaa9509f3f7",
+    "name": "HustleLarp",
+    "influence_score": 49,
+    "rarity_score": 49
+  },
+  {
+    "id": "8893ef27-ef27-406b-bc40-5a8487f0c071",
+    "name": "Touch Base",
+    "influence_score": 35,
+    "rarity_score": 35
+  },
+  {
+    "id": "66191cf4-1be7-486b-9a97-fba5fdb7dd60",
+    "name": "DropShipper",
+    "influence_score": 51,
+    "rarity_score": 51
+  },
+  {
+    "id": "228bd9e5-e88a-4923-a370-04505a6040af",
+    "name": "BuzzKill",
+    "influence_score": 41,
+    "rarity_score": 41
+  },
+  {
+    "id": "1b23f7ab-0899-4fe4-ae6c-c087b0b90023",
+    "name": "TradeRekt",
+    "influence_score": 37,
+    "rarity_score": 37
+  },
+  {
+    "id": "6d91d384-b09d-4f95-85ab-55100c6cd707",
+    "name": "SigmaBluff",
+    "influence_score": 53,
+    "rarity_score": 53
+  },
+  {
+    "id": "3ca99e2d-ed90-4eee-819f-28356c991702",
+    "name": "FakeProof",
+    "influence_score": 32,
+    "rarity_score": 32
+  },
+  {
+    "id": "0b89fccd-888d-4d07-b999-92b43053dcb7",
+    "name": "TrendSurfer",
+    "influence_score": 38,
+    "rarity_score": 38
+  },
+  {
+    "id": "4449d663-2503-418a-a4f3-b6ca383a7573",
+    "name": "CapLock",
+    "influence_score": 45,
+    "rarity_score": 45
+  },
+  {
+    "id": "04d9c266-43d2-496d-b49e-d437032bb71b",
+    "name": "TrendQueima",
+    "influence_score": 38,
+    "rarity_score": 38
+  },
+  {
+    "id": "69b7814a-cf6e-4d62-8f57-c93e609c8956",
+    "name": "TikStar",
+    "influence_score": 45,
+    "rarity_score": 45
+  },
+  {
+    "id": "4df35fe0-4902-4342-95c0-770fd4b2b477",
+    "name": "C\u00f3piaPura",
+    "influence_score": 52,
+    "rarity_score": 52
+  },
+  {
+    "id": "2459a5ab-e76d-4159-b6e5-66b271d38821",
+    "name": "BuzzHunter",
+    "influence_score": 40,
+    "rarity_score": 40
+  },
+  {
+    "id": "1999a889-6cd9-4725-af1f-84bc1badccf2",
+    "name": "SkinInvest",
+    "influence_score": 37,
+    "rarity_score": 37
+  },
+  {
+    "id": "17cb1547-6d96-4498-90e6-85b9d578f0cf",
+    "name": "BotCursor",
+    "influence_score": 34,
+    "rarity_score": 34
+  },
+  {
+    "id": "38e41a7a-1b2d-4fd1-835a-025ddfd11015",
+    "name": "AutoReply",
+    "influence_score": 53,
+    "rarity_score": 53
+  },
+  {
+    "id": "2ebe7525-5d1a-44f5-adab-e39b6acb8829",
+    "name": "ShillLost",
+    "influence_score": 13,
+    "rarity_score": 13
+  },
+  {
+    "id": "7613b4bf-8be6-4822-a4ef-e69ab30f27f5",
+    "name": "NotifFlood",
+    "influence_score": 32,
+    "rarity_score": 32
+  },
+  {
+    "id": "8b140c66-c7d5-4de2-a9e5-37d8cfa9368d",
+    "name": "Pancad\u00e3o Go",
+    "influence_score": 54,
+    "rarity_score": 54
+  },
+  {
+    "id": "8e214bbc-08b5-4f59-a599-299b0487a62f",
+    "name": "Odd Run",
+    "influence_score": 64,
+    "rarity_score": 64
+  },
+  {
+    "id": "2f90914a-ba1f-4cd7-9237-2ae3a0ada616",
+    "name": "Portal Love",
+    "influence_score": 73,
+    "rarity_score": 73
+  },
+  {
+    "id": "31858770-2766-4771-963c-2a8a5a47af22",
+    "name": "Fatal Race",
+    "influence_score": 49,
+    "rarity_score": 49
+  },
+  {
+    "id": "5cd52503-d60c-4317-9b86-53d68a65a2c3",
+    "name": "Hell Deploy",
+    "influence_score": 58,
+    "rarity_score": 58
+  },
+  {
+    "id": "48fc67d8-dabf-447a-b0f5-58a8f6133c4a",
+    "name": "Flex Prime",
+    "influence_score": 71,
+    "rarity_score": 71
+  },
+  {
+    "id": "7f9538b9-a9c4-4d61-a83a-7502101b9a28",
+    "name": "Edit Track",
+    "influence_score": 54,
+    "rarity_score": 54
+  },
+  {
+    "id": "73e893c8-c529-43b1-b2db-882df9245c22",
+    "name": "ViewAddic",
+    "influence_score": 60,
+    "rarity_score": 60
+  },
+  {
+    "id": "7b5113e0-749f-4df9-ad16-47f552636b68",
+    "name": "TrendExplos",
+    "influence_score": 53,
+    "rarity_score": 53
+  },
+  {
+    "id": "3297ec0e-9ff0-435c-83c8-fe71c92bda5e",
+    "name": "ShillLegend",
+    "influence_score": 60,
+    "rarity_score": 60
+  },
+  {
+    "id": "660530dc-cc0e-47c0-b20f-eb3fd45e95ba",
+    "name": "CancelWave",
+    "influence_score": 69,
+    "rarity_score": 69
+  },
+  {
+    "id": "543b9a1c-f40f-4cac-827c-35f5be32fe09",
+    "name": "IACopyGod",
+    "influence_score": 66,
+    "rarity_score": 66
+  },
+  {
+    "id": "67bdbda7-9e23-4c8d-b743-02dfed51d44c",
+    "name": "Pol\u00eamica BR",
+    "influence_score": 84,
+    "rarity_score": 84
+  },
+  {
+    "id": "8808dc22-1666-4f2b-9434-312f53fa63c8",
+    "name": "AlgoFodido",
+    "influence_score": 39,
+    "rarity_score": 39
+  },
+  {
+    "id": "42069f52-1510-42b5-8146-217c2b0a97df",
+    "name": "Duo Cinema",
+    "influence_score": 66,
+    "rarity_score": 66
+  },
+  {
+    "id": "11d019f7-c369-42cf-961a-a61f18c97275",
+    "name": "BurnoutKing",
+    "influence_score": 52,
+    "rarity_score": 52
+  },
+  {
+    "id": "316f17a5-9459-45cc-8867-1973ed6c8a4b",
+    "name": "Boom Sert\u00e3o",
+    "influence_score": 69,
+    "rarity_score": 69
+  },
+  {
+    "id": "3f3f0eb9-6f28-4ed2-8f10-6e9f3457b5da",
+    "name": "Wed Dance",
+    "influence_score": 64,
+    "rarity_score": 64
+  },
+  {
+    "id": "64627fc2-32d6-4f2c-94fa-fc9efb7d6b33",
+    "name": "MetaChaos",
+    "influence_score": 70,
+    "rarity_score": 70
+  },
+  {
+    "id": "3545ffec-8c2a-458d-8744-edac5abe5d20",
+    "name": "HustleMito",
+    "influence_score": 74,
+    "rarity_score": 74
+  },
+  {
+    "id": "9c9dba7f-573c-4781-a170-80e367e29e57",
+    "name": "AfiliZero",
+    "influence_score": 28,
+    "rarity_score": 28
+  },
+  {
+    "id": "2d51c680-30d5-4d97-939d-c0d56937dc5f",
+    "name": "MemeDealer",
+    "influence_score": 36,
+    "rarity_score": 36
+  },
+  {
+    "id": "4ee6aeca-614c-4623-af5c-2b84f0dfaeec",
+    "name": "ImpulsoShop",
+    "influence_score": 29,
+    "rarity_score": 29
+  },
+  {
+    "id": "2d7fd0bd-69d7-44df-939e-aae27e94f845",
+    "name": "Onda Funk",
+    "influence_score": 63,
+    "rarity_score": 63
+  },
+  {
+    "id": "71f6cc3b-7671-4173-8b60-ee094c5e854b",
+    "name": "Game Throne",
+    "influence_score": 75,
+    "rarity_score": 75
+  },
+  {
+    "id": "4975d074-5711-451f-aff2-71f1fbff11c1",
+    "name": "Gas War Vet",
+    "influence_score": 38,
+    "rarity_score": 38
+  },
+  {
+    "id": "339dd603-2a11-4ff0-8881-c37c07d33cbf",
+    "name": "DropKing",
+    "influence_score": 65,
+    "rarity_score": 65
+  },
+  {
+    "id": "70842476-bca4-4915-a538-0ac3d649afd3",
+    "name": "Dream Nexus",
+    "influence_score": 94,
+    "rarity_score": 94
+  },
+  {
+    "id": "454f8196-d4d7-42f0-bc6d-3879a86fc811",
+    "name": "Pump Lord",
+    "influence_score": 37,
+    "rarity_score": 37
+  },
+  {
+    "id": "7430c0d5-7a23-42c4-bd00-489c7ada97fd",
+    "name": "HashtagMort",
+    "influence_score": 25,
+    "rarity_score": 25
+  },
+  {
+    "id": "8a708107-eb1f-4cf8-8282-99cb55fd3879",
+    "name": "Philanthro+",
+    "influence_score": 88,
+    "rarity_score": 88
+  },
+  {
+    "id": "5af55b14-8e60-4dd6-956f-17b07e878e98",
+    "name": "Never Gonna",
+    "influence_score": 77,
+    "rarity_score": 77
+  },
+  {
+    "id": "179410d4-5d6f-4dcf-a31d-e974bbfe7fe4",
+    "name": "AlgoRoi",
+    "influence_score": 75,
+    "rarity_score": 75
+  },
+  {
+    "id": "62f7f9b0-2d21-4bfe-8694-812139342f73",
+    "name": "FeedVazio",
+    "influence_score": 34,
+    "rarity_score": 34
+  },
+  {
+    "id": "4a61f7aa-270b-4195-887d-927124d5d732",
+    "name": "Meta Prime",
+    "influence_score": 100,
+    "rarity_score": 100
+  },
+  {
+    "id": "581ca707-d132-4543-b7f7-7148132342f2",
+    "name": "Revolta Pro",
+    "influence_score": 84,
+    "rarity_score": 84
+  },
+  {
+    "id": "24118a28-0814-49e6-8d04-7c9fdab4b244",
+    "name": "Check Drama",
+    "influence_score": 65,
+    "rarity_score": 65
+  },
+  {
+    "id": "90a579a8-77d5-4ab3-b92e-d8c6dd8d6e88",
+    "name": "Schizo Pos",
+    "influence_score": 41,
+    "rarity_score": 41
+  },
+  {
+    "id": "3d964378-ebca-4fb5-8a59-32b7615c40f8",
+    "name": "Janny Free",
+    "influence_score": 48,
+    "rarity_score": 48
+  },
+  {
+    "id": "70d3d674-6003-4491-b65f-a508807963ce",
+    "name": "MentorBluff",
+    "influence_score": 28,
+    "rarity_score": 28
+  },
+  {
+    "id": "01becbe2-d5d8-435c-9ce7-267e2dd52b09",
+    "name": "SigmaMeme",
+    "influence_score": 21,
+    "rarity_score": 21
+  },
+  {
+    "id": "420389f5-b9c7-4f89-a1d6-6fb61ca1c2f2",
+    "name": "TrapEngaje",
+    "influence_score": 16,
+    "rarity_score": 16
+  },
+  {
+    "id": "440a0dc3-ae11-4322-b5dc-2b6a84d96ae4",
+    "name": "SpaceVazio",
+    "influence_score": 23,
+    "rarity_score": 23
+  },
+  {
+    "id": "20a34bff-ff6e-417b-8cd2-898139256f82",
+    "name": "ScrollZumbi",
+    "influence_score": 27,
+    "rarity_score": 27
+  },
+  {
+    "id": "347d6f69-fc74-4ab5-8cb5-cf2916a53e0a",
+    "name": "CrowdNone",
+    "influence_score": 20,
+    "rarity_score": 20
+  },
+  {
+    "id": "5332c391-70a0-4bba-97cc-d3a195ac7749",
+    "name": "Pedr\u00e3o Mem",
+    "influence_score": 42,
+    "rarity_score": 42
+  },
+  {
+    "id": "9043a94a-681d-4319-884b-21368db4fe8d",
+    "name": "CancelFodas",
+    "influence_score": 14,
+    "rarity_score": 14
+  },
+  {
+    "id": "44164c92-3790-4a86-baa7-3b54b46ce2d4",
+    "name": "WAGMI Vibe",
+    "influence_score": 46,
+    "rarity_score": 46
+  },
+  {
+    "id": "617f1055-d106-4a4a-ba23-7a4410b187aa",
+    "name": "GamerLost",
+    "influence_score": 45,
+    "rarity_score": 45
+  },
+  {
+    "id": "148f27a4-af55-4977-af0b-c2b61f3bc28f",
+    "name": "RageProfit",
+    "influence_score": 75,
+    "rarity_score": 75
+  },
+  {
+    "id": "9262e423-b26f-40ce-b30a-6cfd8fb729ab",
+    "name": "TikFlopado",
+    "influence_score": 32,
+    "rarity_score": 32
+  },
+  {
+    "id": "9305740c-c7e6-4925-9983-a45db7ad4e05",
+    "name": "StoryExp",
+    "influence_score": 27,
+    "rarity_score": 27
+  },
+  {
+    "id": "9b0fc095-64b8-40e4-acec-42ed6827ba64",
+    "name": "BotArmy",
+    "influence_score": 53,
+    "rarity_score": 53
+  },
+  {
+    "id": "9b27e0e4-63ec-4ff2-94d7-d4a982fb822d",
+    "name": "Mestre Clip",
+    "influence_score": 32,
+    "rarity_score": 32
+  },
+  {
+    "id": "a005068b-a43a-499e-a858-6100472e229b",
+    "name": "TrendMorto",
+    "influence_score": 16,
+    "rarity_score": 16
+  },
+  {
+    "id": "a0c6945d-2554-4316-a9c1-7a9d84a87d9e",
+    "name": "ThreadUnfin",
+    "influence_score": 21,
+    "rarity_score": 21
+  },
+  {
+    "id": "99593425-8e2a-4586-8f44-87b3622e2452",
+    "name": "Copypasta L",
+    "influence_score": 34,
+    "rarity_score": 34
+  },
+  {
+    "id": "985ba410-6381-4625-afd5-d83abb2e2e8b",
+    "name": "RaidKing",
+    "influence_score": 41,
+    "rarity_score": 41
+  },
+  {
+    "id": "98f17c01-8475-4650-9f8c-1ed055b9547d",
+    "name": "ViewCarol",
+    "influence_score": 35,
+    "rarity_score": 35
+  },
+  {
+    "id": "998bf37c-80d5-4482-b153-95463890496b",
+    "name": "VapeDev",
+    "influence_score": 9,
+    "rarity_score": 9
+  },
+  {
+    "id": "a08860a6-0c8b-4b79-8978-5ba95cf8a139",
+    "name": "CarrosselVz",
+    "influence_score": 34,
+    "rarity_score": 34
+  },
+  {
+    "id": "a208808a-97f2-466a-b748-89c739660c35",
+    "name": "SorteioFake",
+    "influence_score": 15,
+    "rarity_score": 15
+  },
+  {
+    "id": "a23ebc12-1a12-472e-8c68-eaaf71019a49",
+    "name": "Space Rec",
+    "influence_score": 59,
+    "rarity_score": 59
+  },
+  {
+    "id": "a5e4fdd3-19e6-4467-a0c2-43df560fb025",
+    "name": "Mon Catch",
+    "influence_score": 71,
+    "rarity_score": 71
+  },
+  {
+    "id": "a05e4373-a311-450f-8686-345781e1fc5b",
+    "name": "Shake Roxo",
+    "influence_score": 55,
+    "rarity_score": 55
+  },
+  {
+    "id": "a614d6d9-731c-4c24-af65-bb86afc40893",
+    "name": "TrendCorpse",
+    "influence_score": 12,
+    "rarity_score": 12
+  },
+  {
+    "id": "a6d021ba-33af-4920-b919-e9c01f9fb4ba",
+    "name": "BurnSaint",
+    "influence_score": 79,
+    "rarity_score": 79
+  },
+  {
+    "id": "99c011fb-0f57-4de8-ba84-143226eb434f",
+    "name": "Conspira++",
+    "influence_score": 81,
+    "rarity_score": 81
+  },
+  {
+    "id": "99d225b1-09da-41c5-9c13-00742fde0ab0",
+    "name": "MemeQuente",
+    "influence_score": 18,
+    "rarity_score": 18
+  },
+  {
+    "id": "98b9780d-138b-4e6c-9444-280238ec7a86",
+    "name": "PlaySolo",
+    "influence_score": 15,
+    "rarity_score": 15
+  },
+  {
+    "id": "9fc28e78-7a48-46f2-8da1-3e47016b2c84",
+    "name": "TagIn\u00fatil",
+    "influence_score": 20,
+    "rarity_score": 20
+  },
+  {
+    "id": "95a60eeb-736c-480f-8141-1c37342d7d3c",
+    "name": "NFTOrf\u00e3",
+    "influence_score": 16,
+    "rarity_score": 16
+  },
+  {
+    "id": "994e90ac-7a18-4909-b979-b7a077b8aa3e",
+    "name": "Pisadinha+",
+    "influence_score": 75,
+    "rarity_score": 75
+  },
+  {
+    "id": "a95d5f7d-8429-4627-b87d-b6c297a46ae9",
+    "name": "RugPull",
+    "influence_score": 33,
+    "rarity_score": 33
+  },
+  {
+    "id": "b1e343b6-0363-44b7-a371-0be56a1ad6c1",
+    "name": "DescVazia",
+    "influence_score": 11,
+    "rarity_score": 11
+  },
+  {
+    "id": "ae058829-7e9a-46de-bb85-57038d291181",
+    "name": "CloutFarmer",
+    "influence_score": 50,
+    "rarity_score": 50
+  },
+  {
+    "id": "afd25ee0-1a88-4ce1-a5f2-ba68b543e2b0",
+    "name": "AlfaPretnd",
+    "influence_score": 25,
+    "rarity_score": 25
+  },
+  {
+    "id": "a805e84a-aa4b-430f-aedb-521bcba060c0",
+    "name": "ViewBought",
+    "influence_score": 16,
+    "rarity_score": 16
+  },
+  {
+    "id": "a85aa45a-ca34-4c80-89a0-2fb996b9e0f3",
+    "name": "CarreiraVap",
+    "influence_score": 16,
+    "rarity_score": 16
+  },
+  {
+    "id": "a9337878-48f0-4d93-a8ad-afb192e823ae",
+    "name": "HypeStorm",
+    "influence_score": 69,
+    "rarity_score": 69
+  },
+  {
+    "id": "a9914d58-1bf3-48bb-9a0a-cacd76882040",
+    "name": "TrapSocial",
+    "influence_score": 17,
+    "rarity_score": 17
+  },
+  {
+    "id": "a99b37d0-49cd-49bd-9e0d-cbac68fd563d",
+    "name": "ReelCringe",
+    "influence_score": 32,
+    "rarity_score": 32
+  },
+  {
+    "id": "aa32b9c5-5dee-4c4f-9dbe-da68bab3aac9",
+    "name": "DuetFlop",
+    "influence_score": 14,
+    "rarity_score": 14
+  },
+  {
+    "id": "ac71d733-de44-42e6-9416-912981ca0c81",
+    "name": "BoicoFrac",
+    "influence_score": 13,
+    "rarity_score": 13
+  },
+  {
+    "id": "ad0e9eb3-1396-4d56-a550-7473635833cd",
+    "name": "ParaSempre",
+    "influence_score": 23,
+    "rarity_score": 23
+  },
+  {
+    "id": "ad796f41-1cfc-4e77-bc78-8150f00e6012",
+    "name": "PromFake",
+    "influence_score": 21,
+    "rarity_score": 21
+  },
+  {
+    "id": "ad7b0fab-462b-424e-b980-86351f75d213",
+    "name": "PinPregui",
+    "influence_score": 47,
+    "rarity_score": 47
+  },
+  {
+    "id": "ae287403-9cef-49cf-975c-66c9cff61d9c",
+    "name": "DicaNada",
+    "influence_score": 15,
+    "rarity_score": 15
+  },
+  {
+    "id": "aed61c0e-e9ff-4d5e-9ac6-1de5ae0aad0b",
+    "name": "EngajaBot",
+    "influence_score": 52,
+    "rarity_score": 52
+  },
+  {
+    "id": "b15e26d3-7711-4bc2-a3bd-81c5e00e8188",
+    "name": "TrapClick",
+    "influence_score": 31,
+    "rarity_score": 31
+  },
+  {
+    "id": "ad0dc183-5c13-4e02-8693-8c5f5bbccb97",
+    "name": "GigEscrav",
+    "influence_score": 26,
+    "rarity_score": 26
+  },
+  {
+    "id": "a89ecba2-ff17-47cf-9c2c-ef98a139701b",
+    "name": "ColabGhost",
+    "influence_score": 28,
+    "rarity_score": 28
+  },
+  {
+    "id": "b0f6067c-65fd-4636-b064-0bda4ff4f15f",
+    "name": "TradeNoob",
+    "influence_score": 32,
+    "rarity_score": 32
+  },
+  {
+    "id": "b1310a11-2b87-4ed5-8140-865e38ba7d0c",
+    "name": "DropVoid",
+    "influence_score": 23,
+    "rarity_score": 23
+  },
+  {
+    "id": "c2274228-8d65-4252-be83-0dc298af05cd",
+    "name": "BurnZumbi",
+    "influence_score": 14,
+    "rarity_score": 14
+  },
+  {
+    "id": "c480dece-4be7-46c3-860c-7b91f15a3b37",
+    "name": "SubPerdido",
+    "influence_score": 19,
+    "rarity_score": 19
+  },
+  {
+    "id": "c5606a0e-e727-4b43-bd64-8057e11f3741",
+    "name": "TagNingu\u00e9m",
+    "influence_score": 19,
+    "rarity_score": 19
+  },
+  {
+    "id": "c4730c40-2142-4fd5-9b6f-b0eba055442c",
+    "name": "AlgoTrap",
+    "influence_score": 49,
+    "rarity_score": 49
+  },
+  {
+    "id": "c56fe492-a3a5-4d9a-ba64-02ef23d5a98d",
+    "name": "Croco Trader",
+    "influence_score": 75,
+    "rarity_score": 75
+  },
+  {
+    "id": "c6db227b-186c-4685-b6a1-48f30e3bf72a",
+    "name": "BannerGen",
+    "influence_score": 27,
+    "rarity_score": 27
+  },
+  {
+    "id": "b75c637f-1346-4b2d-966d-63a622cb6722",
+    "name": "PinOrf\u00e3",
+    "influence_score": 9,
+    "rarity_score": 9
+  },
+  {
+    "id": "b852ceac-3447-4a2e-ba36-f9059daed1b3",
+    "name": "ViralBug",
+    "influence_score": 68,
+    "rarity_score": 68
+  },
+  {
+    "id": "be736656-cede-4d30-8b41-4f1cd059ff9f",
+    "name": "PlayEmpty",
+    "influence_score": 27,
+    "rarity_score": 27
+  },
+  {
+    "id": "b9245c06-110b-4154-a04f-73e7e83187c8",
+    "name": "Mald Master",
+    "influence_score": 38,
+    "rarity_score": 38
+  },
+  {
+    "id": "bb8b2d57-99c4-4e3d-a3e5-e0a31b13c8b7",
+    "name": "EmojiSpam",
+    "influence_score": 38,
+    "rarity_score": 38
+  },
+  {
+    "id": "bdea5b21-710c-4b49-a1db-69655166b9c5",
+    "name": "CriptoMax",
+    "influence_score": 50,
+    "rarity_score": 50
+  },
+  {
+    "id": "c04316f5-4b9c-4684-88d0-bef20dec59c3",
+    "name": "CollabGhost",
+    "influence_score": 31,
+    "rarity_score": 31
+  },
+  {
+    "id": "c171083f-22ec-4980-9f33-323bfbf31c09",
+    "name": "BuzzVazio",
+    "influence_score": 32,
+    "rarity_score": 32
+  },
+  {
+    "id": "b3f0c558-a6c3-4d9a-aa42-5716e78fae73",
+    "name": "Baile Pro",
+    "influence_score": 57,
+    "rarity_score": 57
+  },
+  {
+    "id": "b7f07048-9a87-4d85-bc0e-10eab3aa7714",
+    "name": "Diamond H",
+    "influence_score": 35,
+    "rarity_score": 35
+  },
+  {
+    "id": "bc2fb4ca-30f0-4e93-854b-9a152f987089",
+    "name": "Touch Grass",
+    "influence_score": 55,
+    "rarity_score": 55
+  },
+  {
+    "id": "c1c7f856-8aed-42fb-9084-60e46ac4e236",
+    "name": "BioPoser",
+    "influence_score": 11,
+    "rarity_score": 11
+  },
+  {
+    "id": "be758707-3fd5-4520-87dd-eb3322620fc5",
+    "name": "Rug Surviv",
+    "influence_score": 51,
+    "rarity_score": 51
+  },
+  {
+    "id": "c1c82478-cce9-4333-834c-44ab214477b6",
+    "name": "PixFlexer",
+    "influence_score": 54,
+    "rarity_score": 54
+  },
+  {
+    "id": "c138fc58-6d24-41c2-a4fd-2cb9d262d718",
+    "name": "PinOrphan",
+    "influence_score": 29,
+    "rarity_score": 29
+  },
+  {
+    "id": "ca59d638-ddf7-48da-ba2f-b3b839952e46",
+    "name": "CancelSurv",
+    "influence_score": 70,
+    "rarity_score": 70
+  },
+  {
+    "id": "ca7b1af5-a8f6-4c84-93af-37b489d932c6",
+    "name": "RaidNulo",
+    "influence_score": 23,
+    "rarity_score": 23
+  },
+  {
+    "id": "d47e3f7b-7d7b-4357-80e8-12d69a45318d",
+    "name": "CopyPasteGM",
+    "influence_score": 25,
+    "rarity_score": 25
+  },
+  {
+    "id": "cc759199-fa1a-42e2-add0-0b0fd997d39b",
+    "name": "PixPromessa",
+    "influence_score": 18,
+    "rarity_score": 18
+  },
+  {
+    "id": "cde096cf-4b0b-4160-ba04-1a69bbf383ca",
+    "name": "Brega Storm",
+    "influence_score": 57,
+    "rarity_score": 57
+  },
+  {
+    "id": "cd63348e-3e88-4729-9a4d-96f41f3c3eed",
+    "name": "CancelMa\u00e7on",
+    "influence_score": 31,
+    "rarity_score": 31
+  },
+  {
+    "id": "c93f3194-208c-4c88-a06a-0a6e908ca5b1",
+    "name": "NFTCopeiro",
+    "influence_score": 53,
+    "rarity_score": 53
+  },
+  {
+    "id": "d40974ec-500e-4fdf-a453-c5a2638013d4",
+    "name": "Ogre Prime",
+    "influence_score": 81,
+    "rarity_score": 81
+  },
+  {
+    "id": "cf286939-b26f-413d-990e-0934680d7959",
+    "name": "Based Dept",
+    "influence_score": 46,
+    "rarity_score": 46
+  },
+  {
+    "id": "d4749d41-c5f0-4ee3-be32-b42029fa6e96",
+    "name": "Marks Crown",
+    "influence_score": 73,
+    "rarity_score": 73
+  },
+  {
+    "id": "cbd3ac95-5e38-43d9-b1c2-b54cfdc41eb6",
+    "name": "AudioRuim",
+    "influence_score": 10,
+    "rarity_score": 10
+  },
+  {
+    "id": "d667af2d-3c96-4891-b9fe-b36b1c4208c0",
+    "name": "CloutChase",
+    "influence_score": 24,
+    "rarity_score": 24
+  },
+  {
+    "id": "cf4f2be5-2271-405e-b10c-91f93416b175",
+    "name": "FollowTrap",
+    "influence_score": 25,
+    "rarity_score": 25
+  },
+  {
+    "id": "c95c17d5-056d-4d65-a90a-66c2ade40e7d",
+    "name": "Chat Break",
+    "influence_score": 51,
+    "rarity_score": 51
+  },
+  {
+    "id": "cb85bd76-c3c7-448c-ab81-086b39282aec",
+    "name": "AI Drama",
+    "influence_score": 63,
+    "rarity_score": 63
+  },
+  {
+    "id": "d34dd9c9-6794-4a51-95d7-07834b9a44d3",
+    "name": "LevelFraco",
+    "influence_score": 20,
+    "rarity_score": 20
+  },
+  {
+    "id": "cdcefedc-1f36-4b62-a642-19b067040b5a",
+    "name": "TrendMaker",
+    "influence_score": 54,
+    "rarity_score": 54
+  },
+  {
+    "id": "d1a86cd6-b9f6-4258-a60b-e7e390afd110",
+    "name": "Taxa Meme",
+    "influence_score": 38,
+    "rarity_score": 38
+  },
+  {
+    "id": "d06bb5a4-915c-4a7d-8c66-1fe01a4acc9a",
+    "name": "CropErrado",
+    "influence_score": 29,
+    "rarity_score": 29
+  },
+  {
+    "id": "d553f3df-61fa-40a0-8235-471ebb380e70",
+    "name": "RaivaTuite",
+    "influence_score": 12,
+    "rarity_score": 12
+  },
+  {
+    "id": "db8955aa-052e-47d5-b491-be3ebed4eea4",
+    "name": "Echo Abra\u00e7o",
+    "influence_score": 46,
+    "rarity_score": 46
+  },
+  {
+    "id": "de647bcb-dcc8-4bd2-a24e-423f13b82e37",
+    "name": "ViewFake",
+    "influence_score": 15,
+    "rarity_score": 15
+  },
+  {
+    "id": "e0312ac6-8700-4a9d-a3f5-cc4deb6b256a",
+    "name": "Main Char",
+    "influence_score": 52,
+    "rarity_score": 52
+  },
+  {
+    "id": "de32acf1-e752-4d96-be56-27fd9339e4a1",
+    "name": "Corn Boom",
+    "influence_score": 60,
+    "rarity_score": 60
+  },
+  {
+    "id": "dffc2f29-ae5f-4e64-af8b-45a08487199e",
+    "name": "DicaSeca",
+    "influence_score": 33,
+    "rarity_score": 33
+  },
+  {
+    "id": "d9427f66-b10c-4ed8-bb37-eb98cda95044",
+    "name": "DMSeco",
+    "influence_score": 14,
+    "rarity_score": 14
+  },
+  {
+    "id": "e045484c-d924-4ec8-85b0-a9817bd5d167",
+    "name": "MetaEscravo",
+    "influence_score": 46,
+    "rarity_score": 46
+  },
+  {
+    "id": "d86cfb32-e986-480a-adff-ed49e5d180f0",
+    "name": "Glow Hard",
+    "influence_score": 50,
+    "rarity_score": 50
+  },
+  {
+    "id": "e09911f0-44b3-473b-905f-9e85e5753444",
+    "name": "CacheGhost",
+    "influence_score": 12,
+    "rarity_score": 12
+  },
+  {
+    "id": "e0224269-2b34-4f88-9460-c7c183bedffa",
+    "name": "PodVazio",
+    "influence_score": 12,
+    "rarity_score": 12
+  },
+  {
+    "id": "e1cced83-192c-477f-be6d-c2e2dce14567",
+    "name": "PixGuru",
+    "influence_score": 43,
+    "rarity_score": 43
+  },
+  {
+    "id": "dafd6ad3-f7ad-4b04-830d-2966b1466468",
+    "name": "MemeRobado",
+    "influence_score": 31,
+    "rarity_score": 31
+  },
+  {
+    "id": "d8a578bb-820d-4fe3-ad5b-af81c1a96a48",
+    "name": "ServMort",
+    "influence_score": 25,
+    "rarity_score": 25
+  },
+  {
+    "id": "d8bb7c22-b30e-4706-b06e-6653d0c6c91d",
+    "name": "Carl\u00e3o Deep",
+    "influence_score": 43,
+    "rarity_score": 43
+  },
+  {
+    "id": "e2480838-ed4a-4fc5-88eb-044523d23c61",
+    "name": "Print Hunt",
+    "influence_score": 48,
+    "rarity_score": 48
+  },
+  {
+    "id": "dab0d39a-63cd-4131-a7f9-c86f1520f8bb",
+    "name": "ToxicGuru",
+    "influence_score": 53,
+    "rarity_score": 53
+  },
+  {
+    "id": "e11691d3-9ae4-4e58-9685-2e5dbcbc8831",
+    "name": "ProtFollow",
+    "influence_score": 34,
+    "rarity_score": 34
+  },
+  {
+    "id": "e2245f36-d09c-4fb1-a8d1-986880b11a57",
+    "name": "Ring Death",
+    "influence_score": 71,
+    "rarity_score": 71
+  },
+  {
+    "id": "da4d8371-1f1b-4ccf-8bcf-213971897f4a",
+    "name": "Tech War++",
+    "influence_score": 81,
+    "rarity_score": 81
+  },
+  {
+    "id": "e3770eb9-51ce-4ec8-a7b3-fe0d3ac8cede",
+    "name": "Rekt Alert",
+    "influence_score": 39,
+    "rarity_score": 39
+  },
+  {
+    "id": "e76ddb13-f859-4a39-b343-b29eb93c730d",
+    "name": "Sinal Dan\u00e7a",
+    "influence_score": 34,
+    "rarity_score": 34
+  },
+  {
+    "id": "e8616dcd-2557-47b2-89de-11cfabd91bf2",
+    "name": "CarouMort",
+    "influence_score": 22,
+    "rarity_score": 22
+  },
+  {
+    "id": "ea0d1627-f646-4eee-862c-8086d5a0093e",
+    "name": "Paper Hand",
+    "influence_score": 47,
+    "rarity_score": 47
+  },
+  {
+    "id": "e606d511-0ccc-4c78-8b3e-81ed3103e149",
+    "name": "CoachMin",
+    "influence_score": 52,
+    "rarity_score": 52
+  },
+  {
+    "id": "e4460036-d4df-4577-bccf-265dbfc57bbc",
+    "name": "StoryFalso",
+    "influence_score": 27,
+    "rarity_score": 27
+  },
+  {
+    "id": "ecde99e6-8896-424d-8a37-3ae029f33b49",
+    "name": "TempUsed",
+    "influence_score": 52,
+    "rarity_score": 52
+  },
+  {
+    "id": "e89bc38d-9c08-4aa5-9941-642b90660cba",
+    "name": "MemeOld",
+    "influence_score": 26,
+    "rarity_score": 26
+  },
+  {
+    "id": "edfbb846-f392-4f7f-8b88-402871c4696b",
+    "name": "EngajeFome",
+    "influence_score": 33,
+    "rarity_score": 33
+  },
+  {
+    "id": "e5be5899-ead4-4c22-8b6f-21b937ad2e38",
+    "name": "Wholesome++",
+    "influence_score": 90,
+    "rarity_score": 90
+  },
+  {
+    "id": "e87026bc-5434-4485-8da6-53c22ab62cb7",
+    "name": "Note Scam",
+    "influence_score": 53,
+    "rarity_score": 53
+  },
+  {
+    "id": "efaed764-17ba-4288-91fe-32230468040b",
+    "name": "ViraLixo",
+    "influence_score": 14,
+    "rarity_score": 14
+  },
+  {
+    "id": "e4dadf08-703b-4722-81b6-4b09faaf4d03",
+    "name": "ToxicKing",
+    "influence_score": 44,
+    "rarity_score": 44
+  },
+  {
+    "id": "eb362d46-713d-43c4-97b0-1e2be808771b",
+    "name": "BaitEterno",
+    "influence_score": 19,
+    "rarity_score": 19
+  },
+  {
+    "id": "ea3f65d7-552a-4a22-b76a-f778a1523ad3",
+    "name": "MemeLord",
+    "influence_score": 73,
+    "rarity_score": 73
+  },
+  {
+    "id": "e7e34117-2bd9-46d1-af3e-156729b60571",
+    "name": "Ratio King",
+    "influence_score": 53,
+    "rarity_score": 53
+  },
+  {
+    "id": "ede721bc-52d9-42ce-916f-6e3a8774d130",
+    "name": "AlgoFalha",
+    "influence_score": 67,
+    "rarity_score": 67
+  },
+  {
+    "id": "f206fc15-745c-458f-a66c-d0e52a517db4",
+    "name": "BuzzKiller",
+    "influence_score": 14,
+    "rarity_score": 14
+  },
+  {
+    "id": "f22e1d07-5cc4-4ad2-92bc-0c431de4bf4b",
+    "name": "Water Boom",
+    "influence_score": 71,
+    "rarity_score": 71
+  },
+  {
+    "id": "ef20a40f-b451-4aab-8802-2752d64fdbad",
+    "name": "Jiggle Max",
+    "influence_score": 51,
+    "rarity_score": 51
+  },
+  {
+    "id": "e9f44fb6-80f0-43c1-a206-52fe949d7aee",
+    "name": "PodLord",
+    "influence_score": 40,
+    "rarity_score": 40
+  },
+  {
+    "id": "f2cbf5d8-d0af-41c4-a7b4-a1d011d1aec2",
+    "name": "Ape Strong",
+    "influence_score": 49,
+    "rarity_score": 49
+  },
+  {
+    "id": "f51c4186-3b56-49ef-8224-1597c008b0ed",
+    "name": "ShopImpulso",
+    "influence_score": 29,
+    "rarity_score": 29
+  },
+  {
+    "id": "f531bed7-f0ae-4758-b2f9-a23f2e040eb2",
+    "name": "PodcastV\u00e3o",
+    "influence_score": 34,
+    "rarity_score": 34
+  },
+  {
+    "id": "f60228bc-fa86-4154-afcf-e482e723ed34",
+    "name": "VlogAband",
+    "influence_score": 31,
+    "rarity_score": 31
+  },
+  {
+    "id": "f709e654-1d2b-4976-9bfa-fcca3083f8f0",
+    "name": "Green Beam",
+    "influence_score": 71,
+    "rarity_score": 71
+  },
+  {
+    "id": "f48e4504-4871-4324-894c-6524a8efe06e",
+    "name": "Warn Upload",
+    "influence_score": 56,
+    "rarity_score": 56
+  },
+  {
+    "id": "f68e95ca-5665-4367-a5d2-b644fee7525e",
+    "name": "HashChal",
+    "influence_score": 23,
+    "rarity_score": 23
+  },
+  {
+    "id": "fa6918da-0755-4f26-9024-61c0402d5109",
+    "name": "Vibe Max",
+    "influence_score": 40,
+    "rarity_score": 40
+  },
+  {
+    "id": "fa62c5a0-a64d-4f2a-a0df-2c49a9f3a8fd",
+    "name": "ScrollM\u00e1q",
+    "influence_score": 48,
+    "rarity_score": 48
+  },
+  {
+    "id": "fb68b34a-fb46-4a5f-9f85-f04efd1aeee8",
+    "name": "Go Outside",
+    "influence_score": 37,
+    "rarity_score": 37
+  },
+  {
+    "id": "f573cdc2-71b1-45d0-8dcc-1a40eb254782",
+    "name": "MetaShift",
+    "influence_score": 55,
+    "rarity_score": 55
+  },
+  {
+    "id": "f8da2a26-53fa-4121-899f-5392ce33ad55",
+    "name": "Dip Buyer",
+    "influence_score": 47,
+    "rarity_score": 47
+  },
+  {
+    "id": "fb32783b-ded8-4a6c-96e1-1585c3e72207",
+    "name": "Caveira Rir",
+    "influence_score": 34,
+    "rarity_score": 34
+  },
+  {
+    "id": "fab2191c-1e9b-43cc-8c0c-5696dea03748",
+    "name": "ThreadNulo",
+    "influence_score": 34,
+    "rarity_score": 34
+  },
+  {
+    "id": "fde471d0-fbf8-4091-9ccd-52023c127c6e",
+    "name": "HustleFake",
+    "influence_score": 30,
+    "rarity_score": 30
+  },
+  {
+    "id": "ffe5d201-3cab-469f-a47c-b91722f7d2c1",
+    "name": "AlgoCrown",
+    "influence_score": 73,
+    "rarity_score": 73
+  },
+  {
+    "id": "fb472735-976e-4027-abd0-d1a46758b7ba",
+    "name": "Kek Top",
+    "influence_score": 37,
+    "rarity_score": 37
+  },
+  {
+    "id": "ffc2ef47-25dd-4faa-a0b8-3fab76302310",
+    "name": "CaosDigital",
+    "influence_score": 95,
+    "rarity_score": 95
+  }
+]

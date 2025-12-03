@@ -83,26 +83,19 @@ export async function POST(request: NextRequest) {
     }
     console.log('[OPEN-V2] 8. Not opened yet, OK');
     
-    // Buscar config da edição
-    const editionId = opening.booster_pack.edition_id;
-    const { data: editionConfig } = await supabase
-      .from('edition_configs')
-      .select('rarity_distribution')
-      .eq('id', editionId)
-      .single();
+    // Distribuição de raridade padrão (refs: KROOVA_BOOSTER_PACK_FINAL_SPEC.md)
+    const rarityDist = {
+      trash: 50.0,
+      meme: 30.0,
+      viral: 15.0,
+      legendary: 4.0,
+      epica: 1.0
+    };
     
-    if (!editionConfig) {
-      return NextResponse.json(
-        { ok: false, error: { code: 'CONFIG_NOT_FOUND', message: 'Edition config not found' } },
-        { status: 500 }
-      );
-    }
-    
-    console.log('[OPEN-V2] 9. Edition config OK, gerando 5 cartas');
+    console.log('[OPEN-V2] 9. Gerando 5 cartas com distribuição padrão');
     
     // Gerar 5 cartas baseado na distribuição de raridade
     const generatedCards = [];
-    const rarityDist = editionConfig.rarity_distribution;
     
     for (let i = 0; i < 5; i++) {
       // Selecionar raridade baseado na distribuição
@@ -162,7 +155,7 @@ export async function POST(request: NextRequest) {
         .insert({
           base_id: randomCard.id,
           owner_id: user.id,
-          edition_id: editionId,
+          edition_id: opening.booster_pack.edition_id,
           skin: 'default',
           is_godmode: false,
           liquidity_brl: 0.10

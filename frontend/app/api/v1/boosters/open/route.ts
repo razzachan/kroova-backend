@@ -114,26 +114,38 @@ export async function POST(request: NextRequest) {
       console.log(`[OPEN-V2] Carta ${i + 1}: raridade ${selectedRarity}`);
       
       // TEMPORÁRIO: Buscar direto da edição sem filtrar por pack
-      // (para testar se o problema é com o .in() de 251 IDs)
       console.log(`[OPEN-V2] Buscando cartas ${selectedRarity} da edição ${opening.booster_pack.edition_id}`);
-      const { data: cardsBase, error: cardsError } = await supabase
+      let { data: cardsBase, error: cardsError } = await supabase
         .from('cards_base')
         .select('id, name, rarity, image_url, display_id')
         .eq('edition_id', opening.booster_pack.edition_id)
         .eq('rarity', selectedRarity)
-        .limit(50); // Limitar para evitar retornar muitas
+        .limit(50);
+      
+      // Se não encontrou com a raridade específica, pega qualquer carta
+      if (!cardsBase || cardsBase.length === 0) {
+        console.warn(`[OPEN-V2] Nenhuma carta ${selectedRarity} encontrada, buscando QUALQUER raridade...`);
+        const fallbackQuery = await supabase
+          .from('cards_base')
+          .select('id, name, rarity, image_url, display_id')
+          .eq('edition_id', opening.booster_pack.edition_id)
+          .limit(50);
+        
+        cardsBase = fallbackQuery.data;
+        cardsError = fallbackQuery.error;
+      }
       
       if (cardsError) {
-        console.error(`[OPEN-V2] Erro ao buscar cartas ${selectedRarity}:`, cardsError);
+        console.error(`[OPEN-V2] Erro ao buscar cartas:`, cardsError);
         continue;
       }
       
       if (!cardsBase || cardsBase.length === 0) {
-        console.warn(`[OPEN-V2] Nenhuma carta ${selectedRarity} encontrada, pulando...`);
+        console.error(`[OPEN-V2] NENHUMA CARTA ENCONTRADA NA EDIÇÃO!`);
         continue;
       }
       
-      console.log(`[OPEN-V2] Encontradas ${cardsBase.length} cartas ${selectedRarity}`);
+      console.log(`[OPEN-V2] Encontradas ${cardsBase.length} cartas (raridade: ${cardsBase[0].rarity})`);
       
       // Selecionar carta aleatória
       const randomCard = cardsBase[Math.floor(Math.random() * cardsBase.length)];

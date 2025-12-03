@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Kroova Card Image Generator - Google Gemini API (Nano Banana Pro)
-Gera imagens fotorealísticas 4K (3:4 aspect ratio) para todas as 251 cartas ED01
-usando Imagen 4 via Google Gemini API
+Kroova Card Image Generator - Google Vertex AI (Imagen 4)
+Gera imagens fotorealísticas 2K (3:4 aspect ratio) para todas as 354 cartas ED01
+usando Imagen 4 Ultra via Vertex AI API
 
 🎯 CRITICAL: Each card gets a UNIQUE prompt based on its COMPLETE description
    - Not generic templates, but SPECIFIC visual narratives

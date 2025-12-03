@@ -83,16 +83,14 @@ export async function POST(request: NextRequest) {
     }
     console.log('[OPEN-V2] 8. Not opened yet, OK');
     
-    // Distribuição de raridade padrão (refs: KROOVA_BOOSTER_PACK_FINAL_SPEC.md)
+    // Distribuição de raridade AJUSTADA para as raridades que existem no banco
+    // Baseado no que vimos: apenas 'meme' e 'trash' existem
     const rarityDist = {
-      trash: 50.0,
-      meme: 30.0,
-      viral: 15.0,
-      legendary: 4.0,
-      epica: 1.0
+      trash: 60.0,
+      meme: 40.0
     };
     
-    console.log('[OPEN-V2] 9. Gerando 5 cartas com distribuição padrão');
+    console.log('[OPEN-V2] 9. Gerando 5 cartas com distribuição ajustada (trash/meme apenas)');
     
     // Gerar 5 cartas baseado na distribuição de raridade
     const generatedCards = [];

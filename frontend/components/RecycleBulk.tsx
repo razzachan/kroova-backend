@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { unwrap } from '@/lib/unwrap';
@@ -34,10 +34,27 @@ export default function RecycleBulk({ cards, onSuccess }: RecycleBulkProps) {
   const [recycling, setRecycling] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [rewardData, setRewardData] = useState<any>(null);
+  const [recyclesToday, setRecyclesToday] = useState(0);
+  const [maxRecycles, setMaxRecycles] = useState(3);
   const router = useRouter();
 
   const REQUIRED_CARDS = 25;
-  const canRecycle = selectedCards.size === REQUIRED_CARDS;
+  const canRecycle = selectedCards.size === REQUIRED_CARDS && recyclesToday < maxRecycles;
+
+  // Buscar contador de reciclagens ao montar
+  useEffect(() => {
+    const fetchRecycleCount = async () => {
+      try {
+        const res = await api.get('/cards/recycle-count');
+        const data = unwrap(res);
+        setRecyclesToday(data.recycles_today || 0);
+        setMaxRecycles(data.max_recycles || 3);
+      } catch (error) {
+        // Silenciar erro, usar defaults
+      }
+    };
+    fetchRecycleCount();
+  }, []);
 
   const toggleCard = (cardId: string) => {
     const newSelected = new Set(selectedCards);
@@ -57,7 +74,11 @@ export default function RecycleBulk({ cards, onSuccess }: RecycleBulkProps) {
   const handleRecycle = async () => {
     if (!canRecycle) {
       cardAudio.playErrorBuzz();
-      alert(`Selecione exatamente ${REQUIRED_CARDS} cartas`);
+      if (recyclesToday >= maxRecycles) {
+        alert(`Você já reciclou ${maxRecycles} vezes hoje. Volte amanhã!`);
+      } else {
+        alert(`Selecione exatamente ${REQUIRED_CARDS} cartas`);
+      }
       return;
     }
 
@@ -72,6 +93,12 @@ export default function RecycleBulk({ cards, onSuccess }: RecycleBulkProps) {
       setRewardData(data);
       setShowSuccessModal(true);
       setSelectedCards(new Set());
+      
+      // Atualizar contador local
+      if (data.recycles_today !== undefined) {
+        setRecyclesToday(data.recycles_today);
+      }
+      
       if (onSuccess) onSuccess();
     } catch (error: any) {
       cardAudio.playErrorBuzz();
@@ -102,6 +129,17 @@ export default function RecycleBulk({ cards, onSuccess }: RecycleBulkProps) {
           Selecione <span className="text-[#A855F7] font-bold">{REQUIRED_CARDS} cartas</span> para reciclar e ganhar{' '}
           <span className="text-[#FFC700] font-bold">1 booster grátis</span>
         </p>
+        
+        {/* Contador de reciclagens diárias */}
+        <div className="mt-3 flex items-center gap-2 text-sm">
+          <span className="text-gray-400">Reciclagens hoje:</span>
+          <span className={`font-bold ${recyclesToday >= maxRecycles ? 'text-red-400' : 'text-[#A855F7]'}`}>
+            {recyclesToday}/{maxRecycles}
+          </span>
+          {recyclesToday >= maxRecycles && (
+            <span className="text-red-400 text-xs">⚠️ Limite diário atingido</span>
+          )}
+        </div>
       </div>
 
       {/* Progress Bar */}

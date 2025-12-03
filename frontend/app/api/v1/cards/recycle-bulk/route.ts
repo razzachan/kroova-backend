@@ -3,9 +3,12 @@ import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'edge';
 
+const MAX_RECYCLES_PER_DAY = 3;
+
 /**
  * POST /api/v1/cards/recycle-bulk
  * Recicla 25 cartas e ganha 1 booster grátis aleatório
+ * Limitado a 3 reciclagens por dia para proteger economia
  */
 export async function POST(request: NextRequest) {
   try {
@@ -37,6 +40,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { ok: false, error: { code: 'INVALID_TOKEN', message: 'Token inválido' } },
         { status: 401 }
+      );
+    }
+
+    // Verificar limite diário de reciclagens
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const { data: todayRecycles, error: recyclesError } = await supabaseAdmin
+      .from('transactions')
+      .select('id', { count: 'exact', head: false })
+      .eq('user_id', user.id)
+      .eq('type', 'recycle_bulk')
+      .gte('created_at', today.toISOString());
+
+    const recycleCount = todayRecycles?.length || 0;
+    
+    if (recycleCount >= MAX_RECYCLES_PER_DAY) {
+      return NextResponse.json(
+        { 
+          ok: false, 
+          error: { 
+            code: 'DAILY_LIMIT_REACHED', 
+            message: `Você já reciclou ${MAX_RECYCLES_PER_DAY} vezes hoje. Volte amanhã!`,
+            recycles_today: recycleCount,
+            max_recycles: MAX_RECYCLES_PER_DAY
+          } 
+        },
+        { status: 429 }
       );
     }
 
@@ -117,7 +147,8 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
         booster_type_id: randomPack.pack_id,
         cards_obtained: [],
-        purchased_at: new Date().toISOString()
+        purchased_at: new Date().toISOString(),
+        source: 'recycle' // Marca origem para proteção de pity
       })
       .select()
       .single();
@@ -149,9 +180,13 @@ export async function POST(request: NextRequest) {
         cards_recycled: 25,
         reward: {
           opening_id: opening.id,
+          booster_id: opening.id,
           booster_name: randomPack.pack_name,
-          booster_type_id: randomPack.pack_id
-        }
+          booster_type_id: randomPack.pack_id,
+          booster_description: 'Booster grátis obtido via reciclagem'
+        },
+        recycles_today: recycleCount + 1,
+        max_recycles: MAX_RECYCLES_PER_DAY
       }
     });
 

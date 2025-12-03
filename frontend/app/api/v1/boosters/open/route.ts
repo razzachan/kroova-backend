@@ -235,9 +235,9 @@ export async function POST(request: NextRequest) {
       ok: true,
       data: {
         opening_id,
-        cards: generatedCards,
-        pity_counter: 0,
-        godmode_awarded: false
+        cards: generatedCards
+        // Pity system será implementado futuramente
+        // Por ora, apenas retorna as cartas geradas
       }
     });
     

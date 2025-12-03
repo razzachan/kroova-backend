@@ -120,7 +120,7 @@ export default function RecycleBulk({ cards, onSuccess }: RecycleBulkProps) {
       </div>
 
       {/* Cards Grid */}
-      <div className="grid grid-cols-5 gap-3 mb-6 max-h-96 overflow-y-auto pr-2">
+      <div className="grid grid-cols-8 gap-2 mb-6 max-h-[500px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-purple-500/50 scrollbar-track-gray-800/50">
         {cards.slice(0, 50).map((card) => {
           const cardData = card.card || card.cards_instances?.cards_base;
           const isSelected = selectedCards.has(card.id);
@@ -129,26 +129,26 @@ export default function RecycleBulk({ cards, onSuccess }: RecycleBulkProps) {
             <button
               key={card.id}
               onClick={() => toggleCard(card.id)}
-              className={`relative rounded-lg overflow-hidden transition-all ${
+              className={`relative rounded-md overflow-hidden transition-all hover:z-10 ${
                 isSelected
-                  ? 'ring-4 ring-[#A855F7] scale-95'
-                  : 'opacity-70 hover:opacity-100 hover:scale-105'
+                  ? 'ring-2 ring-[#A855F7] scale-95'
+                  : 'opacity-70 hover:opacity-100 hover:scale-110'
               }`}
               disabled={recycling}
             >
               <img
                 src={cardData?.image_url || '/placeholder-card.png'}
                 alt={cardData?.name || 'Card'}
-                className="w-full h-auto"
+                className="w-full h-auto aspect-[2/3] object-cover"
               />
               {isSelected && (
-                <div className="absolute inset-0 bg-[#A855F7]/30 flex items-center justify-center">
-                  <span className="text-4xl">✓</span>
+                <div className="absolute inset-0 bg-[#A855F7]/40 flex items-center justify-center">
+                  <span className="text-2xl">✓</span>
                 </div>
               )}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-2">
-                <p className="text-xs font-bold truncate">{cardData?.name}</p>
-                <p className={`text-xs ${getRarityColor(cardData?.rarity || 'trash')}`}>
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-1">
+                <p className="text-[10px] font-bold truncate">{cardData?.name}</p>
+                <p className={`text-[9px] ${getRarityColor(cardData?.rarity || 'trash')}`}>
                   {cardData?.rarity}
                 </p>
               </div>
@@ -162,7 +162,15 @@ export default function RecycleBulk({ cards, onSuccess }: RecycleBulkProps) {
         <button
           onClick={() => setSelectedCards(new Set())}
           disabled={selectedCards.size === 0 || recycling}
-          className="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600 transition"
+          className="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white font-bold uppercase disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600 transition"
+        >
+          LIMPAR SELEÇÃO
+        </button>
+        
+        <button
+          onClick={handleRecycle}
+          disabled={!canRecycle || recycling}
+          className="flex-1 px-4 py-3 rounded-lg bg-gradient-to-r from-[#A855F7] to-[#FFC700] text-white font-bold uppercase disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition"
         >
           LIMPAR SELEÇÃO
         </button>

@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Registra transação de reciclagem
-    await supabase
+    await supabaseAdmin
       .from('transactions')
       .insert({
         user_id: user.id,

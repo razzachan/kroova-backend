@@ -83,14 +83,16 @@ export async function POST(request: NextRequest) {
     }
     console.log('[OPEN-V2] 8. Not opened yet, OK');
     
-    // Distribuição de raridade AJUSTADA para as raridades que existem no banco
-    // Baseado no que vimos: apenas 'meme' e 'trash' existem
+    // Distribuição de raridade correta (todas as raridades existem!)
     const rarityDist = {
-      trash: 60.0,
-      meme: 40.0
+      trash: 50.0,
+      meme: 30.0,
+      viral: 15.0,
+      legendary: 4.0,
+      godmode: 1.0
     };
     
-    console.log('[OPEN-V2] 9. Gerando 5 cartas com distribuição ajustada (trash/meme apenas)');
+    console.log('[OPEN-V2] 9. Gerando 5 cartas com distribuição completa');
     
     // Gerar 5 cartas baseado na distribuição de raridade
     const generatedCards = [];

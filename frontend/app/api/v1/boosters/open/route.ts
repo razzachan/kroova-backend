@@ -89,10 +89,11 @@ export async function POST(request: NextRequest) {
       meme: 30.0,
       viral: 15.0,
       legendary: 4.0,
-      godmode: 1.0
+      godmode: 1.0  // NOTE: banco usa "godmode" não "epica"
     };
     
     console.log('[OPEN-V2] 9. Gerando 5 cartas com distribuição completa');
+    console.log('[OPEN-V2] Raridades disponíveis:', Object.keys(rarityDist));
     
     // Gerar 5 cartas baseado na distribuição de raridade
     const generatedCards = [];
@@ -121,6 +122,8 @@ export async function POST(request: NextRequest) {
         .eq('edition_id', opening.booster_pack.edition_id)
         .eq('rarity', selectedRarity)
         .limit(50);
+      
+      console.log(`[OPEN-V2] Query result: found ${cardsBase?.length || 0} cards, error:`, cardsError);
       
       // Se não encontrou com a raridade específica, pega qualquer carta
       if (!cardsBase || cardsBase.length === 0) {

@@ -3,15 +3,16 @@ import { createClient } from '@supabase/supabase-js';
 
 export const runtime = 'edge';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
 /**
  * POST /api/v1/cards/recycle-bulk
  * Recicla 25 cartas e ganha 1 booster grátis aleatório
  */
 export async function POST(request: NextRequest) {
   try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(
@@ -21,12 +22,17 @@ export async function POST(request: NextRequest) {
     }
 
     const token = authHeader.replace('Bearer ', '');
-    const supabase = createClient(supabaseUrl, supabaseKey, {
+    
+    // Cliente para auth
+    const supabaseAuth = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: `Bearer ${token}` } }
     });
+    
+    // Cliente admin para bypass RLS
+    const supabaseAdmin = createClient(supabaseUrl, serviceKey);
 
     // Valida token
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token);
     if (authError || !user) {
       return NextResponse.json(
         { ok: false, error: { code: 'INVALID_TOKEN', message: 'Token inválido' } },
@@ -46,9 +52,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Verifica se o usuário possui todas as cartas
-    const { data: cards, error: cardsError } = await supabase
+    const { data: cards, error: cardsError } = await supabaseAuth
       .from('cards_instances')
-      .select('id, user_id')
+      .select('id, owner_id')
       .in('id', card_instance_ids);
 
     if (cardsError) {
@@ -59,7 +65,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verifica propriedade
-    const notOwned = cards?.filter(c => c.user_id !== user.id) || [];
+    const notOwned = cards?.filter(c => c.owner_id !== user.id) || [];
     if (notOwned.length > 0) {
       return NextResponse.json(
         { ok: false, error: { code: 'FORBIDDEN', message: 'Você não possui todas essas cartas' } },
@@ -74,8 +80,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Deleta as cartas (reciclagem)
-    const { error: deleteError } = await supabase
+    // Deleta as cartas (reciclagem) - usar admin para bypass RLS
+    const { error: deleteError } = await supabaseAdmin
       .from('cards_instances')
       .delete()
       .in('id', card_instance_ids);
@@ -88,7 +94,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Busca um booster pack aleatório ativo
-    const { data: packs, error: packsError } = await supabase
+    const { data: packs, error: packsError } = await supabaseAdmin
       .from('booster_packs')
       .select('pack_id, pack_name, edition_id')
       .eq('is_active', true)
@@ -104,8 +110,8 @@ export async function POST(request: NextRequest) {
     // Escolhe pack aleatório
     const randomPack = packs[Math.floor(Math.random() * packs.length)];
 
-    // Cria booster_opening (booster grátis)
-    const { data: opening, error: openingError } = await supabase
+    // Cria booster_opening (booster grátis) - usar admin para bypass RLS
+    const { data: opening, error: openingError } = await supabaseAdmin
       .from('booster_openings')
       .insert({
         user_id: user.id,

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { api } from '@/lib/api';
 import { unwrap } from '@/lib/unwrap';
 import { cardAudio } from '@/lib/cardAudio';
+import GlitchButton from '@/components/UI/GlitchButton';
 
 interface Card {
   id: string;
@@ -159,32 +160,24 @@ export default function RecycleBulk({ cards, onSuccess }: RecycleBulkProps) {
 
       {/* Action Buttons */}
       <div className="flex gap-3">
-        <button
+        <GlitchButton
           onClick={() => setSelectedCards(new Set())}
           disabled={selectedCards.size === 0 || recycling}
-          className="flex-1 px-4 py-3 rounded-lg bg-gray-700 text-white font-bold uppercase disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-600 transition"
+          variant="secondary"
+          glitchIntensity={0.3}
         >
           LIMPAR SELEÇÃO
-        </button>
+        </GlitchButton>
         
-        <button
+        <GlitchButton
           onClick={handleRecycle}
           disabled={!canRecycle || recycling}
-          className="flex-1 px-4 py-3 rounded-lg bg-gradient-to-r from-[#A855F7] to-[#FFC700] text-white font-bold uppercase disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition"
-        >
-          LIMPAR SELEÇÃO
-        </button>
-        <button
-          onClick={handleRecycle}
-          disabled={!canRecycle || recycling}
-          className={`flex-1 px-4 py-3 rounded-lg font-bold uppercase tracking-wider transition ${
-            canRecycle && !recycling
-              ? 'bg-gradient-to-r from-[#A855F7] to-[#FF006D] text-white hover:scale-105'
-              : 'bg-gray-700 text-gray-500 cursor-not-allowed'
-          }`}
+          variant="primary"
+          glitchIntensity={0.5}
+          className="flex-1"
         >
           {recycling ? 'RECICLANDO...' : `RECICLAR ${REQUIRED_CARDS} CARTAS`}
-        </button>
+        </GlitchButton>
       </div>
 
       {cards.length < REQUIRED_CARDS && (

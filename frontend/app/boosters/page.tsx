@@ -615,32 +615,40 @@ export default function BoostersPage() {
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {[
-                { price: 0.50, name: 'Básico', color: 'from-gray-600 to-gray-800' },
-                { price: 1.00, name: 'Padrão', color: 'from-green-600 to-green-800' },
-                { price: 2.00, name: 'Premium', color: 'from-blue-600 to-blue-800' },
-                { price: 5.00, name: 'Elite', color: 'from-purple-600 to-purple-800' },
-                { price: 10.00, name: 'Whale', color: 'from-yellow-600 to-yellow-800' }
+                { price: 0.50, name: 'Básico', color: 'bg-gray-800/40' },
+                { price: 1.00, name: 'Padrão', color: 'bg-green-900/40' },
+                { price: 2.00, name: 'Premium', color: 'bg-blue-900/40' },
+                { price: 5.00, name: 'Elite', color: 'bg-purple-900/40' },
+                { price: 10.00, name: 'Whale', color: 'bg-yellow-900/40' }
               ].map((tier) => (
-                <button
+                <div
                   key={tier.price}
                   onClick={() => {
                     setSelectedTier(tier.price);
                     setSelectedVariant(null);
                   }}
-                  className={`relative p-6 rounded-lg border-2 transition-all ${
+                  className={`relative p-6 rounded-lg border-2 transition-all cursor-pointer ${
                     selectedTier === tier.price
-                      ? 'border-[#00F0FF] scale-105'
-                      : 'border-gray-700 hover:border-gray-500'
-                  } bg-gradient-to-br ${tier.color}`}
+                      ? 'border-[#00F0FF] shadow-[0_0_20px_rgba(0,240,255,0.5)]'
+                      : 'border-gray-700/50 hover:border-[#00F0FF]/50'
+                  } ${tier.color} backdrop-blur-sm group`}
                 >
-                  <div className="text-xl font-bold mb-2">{tier.name}</div>
-                  <div className="text-2xl font-bold text-[#00F0FF]">R$ {tier.price.toFixed(2)}</div>
+                  <div className="text-xl font-bold mb-2 font-mono tracking-wider">{tier.name}</div>
+                  <div className={`text-2xl font-bold font-mono ${
+                    selectedTier === tier.price ? 'text-[#00F0FF]' : 'text-gray-300'
+                  }`}>
+                    R$ {tier.price.toFixed(2)}
+                  </div>
                   {selectedTier === tier.price && (
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-[#00F0FF] rounded-full flex items-center justify-center">
-                      ✓
+                    <div className="absolute -top-3 -right-3 w-8 h-8 bg-[#00F0FF] rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.8)] animate-pulse">
+                      <span className="text-black font-bold">✓</span>
                     </div>
                   )}
-                </button>
+                  {/* Glitch effect on hover */}
+                  <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    <div className="absolute inset-0 rounded-lg border border-[#FF006D]/30 animate-pulse"></div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -658,39 +666,55 @@ export default function BoostersPage() {
                     <div
                       key={booster.id}
                       onClick={() => setSelectedVariant(booster.id)}
-                      className={`cursor-pointer bg-gray-800/60 backdrop-blur-sm rounded-lg overflow-hidden border-2 transition-all ${
+                      className={`cursor-pointer bg-black/40 backdrop-blur-sm rounded-lg overflow-hidden border-2 transition-all ${
                         selectedVariant === booster.id
-                          ? 'border-[#00F0FF] scale-105'
-                          : 'border-gray-700 hover:border-blue-500'
-                      } group`}
+                          ? 'border-[#00F0FF] shadow-[0_0_30px_rgba(0,240,255,0.6)]'
+                          : 'border-gray-700/50 hover:border-[#00F0FF]/50 hover:shadow-[0_0_15px_rgba(0,240,255,0.3)]'
+                      } group relative`}
                     >
+                      {/* Badge da variante */}
+                      <div className={`absolute top-3 left-3 z-10 px-3 py-1 rounded-lg text-xs font-bold font-mono ${
+                        booster.id === 'ED01_ALPHA' ? 'bg-yellow-600/90' :
+                        booster.id === 'ED01_BETA' ? 'bg-gray-500/90' :
+                        'bg-orange-600/90'
+                      } shadow-lg border border-black/50`}>
+                        {booster.id.split('_')[1]}
+                      </div>
+                      
                       <div className="relative h-64 bg-gray-900/50 flex items-center justify-center overflow-hidden">
                         <img 
                           src={PACK_IMAGES[booster.id] || PACK_IMAGES['ED01_ALPHA']} 
                           alt={booster.pack_name || booster.name}
-                          className="h-full w-auto object-contain transform group-hover:scale-105 transition-transform duration-300"
+                          className="h-full w-auto object-contain transform group-hover:scale-110 transition-transform duration-300"
                         />
                         {selectedVariant === booster.id && (
-                          <div className="absolute top-2 right-2 w-8 h-8 bg-[#00F0FF] rounded-full flex items-center justify-center text-black font-bold">
+                          <div className="absolute top-3 right-3 w-10 h-10 bg-[#00F0FF] rounded-full flex items-center justify-center text-black font-bold shadow-[0_0_20px_rgba(0,240,255,0.9)] animate-pulse">
                             ✓
                           </div>
                         )}
                       </div>
-                      <div className="p-4">
-                        <h3 className="text-xl font-bold mb-2">{booster.pack_name || booster.name}</h3>
+                      <div className="p-4 bg-black/60">
+                        <h3 className="text-xl font-bold mb-2 font-mono tracking-wide">{booster.pack_name || booster.name}</h3>
                         <div className="text-sm text-gray-400 mb-3">
-                          <p className="mb-1">5 cartas • {booster.edition_id}</p>
-                          <p className="text-xs">Distribuição:</p>
-                          <div className="grid grid-cols-2 gap-1 text-xs mt-1">
+                          <p className="mb-1 font-mono">5 cartas • {booster.edition_id}</p>
+                          <p className="text-xs text-gray-500 font-mono">Distribuição:</p>
+                          <div className="grid grid-cols-2 gap-1 text-xs mt-1 font-mono">
                             {Object.entries(booster.rarity_distribution || {}).map(([rarity, percent]) => (
                               <div key={rarity} className="flex justify-between">
                                 <span className={getRarityColor(rarity)}>{rarity}</span>
-                                <span>{percent}%</span>
+                                <span className="text-gray-400">{percent}%</span>
                               </div>
                             ))}
                           </div>
                         </div>
                       </div>
+                      
+                      {/* Glitch effect border */}
+                      {selectedVariant === booster.id && (
+                        <div className="absolute inset-0 rounded-lg pointer-events-none">
+                          <div className="absolute inset-0 rounded-lg border-2 border-[#FF006D]/40 animate-pulse"></div>
+                        </div>
+                      )}
                     </div>
                   ))}
               </div>

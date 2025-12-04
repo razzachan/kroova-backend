@@ -1495,8 +1495,14 @@ export default function InventoryPage() {
               
               <GlitchButton
                 onClick={() => {
+                  console.log('🔄 [RELOAD] Fechando modal e recarregando página...');
                   setSellSuccessData(null);
-                  // Recarrega a página para atualizar o saldo na navbar
+                  // Dispara evento para atualizar saldo no dashboard
+                  window.dispatchEvent(new CustomEvent('balance-updated', { 
+                    detail: { new_balance: sellSuccessData.new_balance } 
+                  }));
+                  console.log('🔄 [RELOAD] Executando window.location.reload()...');
+                  // Recarrega a página para garantir sincronização completa
                   window.location.reload();
                 }}
                 variant="success"

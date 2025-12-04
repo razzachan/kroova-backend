@@ -202,6 +202,8 @@ export default function BoostersPage() {
       // Sealed packs
       if (sealedRes.status === 'fulfilled') {
         const data = unwrap(sealedRes.value.data);
+        console.log('📦 [BOOSTERS] Sealed packs loaded:', data.sealed_packs?.length || 0);
+        console.log('📦 [BOOSTERS] First pack:', data.sealed_packs?.[0]);
         setSealedPacks(data.sealed_packs || []);
       } else {
         console.warn('Sealed packs endpoint not available yet');

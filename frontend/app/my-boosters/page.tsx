@@ -15,16 +15,29 @@ const PACK_IMAGES: Record<string, string> = {
   'ED01_GAMMA': '/assets/booster-packs/pack-front-ed01-gamma.png',
 };
 
-const TIER_INFO: Record<string, { name: string; badge: string; color: string }> = {
-  'ED01_ALPHA': { name: 'ALPHA', badge: '🏆', color: 'from-yellow-500 to-yellow-700' },
-  'ED01_BETA': { name: 'BETA', badge: '⚡', color: 'from-gray-400 to-gray-600' },
-  'ED01_GAMMA': { name: 'GAMMA', badge: '💎', color: 'from-orange-600 to-orange-800' },
+const TIER_INFO: Record<string, { name: string; badge: string; color: string; textColor: string }> = {
+  'ED01_ALPHA': { name: 'ALPHA', badge: '🏆', color: 'from-yellow-500 to-yellow-700', textColor: 'text-yellow-400' },
+  'ED01_BETA': { name: 'BETA', badge: '⚡', color: 'from-gray-400 to-gray-600', textColor: 'text-gray-300' },
+  'ED01_GAMMA': { name: 'GAMMA', badge: '💎', color: 'from-orange-600 to-orange-800', textColor: 'text-orange-400' },
+};
+
+// Mapeamento de preço para tier
+const PRICE_TO_TIER: Record<number, string> = {
+  0.50: 'Básico',
+  1.00: 'Padrão',
+  2.00: 'Premium',
+  5.00: 'Elite',
+  10.00: 'Whale'
 };
 
 interface SealedPack {
   id: string;
   booster_type_id: string;
-  acquired_at: string;
+  purchased_at: string;
+  booster_packs?: {
+    pack_name: string;
+    edition_id: string;
+  };
   booster_types?: {
     name: string;
     pack_name: string;
@@ -176,10 +189,22 @@ export default function MyBoostersPage() {
               key={pack.id}
               className="relative group"
             >
-              {/* Tier Badge */}
-              <div className={`absolute -top-3 -right-3 z-10 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r ${TIER_INFO[pack.booster_type_id]?.color || 'from-gray-600 to-gray-800'} shadow-lg`}>
-                {TIER_INFO[pack.booster_type_id]?.badge} {TIER_INFO[pack.booster_type_id]?.name || pack.booster_type_id}
+              {/* Variant Badge (ALPHA/BETA/GAMMA) - Estilo cyberpunk */}
+              <div className={`absolute -top-3 -right-3 z-10 px-4 py-2 rounded-lg text-xs font-bold font-mono bg-gradient-to-r ${TIER_INFO[pack.booster_type_id]?.color || 'from-gray-600 to-gray-800'} shadow-lg border-2 border-black/50`}>
+                <div className="flex items-center gap-1">
+                  <span className="text-base">{TIER_INFO[pack.booster_type_id]?.badge}</span>
+                  <span className={`${TIER_INFO[pack.booster_type_id]?.textColor || 'text-white'} tracking-wider`}>
+                    {TIER_INFO[pack.booster_type_id]?.name || pack.booster_type_id}
+                  </span>
+                </div>
               </div>
+
+              {/* Price Tier Badge (Básico/Premium/Elite...) */}
+              {pack.booster_types?.price_brl && (
+                <div className="absolute -top-3 -left-3 z-10 px-3 py-1 rounded-lg text-xs font-bold font-mono bg-black/80 backdrop-blur-sm border border-[#00F0FF]/50 text-[#00F0FF]">
+                  {PRICE_TO_TIER[pack.booster_types.price_brl] || `R$ ${pack.booster_types.price_brl.toFixed(2)}`}
+                </div>
+              )}
 
               {/* Booster Card */}
               <BoosterCard3D
@@ -189,7 +214,7 @@ export default function MyBoostersPage() {
                 <div className="relative">
                   <img
                     src={PACK_IMAGES[pack.booster_type_id] || PACK_IMAGES['ED01_ALPHA']}
-                    alt={`${pack.booster_types?.pack_name || 'Booster'} Pack`}
+                    alt={`${pack.booster_packs?.pack_name || pack.booster_types?.pack_name || 'Booster'} Pack`}
                     className="w-full h-auto object-contain"
                     style={{ minHeight: '300px' }}
                   />
@@ -211,7 +236,7 @@ export default function MyBoostersPage() {
               {/* Info */}
               <div className="mt-4 text-center">
                 <div className="text-sm text-gray-400 mb-1">
-                  {pack.booster_types?.pack_name || 'Booster Pack'}
+                  {pack.booster_packs?.pack_name || pack.booster_types?.pack_name || 'Booster Pack'}
                 </div>
                 {pack.booster_types?.price_brl && (
                   <div className="text-xs text-gray-500">
@@ -219,7 +244,11 @@ export default function MyBoostersPage() {
                   </div>
                 )}
                 <div className="text-xs text-gray-600 mt-1">
-                  {new Date(pack.acquired_at).toLocaleDateString('pt-BR')}
+                  {new Date(pack.purchased_at).toLocaleDateString('pt-BR', { 
+                    day: '2-digit', 
+                    month: '2-digit', 
+                    year: 'numeric' 
+                  })}
                 </div>
               </div>
 

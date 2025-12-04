@@ -45,7 +45,13 @@ export async function GET(request: NextRequest) {
     // Busca boosters não abertos (opened_at = null)
     const { data: sealedPacks, error } = await supabase
       .from('booster_openings')
-      .select('id, booster_type_id, purchased_at, booster_packs!inner(pack_name, edition_id)')
+      .select(`
+        id, 
+        booster_type_id, 
+        purchased_at, 
+        booster_packs!inner(pack_name, edition_id),
+        booster_types!inner(name, pack_name, price_brl)
+      `)
       .eq('user_id', user.id)
       .is('opened_at', null)
       .order('purchased_at', { ascending: false });

@@ -51,6 +51,7 @@ export default function InventoryPage() {
   const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
   const [sellingSystems, setSellingSystems] = useState(false);
   const [sellMode, setSellMode] = useState<'quick' | 'advanced' | 'manual'>('quick'); // Modo de venda
+  const [sellSuccessData, setSellSuccessData] = useState<{ cards_sold: number, total_value: number, new_balance: number } | null>(null);
   
   // Quick Actions
   const [quickAction, setQuickAction] = useState<'trash' | 'trash_meme' | 'under_1' | 'under_5' | 'duplicates'>('trash');
@@ -301,8 +302,7 @@ export default function InventoryPage() {
       console.log('[handleSellToSystem] Dados após unwrap:', data);
       
       cardAudio.playSuccessChime();
-      alert(`✅ ${data.cards_sold} cartas vendidas por R$ ${data.total_value.toFixed(2)}!\nNovo saldo: R$ ${data.new_balance.toFixed(2)}`);
-      
+      setSellSuccessData(data);
       setShowSellConfirmModal(false);
       await loadInventory();
     } catch (error: any) {
@@ -1449,6 +1449,53 @@ export default function InventoryPage() {
           </div>
         );
       })()}
+
+      {/* Modal de Sucesso da Venda */}
+      {sellSuccessData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border-2 border-[#00F0FF] rounded-lg p-8 max-w-md mx-4 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#00F0FF]/10 to-[#FF006D]/10 animate-pulse"></div>
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#00F0FF] via-[#FF006D] to-[#00F0FF]"></div>
+            
+            <div className="relative z-10 text-center">
+              <div className="text-6xl mb-4 animate-bounce">💰</div>
+              <h2 className="text-3xl font-bold text-[#00F0FF] mb-3">
+                <TextGlitch delay={0}>VENDA CONCLUÍDA!</TextGlitch>
+              </h2>
+              
+              <div className="space-y-3 mb-6">
+                <div className="bg-black/40 rounded-lg p-4">
+                  <div className="text-gray-400 text-sm mb-1">Cartas vendidas</div>
+                  <div className="text-white font-bold text-2xl">{sellSuccessData.cards_sold}x</div>
+                </div>
+                
+                <div className="bg-gradient-to-r from-green-900/30 to-emerald-900/30 border border-green-500/30 rounded-lg p-4">
+                  <div className="text-green-400 text-sm mb-1">Valor recebido</div>
+                  <div className="text-green-300 font-bold text-3xl font-mono">
+                    R$ {sellSuccessData.total_value.toFixed(2)}
+                  </div>
+                </div>
+                
+                <div className="bg-black/40 rounded-lg p-4">
+                  <div className="text-gray-400 text-sm mb-1">Novo saldo</div>
+                  <div className="text-[#FFC700] font-bold text-2xl font-mono">
+                    R$ {sellSuccessData.new_balance.toFixed(2)}
+                  </div>
+                </div>
+              </div>
+              
+              <GlitchButton
+                onClick={() => setSellSuccessData(null)}
+                variant="success"
+                size="lg"
+                className="w-full"
+              >
+                ✓ FECHAR
+              </GlitchButton>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -25,7 +25,7 @@ export const runtime = 'edge';
  * }
  */
 export async function POST(request: NextRequest) {
-  console.log('[SELL-TO-SYSTEM] 1. POST iniciado');
+  console.log('[SELL-TO-SYSTEM] 🆕 VERSÃO NOVA COM DEBUG LOGS - 1. POST iniciado');
   
   try {
     // Env vars

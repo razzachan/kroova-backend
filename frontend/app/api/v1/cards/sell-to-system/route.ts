@@ -165,6 +165,33 @@ export async function POST(request: NextRequest) {
     }
     console.log('[SELL-TO-SYSTEM] 12. Balance updated: R$', currentBalance.toFixed(2), '→ R$', newBalance.toFixed(2));
     
+    // NOVO: Registrar transação no histórico
+    const { error: transactionError } = await supabaseAdmin
+      .from('transaction_history')
+      .insert({
+        user_id: user.id,
+        type: 'sell_to_system',
+        amount_brl: totalValue,
+        balance_before_brl: currentBalance,
+        balance_after_brl: newBalance,
+        status: 'completed',
+        details: {
+          cards_count: cards.length,
+          card_ids: card_instance_ids,
+          cards_summary: cards.map(c => ({
+            id: c.id,
+            liquidity: c.liquidity_brl
+          }))
+        }
+      });
+    
+    if (transactionError) {
+      console.warn('[SELL-TO-SYSTEM] 13. Transaction history error (non-critical):', transactionError);
+      // Não falha a operação se o histórico não for salvo
+    } else {
+      console.log('[SELL-TO-SYSTEM] 13. Transaction recorded');
+    }
+    
     // Sucesso
     return NextResponse.json({
       ok: true,

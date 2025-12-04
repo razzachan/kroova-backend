@@ -178,6 +178,7 @@ export default function BoostersPage() {
           cards_per_booster: 5
         }));
         console.log('🔍 packsWithId:', packsWithId);
+        console.log('🔍 Primeiro pack:', packsWithId[0]);
         setBoosters(packsWithId);
       } else {
         console.error('❌ Erro ao carregar boosters:', boostersRes.reason);
@@ -613,7 +614,7 @@ export default function BoostersPage() {
             <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
               <TextGlitch delay={100}>ESCOLHA SUA TIER</TextGlitch>
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
               {[
                 { price: 0.50, name: 'Básico', color: 'bg-gray-800/40' },
                 { price: 1.00, name: 'Padrão', color: 'bg-green-900/40' },
@@ -624,28 +625,29 @@ export default function BoostersPage() {
                 <div
                   key={tier.price}
                   onClick={() => {
+                    console.log('🎯 Tier selecionado:', tier.price);
                     setSelectedTier(tier.price);
                     setSelectedVariant(null);
                   }}
-                  className={`relative p-6 rounded-lg border-2 transition-all cursor-pointer ${
+                  className={`relative p-4 md:p-6 rounded-lg border-2 transition-all cursor-pointer ${
                     selectedTier === tier.price
                       ? 'border-[#00F0FF] shadow-[0_0_20px_rgba(0,240,255,0.5)]'
-                      : 'border-gray-700/50 hover:border-[#00F0FF]/50'
+                      : 'border-gray-700/50 hover:border-[#00F0FF]/50 active:border-[#00F0FF]'
                   } ${tier.color} backdrop-blur-sm group`}
                 >
-                  <div className="text-xl font-bold mb-2 font-mono tracking-wider">{tier.name}</div>
-                  <div className={`text-2xl font-bold font-mono ${
+                  <div className="text-base md:text-xl font-bold mb-1 md:mb-2 font-mono tracking-wider">{tier.name}</div>
+                  <div className={`text-lg md:text-2xl font-bold font-mono ${
                     selectedTier === tier.price ? 'text-[#00F0FF]' : 'text-gray-300'
                   }`}>
                     R$ {tier.price.toFixed(2)}
                   </div>
                   {selectedTier === tier.price && (
-                    <div className="absolute -top-3 -right-3 w-8 h-8 bg-[#00F0FF] rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.8)] animate-pulse">
-                      <span className="text-black font-bold">✓</span>
+                    <div className="absolute -top-2 md:-top-3 -right-2 md:-right-3 w-6 h-6 md:w-8 md:h-8 bg-[#00F0FF] rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.8)] animate-pulse">
+                      <span className="text-black font-bold text-sm md:text-base">✓</span>
                     </div>
                   )}
                   {/* Glitch effect on hover */}
-                  <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity pointer-events-none">
                     <div className="absolute inset-0 rounded-lg border border-[#FF006D]/30 animate-pulse"></div>
                   </div>
                 </div>
@@ -660,8 +662,13 @@ export default function BoostersPage() {
                 <TextGlitch delay={200}>ESCOLHA SUA VARIANTE</TextGlitch>
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {boosters
-                  .filter(b => b.price_brl === selectedTier)
+                {(() => {
+                  const filtered = boosters.filter(b => b.price_brl === selectedTier);
+                  console.log('🔍 Filtrando por tier:', selectedTier);
+                  console.log('🔍 Boosters filtrados:', filtered);
+                  console.log('🔍 Todos boosters:', boosters.map(b => ({ id: b.id, price: b.price_brl })));
+                  return filtered;
+                })()
                   .map((booster) => (
                     <div
                       key={booster.id}

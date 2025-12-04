@@ -46,6 +46,11 @@ export default function InventoryPage() {
   const [rarityFilter, setRarityFilter] = useState<string>('all');
   const [searchFilter, setSearchFilter] = useState<string>('');
   const [displayCount, setDisplayCount] = useState(20); // Lazy loading: show 20 at a time
+  
+  // NOVO: Estados para venda ao sistema
+  const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set());
+  const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
+  const [sellingSystems, setSellingSystems] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -98,13 +103,77 @@ export default function InventoryPage() {
         console.log('[inventory] IDs listados:', listedIds); // Debug
         setListedCards(listedIds);
       } catch (listError) {
-        console.warn('Não foi possível carregar listings:', listError);
+      console.warn('Não foi possível carregar listings:', listError);
         setListedCards([]); // Continua sem listings
       }
     } catch (error) {
       console.error('Erro ao carregar inventário:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // NOVO: Funções de seleção de cartas
+  const toggleCardSelection = (cardId: string) => {
+    const newSelected = new Set(selectedCards);
+    if (newSelected.has(cardId)) {
+      newSelected.delete(cardId);
+    } else {
+      newSelected.add(cardId);
+    }
+    setSelectedCards(newSelected);
+  };
+
+  const selectAllFiltered = () => {
+    const filteredCards = inventory.filter(card => {
+      const isListed = listedCards.includes(card.id);
+      if (showListedFilter === 'owned' && isListed) return false;
+      if (showListedFilter === 'listed' && !isListed) return false;
+      if (rarityFilter !== 'all' && card.cards_base?.rarity !== rarityFilter) return false;
+      if (searchFilter) {
+        const searchLower = searchFilter.toLowerCase();
+        const name = card.cards_base?.name?.toLowerCase() || '';
+        const displayId = card.cards_base?.display_id?.toLowerCase() || '';
+        if (!name.includes(searchLower) && !displayId.includes(searchLower)) return false;
+      }
+      return true;
+    });
+    setSelectedCards(new Set(filteredCards.map(c => c.id)));
+  };
+
+  const clearSelection = () => {
+    setSelectedCards(new Set());
+  };
+
+  const calculateSelectedValue = () => {
+    return inventory
+      .filter(card => selectedCards.has(card.id))
+      .reduce((sum, card) => sum + (card.liquidity_brl || 0), 0);
+  };
+
+  const handleSellToSystem = async () => {
+    if (selectedCards.size === 0) return;
+    
+    setSellingSystems(true);
+    try {
+      const response = await api.post('/cards/sell-to-system', {
+        card_instance_ids: Array.from(selectedCards)
+      });
+      
+      const data = unwrap<{ cards_sold: number, total_value: number, new_balance: number }>(response);
+      
+      cardAudio.playSuccessChime();
+      alert(`✅ ${data.cards_sold} cartas vendidas por R$ ${data.total_value.toFixed(2)}!\nNovo saldo: R$ ${data.new_balance.toFixed(2)}`);
+      
+      // Limpar seleção e recarregar
+      setSelectedCards(new Set());
+      setShowSellConfirmModal(false);
+      await loadInventory();
+    } catch (error: any) {
+      cardAudio.playErrorBuzz();
+      alert(error.response?.data?.error?.message || 'Erro ao vender cartas');
+    } finally {
+      setSellingSystems(false);
     }
   };
 
@@ -333,6 +402,68 @@ export default function InventoryPage() {
           </div>
         )}
 
+        {/* NOVO: Seção de Venda ao Sistema */}
+        {inventory.length > 0 && (
+          <div className="bg-gradient-to-br from-[#FFC700]/10 to-[#FF006D]/10 backdrop-blur-md border-2 border-[#FFC700]/30 rounded-lg p-6 mb-6 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#FFC700]/5 to-[#FF006D]/5 animate-pulse" />
+            
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-[#FFC700] text-xl font-bold uppercase tracking-wider flex items-center gap-2">
+                  💰 Vender ao Sistema
+                </h3>
+                <div className="text-white text-sm">
+                  {selectedCards.size > 0 && (
+                    <span className="bg-[#FFC700]/20 px-3 py-1 rounded-full border border-[#FFC700]/50">
+                      {selectedCards.size} carta{selectedCards.size > 1 ? 's' : ''} selecionada{selectedCards.size > 1 ? 's' : ''}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <GlitchButton
+                  onClick={selectAllFiltered}
+                  variant="secondary"
+                  size="md"
+                  disabled={inventory.length === 0}
+                >
+                  ✓ Selecionar Todas Visíveis
+                </GlitchButton>
+
+                <GlitchButton
+                  onClick={clearSelection}
+                  variant="danger"
+                  size="md"
+                  disabled={selectedCards.size === 0}
+                >
+                  ✗ Limpar Seleção
+                </GlitchButton>
+
+                <GlitchButton
+                  onClick={() => setShowSellConfirmModal(true)}
+                  variant="success"
+                  size="md"
+                  disabled={selectedCards.size === 0}
+                  className="relative"
+                >
+                  <span>💸 Vender {selectedCards.size > 0 && `(${selectedCards.size})`}</span>
+                  {selectedCards.size > 0 && (
+                    <span className="text-xs block mt-1">
+                      R$ {calculateSelectedValue().toFixed(2)}
+                    </span>
+                  )}
+                </GlitchButton>
+              </div>
+
+              <p className="text-gray-400 text-sm">
+                Venda suas cartas de volta ao sistema pela <span className="text-[#FFC700]">liquidez mínima garantida</span>. 
+                Selecione as cartas que deseja vender e receba o valor diretamente no seu saldo.
+              </p>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="text-center text-gray-400 py-12">Carregando cartas...</div>
         ) : inventory.length === 0 ? (
@@ -399,8 +530,19 @@ export default function InventoryPage() {
                 <HolographicCard 
                   key={card.id} 
                   rarity={card.is_godmode ? 'godmode' : mapRarity(baseCard?.rarity || 'trash')}
-                  className="p-4"
+                  className="p-4 relative"
                 >
+                  {/* NOVO: Checkbox de seleção */}
+                  <div className="absolute top-2 left-2 z-10">
+                    <input
+                      type="checkbox"
+                      checked={selectedCards.has(card.id)}
+                      onChange={() => toggleCardSelection(card.id)}
+                      className="w-6 h-6 rounded border-2 border-[#FFC700] bg-black/70 checked:bg-[#FFC700] checked:border-[#FFC700] cursor-pointer transition-all hover:scale-110"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+
                   {/* Card Image */}
                   <div className="aspect-[2/3] bg-gray-700/50 rounded-lg mb-4 overflow-hidden relative">
                     {baseCard?.image_url ? (
@@ -544,6 +686,65 @@ export default function InventoryPage() {
               <h2 className="text-2xl font-bold text-[#00F0FF] mb-2">
                 <TextGlitch delay={0}>LISTADO!</TextGlitch>
               </h2>
+
+      {/* NOVO: Modal de Confirmação de Venda ao Sistema */}
+      {showSellConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-[#FFC700] rounded-lg p-8 max-w-2xl mx-4 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#FFC700]/10 to-[#FF006D]/10 animate-pulse"></div>
+            <div className="relative z-10">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-[#FFC700]">
+                  💰 Confirmar Venda ao Sistema
+                </h2>
+                <button
+                  onClick={() => setShowSellConfirmModal(false)}
+                  className="text-gray-400 hover:text-white transition"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="bg-black/40 rounded-lg p-6 mb-6">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-gray-400">Cartas selecionadas:</span>
+                  <span className="text-white font-bold text-xl">{selectedCards.size}</span>
+                </div>
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-gray-400">Valor total:</span>
+                  <span className="text-[#FFC700] font-bold text-2xl">
+                    R$ {calculateSelectedValue().toFixed(2)}
+                  </span>
+                </div>
+                <div className="border-t border-gray-700 pt-4 mt-4">
+                  <p className="text-gray-400 text-sm">
+                    Estas cartas serão <span className="text-red-400 font-bold">permanentemente removidas</span> do seu inventário.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <GlitchButton
+                  onClick={() => setShowSellConfirmModal(false)}
+                  variant="secondary"
+                  size="lg"
+                  disabled={sellingSystems}
+                >
+                  ✗ Cancelar
+                </GlitchButton>
+                <GlitchButton
+                  onClick={handleSellToSystem}
+                  variant="success"
+                  size="lg"
+                  disabled={sellingSystems}
+                >
+                  {sellingSystems ? '⏳ Vendendo...' : '✓ Confirmar Venda'}
+                </GlitchButton>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
               <p className="text-gray-300">
                 Sua carta foi listada no marketplace com sucesso!
               </p>

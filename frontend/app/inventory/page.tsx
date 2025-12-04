@@ -1485,7 +1485,11 @@ export default function InventoryPage() {
               </div>
               
               <GlitchButton
-                onClick={() => setSellSuccessData(null)}
+                onClick={() => {
+                  setSellSuccessData(null);
+                  // Recarrega a página para atualizar o saldo na navbar
+                  window.location.reload();
+                }}
                 variant="success"
                 size="lg"
                 className="w-full"

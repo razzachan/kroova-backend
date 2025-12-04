@@ -54,6 +54,8 @@ export default function InventoryPage() {
   
   // Modal de Valor do Inventário
   const [showValueModal, setShowValueModal] = useState(false);
+  const [recyclesToday, setRecyclesToday] = useState(0);
+  const MAX_RECYCLES = 3;
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -108,6 +110,21 @@ export default function InventoryPage() {
       } catch (listError) {
       console.warn('Não foi possível carregar listings:', listError);
         setListedCards([]); // Continua sem listings
+      }
+
+      // Buscar quantidade de reciclagens hoje
+      try {
+        const txResponse = await api.get('/users/transactions?type=recycle&limit=100');
+        if (txResponse.data?.ok) {
+          const today = new Date().setHours(0, 0, 0, 0);
+          const todayRecycles = txResponse.data.data.transactions.filter((tx: any) => {
+            const txDate = new Date(tx.created_at).setHours(0, 0, 0, 0);
+            return txDate === today;
+          });
+          setRecyclesToday(todayRecycles.length);
+        }
+      } catch (error) {
+        console.warn('Não foi possível carregar transações:', error);
       }
     } catch (error) {
       console.error('Erro ao carregar inventário:', error);
@@ -899,21 +916,62 @@ export default function InventoryPage() {
                 {/* Suggestions */}
                 {(() => {
                   const trashData = byRarity['trash'];
-                  if (trashData && trashData.count >= 10) {
+                  const memeData = byRarity['meme'];
+                  const recyclesLeft = MAX_RECYCLES - recyclesToday;
+                  
+                  // Sugestão de reciclagem (se tiver 25+ cartas de baixo valor E ainda puder reciclar hoje)
+                  if (trashData && trashData.count >= 25 && recyclesLeft > 0) {
+                    const maxRecycleCards = recyclesLeft * 25;
+                    const canRecycleCards = Math.min(trashData.count, maxRecycleCards);
+                    const possibleRecycles = Math.floor(canRecycleCards / 25);
+                    
                     return (
-                      <div className="bg-gradient-to-r from-cyan-900/20 to-blue-900/20 border border-cyan-500/30 rounded-lg p-4 mb-6">
+                      <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-500/30 rounded-lg p-4 mb-6">
+                        <div className="flex items-start gap-3">
+                          <span className="text-2xl">♻️</span>
+                          <div className="flex-1">
+                            <div className="font-bold text-purple-400 mb-1">
+                              Oportunidade de Reciclagem
+                            </div>
+                            <p className="text-sm text-gray-300 mb-2">
+                              Você tem <span className="text-white font-bold">{trashData.count} cartas Trash</span>. 
+                              Pode fazer <span className="text-purple-400 font-bold">{possibleRecycles}x reciclagens</span> hoje
+                              {recyclesLeft < MAX_RECYCLES && <> (<span className="text-yellow-400">{recyclesToday}/{MAX_RECYCLES} já realizadas</span>)</>}
+                              {recyclesLeft === MAX_RECYCLES && <> (<span className="text-green-400">limite diário completo</span>)</>}!
+                            </p>
+                            <div className="flex items-center gap-2 text-xs">
+                              <span className="bg-purple-500/20 px-2 py-1 rounded text-purple-300">
+                                {possibleRecycles * 25} cartas → {possibleRecycles} booster{possibleRecycles > 1 ? 's' : ''} grátis
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  
+                  // Sugestão de venda (se tiver muitas cartas de baixo valor mas já reciclou hoje)
+                  if ((trashData && trashData.count >= 10) || (memeData && memeData.count >= 15)) {
+                    const totalLowValue = (trashData?.count || 0) + (memeData?.count || 0);
+                    const totalLowValueBrl = (trashData?.value || 0) + (memeData?.value || 0);
+                    
+                    return (
+                      <div className="bg-gradient-to-r from-green-900/20 to-emerald-900/20 border border-green-500/30 rounded-lg p-4 mb-6">
                         <div className="flex items-start gap-3">
                           <span className="text-2xl">💡</span>
-                          <div>
-                            <div className="font-bold text-cyan-400 mb-1">Sugestão de Otimização</div>
-                            <p className="text-sm text-gray-300">
-                              Você tem <span className="text-white font-bold">{trashData.count} cartas Trash</span> valendo{' '}
-                              <span className="text-green-400 font-bold">R$ {trashData.value.toFixed(2)}</span>.
-                              {trashData.count >= 25 && (
-                                <> Considere <span className="text-cyan-400 font-bold">reciclar 25 cartas</span> para ganhar 1 booster grátis!</>
-                              )}
-                              {trashData.count < 25 && (
-                                <> Ou venda ao sistema para liberar espaço e ganhar liquidez imediata.</>
+                          <div className="flex-1">
+                            <div className="font-bold text-green-400 mb-1">
+                              Liquidez Disponível
+                            </div>
+                            <p className="text-sm text-gray-300 mb-2">
+                              Você tem <span className="text-white font-bold">{totalLowValue} cartas de baixo valor</span> (Trash + Meme) 
+                              valendo <span className="text-green-400 font-bold">R$ {totalLowValueBrl.toFixed(2)}</span>.
+                            </p>
+                            <p className="text-sm text-gray-400">
+                              {recyclesLeft === 0 ? (
+                                <>Você já usou todas as reciclagens hoje. <span className="text-green-300">Venda ao sistema para liquidez imediata!</span></>
+                              ) : (
+                                <>Venda ao sistema para liberar espaço e ganhar liquidez instantânea.</>
                               )}
                             </p>
                           </div>
@@ -921,6 +979,7 @@ export default function InventoryPage() {
                       </div>
                     );
                   }
+                  
                   return null;
                 })()}
 

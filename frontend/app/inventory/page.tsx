@@ -782,7 +782,13 @@ export default function InventoryPage() {
                         console.log('[Advanced] Raridades selecionadas:', selectedRarities);
                         console.log('[Advanced] Valor máximo:', maxValue);
                         console.log('[Advanced] Cartas filtradas:', getCardsByAdvancedFilters().length);
+                        console.log('[Advanced] showSellConfirmModal ANTES:', showSellConfirmModal);
                         setShowSellConfirmModal(true);
+                        console.log('[Advanced] setShowSellConfirmModal(true) chamado');
+                        // Verificar após um micro-delay
+                        setTimeout(() => {
+                          console.log('[Advanced] showSellConfirmModal DEPOIS:', showSellConfirmModal);
+                        }, 10);
                       }}
                       variant="success"
                       size="lg"
@@ -1081,6 +1087,13 @@ export default function InventoryPage() {
               <h2 className="text-2xl font-bold text-[#00F0FF] mb-2">
                 <TextGlitch delay={0}>LISTADO!</TextGlitch>
               </h2>
+              <p className="text-gray-300">
+                Sua carta foi listada no marketplace com sucesso!
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal de Confirmação de Venda */}
       {showSellConfirmModal && (() => {
@@ -1436,13 +1449,6 @@ export default function InventoryPage() {
           </div>
         );
       })()}
-              <p className="text-gray-300">
-                Sua carta foi listada no marketplace com sucesso!
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

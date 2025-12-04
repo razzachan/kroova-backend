@@ -677,27 +677,32 @@ export default function InventoryPage() {
                 
                 {/* Seletor de Raridades */}
                 <div>
-                  <label className="block text-[#00F0FF] text-sm font-bold mb-3">
+                  <label className="block text-[#00F0FF] text-sm font-bold mb-3 uppercase tracking-wider">
                     ✨ Selecionar Raridades:
                   </label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {[
-                      { rarity: 'trash', icon: '🗑️', label: 'Trash' },
-                      { rarity: 'meme', icon: '😂', label: 'Meme' },
-                      { rarity: 'uncommon', icon: '🟢', label: 'Uncommon' },
-                      { rarity: 'rare', icon: '🔵', label: 'Rare' },
-                    ].map(({ rarity, icon, label }) => (
+                      { rarity: 'trash', icon: '🗑️', label: 'Trash', color: 'gray' },
+                      { rarity: 'meme', icon: '😂', label: 'Meme', color: 'green' },
+                      { rarity: 'uncommon', icon: '🟢', label: 'Uncommon', color: 'blue' },
+                      { rarity: 'rare', icon: '🔵', label: 'Rare', color: 'purple' },
+                    ].map(({ rarity, icon, label, color }) => (
                       <button
                         key={rarity}
                         onClick={() => toggleRarity(rarity)}
-                        className={`py-3 px-4 rounded-lg font-bold transition-all ${
+                        className={`relative overflow-hidden py-3 px-4 rounded-lg font-bold transition-all border-2 ${
                           selectedRarities.includes(rarity)
-                            ? 'bg-[#00F0FF] text-black border-2 border-[#00F0FF]'
-                            : 'bg-gray-800 text-gray-400 border-2 border-gray-700 hover:border-gray-600'
+                            ? 'bg-gradient-to-r from-[#00F0FF]/20 to-[#FF006D]/20 border-[#00F0FF] text-white shadow-lg shadow-[#00F0FF]/30'
+                            : 'bg-black/40 text-gray-400 border-gray-700 hover:border-[#00F0FF]/50 hover:text-white'
                         }`}
                       >
-                        <span className="text-xl mr-2">{icon}</span>
-                        {label}
+                        <div className="relative z-10 flex items-center justify-center gap-2">
+                          <span className="text-xl">{icon}</span>
+                          <span className="text-sm">{label}</span>
+                        </div>
+                        {selectedRarities.includes(rarity) && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-[#00F0FF]/10 to-[#FF006D]/10 animate-pulse" />
+                        )}
                       </button>
                     ))}
                   </div>
@@ -705,43 +710,55 @@ export default function InventoryPage() {
                 
                 {/* Filtro de Valor Máximo */}
                 <div>
-                  <label className="block text-[#00F0FF] text-sm font-bold mb-3">
+                  <label className="block text-[#00F0FF] text-sm font-bold mb-3 uppercase tracking-wider">
                     💵 Valor Máximo por Carta:
                   </label>
-                  <div className="flex items-center gap-4">
-                    <input
-                      type="range"
-                      min="0.1"
-                      max="20"
-                      step="0.5"
-                      value={maxValue}
-                      onChange={(e) => setMaxValue(parseFloat(e.target.value))}
-                      className="flex-1"
-                    />
-                    <div className="bg-black/40 px-4 py-2 rounded-lg min-w-[120px] text-center">
-                      <span className="text-[#FFC700] font-bold text-lg">R$ {maxValue.toFixed(2)}</span>
+                  <div className="bg-black/40 border-2 border-gray-700 rounded-lg p-4">
+                    <div className="flex items-center gap-4 mb-3">
+                      <input
+                        type="range"
+                        min="0.1"
+                        max="20"
+                        step="0.5"
+                        value={maxValue}
+                        onChange={(e) => setMaxValue(parseFloat(e.target.value))}
+                        className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-[#00F0FF]"
+                        style={{
+                          background: `linear-gradient(to right, #00F0FF 0%, #00F0FF ${(maxValue / 20) * 100}%, #374151 ${(maxValue / 20) * 100}%, #374151 100%)`
+                        }}
+                      />
+                      <div className="bg-gradient-to-r from-[#FFC700]/20 to-[#FF006D]/20 border-2 border-[#FFC700] px-6 py-2 rounded-lg min-w-[140px] text-center">
+                        <span className="text-[#FFC700] font-bold text-xl font-mono">R$ {maxValue.toFixed(2)}</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-500">
+                      <span>R$ 0.10</span>
+                      <span>R$ 20.00</span>
                     </div>
                   </div>
                 </div>
                 
                 {/* Preview e Botão */}
-                <div className="bg-black/40 rounded-lg p-4 flex items-center justify-between">
-                  <div>
-                    <div className="text-white font-bold text-xl">
-                      {getCardsByAdvancedFilters().length} cartas selecionadas
+                <div className="bg-gradient-to-br from-black/60 to-gray-900/60 backdrop-blur-sm border-2 border-[#00F0FF]/30 rounded-lg p-6 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#00F0FF]/5 to-[#FF006D]/5 animate-pulse" />
+                  <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                      <div className="text-white font-bold text-2xl mb-1">
+                        {getCardsByAdvancedFilters().length} cartas selecionadas
+                      </div>
+                      <div className="text-[#FFC700] text-xl font-mono">
+                        Valor total: R$ {getCardsByAdvancedFilters().reduce((s, c) => s + c.liquidity_brl, 0).toFixed(2)}
+                      </div>
                     </div>
-                    <div className="text-[#FFC700] text-lg">
-                      Valor total: R$ {getCardsByAdvancedFilters().reduce((s, c) => s + c.liquidity_brl, 0).toFixed(2)}
-                    </div>
+                    <GlitchButton
+                      onClick={() => setShowSellConfirmModal(true)}
+                      variant="success"
+                      size="lg"
+                      disabled={getCardsByAdvancedFilters().length === 0}
+                    >
+                      {getCardsByAdvancedFilters().length === 0 ? '⚠️ Nenhuma Carta' : '💰 Vender Cartas'}
+                    </GlitchButton>
                   </div>
-                  <GlitchButton
-                    onClick={() => setShowSellConfirmModal(true)}
-                    variant="success"
-                    size="lg"
-                    disabled={getCardsByAdvancedFilters().length === 0}
-                  >
-                    Vender Cartas
-                  </GlitchButton>
                 </div>
               </div>
             )}

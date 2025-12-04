@@ -130,6 +130,7 @@ export default function DashboardPage() {
             <a href="/marketplace" className="text-gray-300 hover:text-[#00F0FF] transition">Marketplace</a>
             <a href="/boosters" className="text-gray-300 hover:text-[#00F0FF] transition">Boosters</a>
             <a href="/inventory" className="text-gray-300 hover:text-[#00F0FF] transition">Inventário</a>
+            <a href="/transactions" className="text-gray-300 hover:text-[#00F0FF] transition">Transações</a>
             <a href="/wallet" className="text-gray-300 hover:text-[#00F0FF] transition">Wallet</a>
             <div className="ml-4 flex items-center gap-3 border-l border-gray-700 pl-4">
               <span className="text-gray-400 text-sm">{user.email}</span>

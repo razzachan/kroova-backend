@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 5. Registrar transação
+    // 5. Registrar transação (tabela antiga)
     await supabaseAdmin
       .from('transactions')
       .insert({
@@ -127,6 +127,24 @@ export async function POST(request: NextRequest) {
         amount_brl: -totalPrice,
         description: `Compra: ${quantity}x ${boosterType.pack_name}`,
         metadata: { booster_type_id, quantity }
+      });
+
+    // 5b. Registrar no histórico de transações (nova tabela)
+    await supabaseAdmin
+      .from('transaction_history')
+      .insert({
+        user_id: user.id,
+        type: 'booster_purchase',
+        amount_brl: -totalPrice,
+        balance_before_brl: wallet.balance_brl,
+        balance_after_brl: wallet.balance_brl - totalPrice,
+        details: {
+          booster_pack_id: booster_type_id,
+          pack_name: boosterType.pack_name,
+          quantity: quantity,
+          unit_price: boosterType.price_brl
+        },
+        status: 'completed'
       });
 
     // 6. Criar booster_openings (um para cada booster comprado)

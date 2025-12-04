@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Registra transação de reciclagem
+    // Registra transação de reciclagem (tabela antiga)
     await supabaseAdmin
       .from('transactions')
       .insert({
@@ -172,6 +172,25 @@ export async function POST(request: NextRequest) {
           recycled_cards: card_instance_ids.length,
           reward_pack_id: randomPack.pack_id
         }
+      });
+
+    // Registra no histórico de transações (nova tabela)
+    await supabaseAdmin
+      .from('transaction_history')
+      .insert({
+        user_id: user.id,
+        type: 'recycle',
+        amount_brl: 0,
+        details: {
+          cards_recycled: 25,
+          card_ids: card_instance_ids,
+          booster_received: randomPack.pack_name,
+          booster_pack_id: randomPack.pack_id,
+          recycles_today: recycleCount + 1
+        },
+        reference_id: opening.id,
+        reference_type: 'booster_opening',
+        status: 'completed'
       });
 
     return NextResponse.json({

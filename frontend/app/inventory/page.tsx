@@ -48,9 +48,9 @@ export default function InventoryPage() {
   const [displayCount, setDisplayCount] = useState(20); // Lazy loading: show 20 at a time
   
   // NOVO: Estados para venda ao sistema
-  const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set());
   const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
   const [sellingSystems, setSellingSystems] = useState(false);
+  const [sellMode, setSellMode] = useState<'trash' | 'trash_meme'>('trash'); // Modo de venda
   
   // Modal de Valor do Inventário
   const [showValueModal, setShowValueModal] = useState(false);
@@ -133,46 +133,55 @@ export default function InventoryPage() {
     }
   };
 
-  // NOVO: Funções de seleção de cartas
-  const toggleCardSelection = (cardId: string) => {
-    console.log('[toggleCardSelection] Clicado na carta:', cardId);
-    const newSelected = new Set(selectedCards);
-    if (newSelected.has(cardId)) {
-      console.log('[toggleCardSelection] Removendo carta da seleção');
-      newSelected.delete(cardId);
-    } else {
-      console.log('[toggleCardSelection] Adicionando carta à seleção');
-      newSelected.add(cardId);
+  // Funções simplificadas de venda ao sistema
+  const getTrashCards = () => {
+    return inventory.filter(c => 
+      !listedCards.includes(c.id) && 
+      c.cards_base?.rarity === 'trash'
+    );
+  };
+
+  const getTrashAndMemeCards = () => {
+    return inventory.filter(c => 
+      !listedCards.includes(c.id) && 
+      (c.cards_base?.rarity === 'trash' || c.cards_base?.rarity === 'meme')
+    );
+  };
+
+  const getCardsToSell = () => {
+    return sellMode === 'trash' ? getTrashCards() : getTrashAndMemeCards();
+  };
+
+  const calculateSellValue = () => {
+    return getCardsToSell().reduce((sum, card) => sum + (card.liquidity_brl || 0), 0);
+  };
+
+  const handleSellToSystem = async () => {
+    const cardsToSell = getCardsToSell();
+    if (cardsToSell.length === 0) {
+      alert('⚠️ Nenhuma carta disponível para venda!');
+      return;
     }
-    console.log('[toggleCardSelection] Nova seleção:', Array.from(newSelected));
-    setSelectedCards(newSelected);
-  };
-
-  const selectAllFiltered = () => {
-    const filteredCards = inventory.filter(card => {
-      const isListed = listedCards.includes(card.id);
-      if (showListedFilter === 'owned' && isListed) return false;
-      if (showListedFilter === 'listed' && !isListed) return false;
-      if (rarityFilter !== 'all' && card.cards_base?.rarity !== rarityFilter) return false;
-      if (searchFilter) {
-        const searchLower = searchFilter.toLowerCase();
-        const name = card.cards_base?.name?.toLowerCase() || '';
-        const displayId = card.cards_base?.display_id?.toLowerCase() || '';
-        if (!name.includes(searchLower) && !displayId.includes(searchLower)) return false;
-      }
-      return true;
-    });
-    setSelectedCards(new Set(filteredCards.map(c => c.id)));
-  };
-
-  const clearSelection = () => {
-    setSelectedCards(new Set());
-  };
-
-  const calculateSelectedValue = () => {
-    return inventory
-      .filter(card => selectedCards.has(card.id))
-      .reduce((sum, card) => sum + (card.liquidity_brl || 0), 0);
+    
+    setSellingSystems(true);
+    try {
+      const response = await api.post('/cards/sell-to-system', {
+        card_instance_ids: cardsToSell.map(c => c.id)
+      });
+      
+      const data = unwrap<{ cards_sold: number, total_value: number, new_balance: number }>(response);
+      
+      cardAudio.playSuccessChime();
+      alert(`✅ ${data.cards_sold} cartas vendidas por R$ ${data.total_value.toFixed(2)}!\nNovo saldo: R$ ${data.new_balance.toFixed(2)}`);
+      
+      setShowSellConfirmModal(false);
+      await loadInventory();
+    } catch (error: any) {
+      cardAudio.playErrorBuzz();
+      alert(error.response?.data?.error?.message || 'Erro ao vender cartas');
+    } finally {
+      setSellingSystems(false);
+    }
   };
 
   const calculateInventoryValue = () => {
@@ -464,73 +473,52 @@ export default function InventoryPage() {
           </div>
         )}
 
-        {/* NOVO: Seção de Venda ao Sistema */}
-        {inventory.length > 0 && (
-          <div className="bg-gradient-to-br from-[#FFC700]/10 to-[#FF006D]/10 backdrop-blur-md border-2 border-[#FFC700]/30 rounded-lg p-6 mb-6 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#FFC700]/5 to-[#FF006D]/5 animate-pulse" />
-            
-            <div className="relative">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-[#FFC700] text-xl font-bold uppercase tracking-wider flex items-center gap-2">
-                  💰 Vender ao Sistema
+        {/* Seção simplificada de Venda ao Sistema */}
+        {(getTrashCards().length > 0 || getTrashAndMemeCards().length > 0) && (
+          <div className="bg-gradient-to-br from-[#FFC700]/10 to-[#FF006D]/10 backdrop-blur-md border-2 border-[#FFC700]/30 rounded-lg p-4 md:p-6 mb-6">
+            <div className="flex flex-col md:flex-row md:items-center gap-4">
+              <div className="flex-1">
+                <h3 className="text-[#FFC700] text-lg md:text-xl font-bold mb-2">
+                  💰 Liquidez Instantânea
                 </h3>
-                <div className="text-white text-sm">
-                  {selectedCards.size > 0 && (
-                    <span className="bg-[#FFC700]/20 px-3 py-1 rounded-full border border-[#FFC700]/50">
-                      {selectedCards.size} carta{selectedCards.size > 1 ? 's' : ''} selecionada{selectedCards.size > 1 ? 's' : ''}
-                    </span>
-                  )}
-                </div>
+                <p className="text-gray-400 text-sm">
+                  Venda cartas de baixo valor e receba créditos imediatamente
+                </p>
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <GlitchButton
-                  onClick={selectAllFiltered}
-                  variant="secondary"
-                  size="md"
-                  disabled={inventory.length === 0}
-                >
-                  ✓ Selecionar Todas Visíveis
-                </GlitchButton>
-
-                <GlitchButton
-                  onClick={clearSelection}
-                  variant="danger"
-                  size="md"
-                  disabled={selectedCards.size === 0}
-                >
-                  ✗ Limpar Seleção
-                </GlitchButton>
-
-                <GlitchButton
-                  onClick={() => {
-                    console.log('[Vender Button] Clicado! selectedCards.size:', selectedCards.size);
-                    console.log('[Vender Button] selectedCards:', Array.from(selectedCards));
-                    if (selectedCards.size === 0) {
-                      console.log('[Vender Button] Nenhuma carta selecionada!');
-                      alert('⚠️ Selecione pelo menos uma carta para vender!');
-                      return;
-                    }
-                    setShowSellConfirmModal(true);
-                  }}
-                  variant="success"
-                  size="md"
-                  disabled={selectedCards.size === 0}
-                  className="relative"
-                >
-                  <span>💸 Vender {selectedCards.size > 0 && `(${selectedCards.size})`}</span>
-                  {selectedCards.size > 0 && (
-                    <span className="text-xs block mt-1">
-                      R$ {calculateSelectedValue().toFixed(2)}
-                    </span>
-                  )}
-                </GlitchButton>
+              
+              <div className="grid grid-cols-2 gap-3 md:gap-4">
+                {getTrashCards().length > 0 && (
+                  <GlitchButton
+                    onClick={() => {
+                      setSellMode('trash');
+                      setShowSellConfirmModal(true);
+                    }}
+                    variant="secondary"
+                    size="md"
+                    className="flex flex-col items-center"
+                  >
+                    <span className="text-lg">🗑️</span>
+                    <span className="text-xs mt-1">Trash ({getTrashCards().length})</span>
+                    <span className="text-xs text-green-400">R$ {getTrashCards().reduce((s, c) => s + c.liquidity_brl, 0).toFixed(2)}</span>
+                  </GlitchButton>
+                )}
+                
+                {getTrashAndMemeCards().length > getTrashCards().length && (
+                  <GlitchButton
+                    onClick={() => {
+                      setSellMode('trash_meme');
+                      setShowSellConfirmModal(true);
+                    }}
+                    variant="success"
+                    size="md"
+                    className="flex flex-col items-center"
+                  >
+                    <span className="text-lg">💸</span>
+                    <span className="text-xs mt-1">Trash + Meme ({getTrashAndMemeCards().length})</span>
+                    <span className="text-xs text-green-400">R$ {getTrashAndMemeCards().reduce((s, c) => s + c.liquidity_brl, 0).toFixed(2)}</span>
+                  </GlitchButton>
+                )}
               </div>
-
-              <p className="text-gray-400 text-sm">
-                Venda suas cartas de volta ao sistema pela <span className="text-[#FFC700]">liquidez mínima garantida</span>. 
-                Selecione as cartas que deseja vender e receba o valor diretamente no seu saldo.
-              </p>
             </div>
           </div>
         )}
@@ -603,24 +591,6 @@ export default function InventoryPage() {
                   rarity={card.is_godmode ? 'godmode' : mapRarity(baseCard?.rarity || 'trash')}
                   className="p-4 relative"
                 >
-                  {/* NOVO: Checkbox de seleção */}
-                  <div className="absolute top-2 left-2 z-10">
-                    <input
-                      type="checkbox"
-                      checked={selectedCards.has(card.id)}
-                      onChange={(e) => {
-                        console.log('[Checkbox] onChange disparado para carta:', card.id);
-                        console.log('[Checkbox] checked:', e.target.checked);
-                        toggleCardSelection(card.id);
-                      }}
-                      className="w-6 h-6 rounded border-2 border-[#FFC700] bg-black/70 checked:bg-[#FFC700] checked:border-[#FFC700] cursor-pointer transition-all hover:scale-110"
-                      onClick={(e) => {
-                        console.log('[Checkbox] onClick disparado');
-                        e.stopPropagation();
-                      }}
-                    />
-                  </div>
-
                   {/* Card Image */}
                   <div className="aspect-[2/3] bg-gray-700/50 rounded-lg mb-4 overflow-hidden relative">
                     {baseCard?.image_url ? (
@@ -765,42 +735,103 @@ export default function InventoryPage() {
                 <TextGlitch delay={0}>LISTADO!</TextGlitch>
               </h2>
 
-      {/* NOVO: Modal de Confirmação de Venda ao Sistema */}
-      {showSellConfirmModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-[#FFC700] rounded-lg p-8 max-w-2xl mx-4 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#FFC700]/10 to-[#FF006D]/10 animate-pulse"></div>
-            <div className="relative z-10">
+      {/* Modal de Confirmação de Venda */}
+      {showSellConfirmModal && (() => {
+        const cardsToSell = getCardsToSell();
+        const totalValue = calculateSellValue();
+        const rarityBreakdown = cardsToSell.reduce((acc, card) => {
+          const rarity = card.cards_base?.rarity || 'unknown';
+          if (!acc[rarity]) acc[rarity] = { count: 0, value: 0 };
+          acc[rarity].count++;
+          acc[rarity].value += card.liquidity_brl || 0;
+          return acc;
+        }, {} as Record<string, { count: number; value: number }>);
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-[#FFC700] rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-[#FFC700]">
                   💰 Confirmar Venda ao Sistema
                 </h2>
                 <button
                   onClick={() => setShowSellConfirmModal(false)}
-                  className="text-gray-400 hover:text-white transition"
+                  className="text-gray-400 hover:text-white transition text-2xl"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="bg-black/40 rounded-lg p-6 mb-6">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-gray-400">Cartas selecionadas:</span>
-                  <span className="text-white font-bold text-xl">{selectedCards.size}</span>
+              {/* Summary */}
+              <div className="bg-black/40 rounded-lg p-4 mb-6">
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <div className="text-gray-400 text-sm">Cartas a vender:</div>
+                    <div className="text-white font-bold text-2xl">{cardsToSell.length}</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-400 text-sm">Valor total:</div>
+                    <div className="text-[#FFC700] font-bold text-2xl">
+                      R$ {totalValue.toFixed(2)}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-gray-400">Valor total:</span>
-                  <span className="text-[#FFC700] font-bold text-2xl">
-                    R$ {calculateSelectedValue().toFixed(2)}
-                  </span>
-                </div>
-                <div className="border-t border-gray-700 pt-4 mt-4">
-                  <p className="text-gray-400 text-sm">
-                    Estas cartas serão <span className="text-red-400 font-bold">permanentemente removidas</span> do seu inventário.
-                  </p>
+                
+                {/* Breakdown por raridade */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                  {Object.entries(rarityBreakdown).map(([rarity, data]) => (
+                    <div key={rarity} className="bg-gray-800/50 rounded px-2 py-1">
+                      <span className="capitalize text-gray-400">{rarity}:</span>
+                      <span className="text-white ml-1">{data.count}x</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
+              {/* Preview das cartas (primeiras 12) */}
+              <div className="mb-6">
+                <div className="text-sm text-gray-400 mb-3">
+                  Preview das cartas (mostrando {Math.min(12, cardsToSell.length)} de {cardsToSell.length}):
+                </div>
+                <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
+                  {cardsToSell.slice(0, 12).map((card) => (
+                    <div key={card.id} className="bg-gray-800 rounded-lg p-2 relative">
+                      <div className="aspect-[2/3] bg-gray-700 rounded overflow-hidden mb-1">
+                        {card.cards_base?.image_url ? (
+                          <img 
+                            src={card.cards_base.image_url} 
+                            alt={card.cards_base.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-2xl">
+                            🎴
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-xs text-white truncate">{card.cards_base?.name}</div>
+                      <div className="text-xs text-green-400">R$ {card.liquidity_brl.toFixed(2)}</div>
+                    </div>
+                  ))}
+                  {cardsToSell.length > 12 && (
+                    <div className="bg-gray-800/50 rounded-lg p-2 flex items-center justify-center">
+                      <div className="text-center text-gray-400">
+                        <div className="text-2xl mb-1">+</div>
+                        <div className="text-xs">{cardsToSell.length - 12} mais</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Warning */}
+              <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 mb-6">
+                <p className="text-sm text-gray-300">
+                  ⚠️ Estas cartas serão <span className="text-red-400 font-bold">permanentemente removidas</span> do seu inventário. Esta ação não pode ser desfeita.
+                </p>
+              </div>
+
+              {/* Actions */}
               <div className="grid grid-cols-2 gap-4">
                 <GlitchButton
                   onClick={() => setShowSellConfirmModal(false)}
@@ -821,8 +852,8 @@ export default function InventoryPage() {
               </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Modal de Valor do Inventário */}
       {showValueModal && (() => {

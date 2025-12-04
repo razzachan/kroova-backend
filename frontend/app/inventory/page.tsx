@@ -647,8 +647,10 @@ export default function InventoryPage() {
                     <GlitchButton
                       key={action}
                       onClick={() => {
+                        console.log('[QuickAction] Botão clicado:', action, 'count:', count);
                         setQuickAction(action as any);
                         setShowSellConfirmModal(true);
+                        console.log('[QuickAction] Modal deveria abrir agora');
                       }}
                       variant="success"
                       size="md"
@@ -705,12 +707,15 @@ export default function InventoryPage() {
                     {[
                       { rarity: 'trash', icon: '🗑️', label: 'Trash', color: 'gray' },
                       { rarity: 'meme', icon: '😂', label: 'Meme', color: 'green' },
-                      { rarity: 'uncommon', icon: '🟢', label: 'Uncommon', color: 'blue' },
-                      { rarity: 'rare', icon: '🔵', label: 'Rare', color: 'purple' },
+                      { rarity: 'viral', icon: '🔥', label: 'Viral', color: 'purple' },
+                      { rarity: 'legendary', icon: '⚡', label: 'Legendary', color: 'yellow' },
                     ].map(({ rarity, icon, label, color }) => (
                       <button
                         key={rarity}
-                        onClick={() => toggleRarity(rarity)}
+                        onClick={() => {
+                          console.log('[Advanced] Toggle rarity:', rarity);
+                          toggleRarity(rarity);
+                        }}
                         className={`relative overflow-hidden py-3 px-4 rounded-lg font-bold transition-all border-2 ${
                           selectedRarities.includes(rarity)
                             ? 'bg-gradient-to-r from-[#00F0FF]/20 to-[#FF006D]/20 border-[#00F0FF] text-white shadow-lg shadow-[#00F0FF]/30'
@@ -772,7 +777,13 @@ export default function InventoryPage() {
                       </div>
                     </div>
                     <GlitchButton
-                      onClick={() => setShowSellConfirmModal(true)}
+                      onClick={() => {
+                        console.log('[Advanced] Botão Vender Cartas clicado');
+                        console.log('[Advanced] Raridades selecionadas:', selectedRarities);
+                        console.log('[Advanced] Valor máximo:', maxValue);
+                        console.log('[Advanced] Cartas filtradas:', getCardsByAdvancedFilters().length);
+                        setShowSellConfirmModal(true);
+                      }}
                       variant="success"
                       size="lg"
                       disabled={getCardsByAdvancedFilters().length === 0}
@@ -1073,7 +1084,13 @@ export default function InventoryPage() {
 
       {/* Modal de Confirmação de Venda */}
       {showSellConfirmModal && (() => {
+        console.log('[Modal] Renderizando modal de confirmação');
+        console.log('[Modal] sellMode:', sellMode);
+        console.log('[Modal] quickAction:', quickAction);
+        
         const cardsToSell = getCardsToSell();
+        console.log('[Modal] Cartas para vender:', cardsToSell.length);
+        
         const totalValue = calculateSellValue();
         const rarityBreakdown = cardsToSell.reduce((acc, card) => {
           const rarity = card.cards_base?.rarity || 'unknown';

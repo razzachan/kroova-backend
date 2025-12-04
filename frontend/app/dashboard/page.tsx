@@ -129,6 +129,7 @@ export default function DashboardPage() {
             <a href="/dashboard" className="text-[#FF006D] font-semibold">Dashboard</a>
             <a href="/marketplace" className="text-gray-300 hover:text-[#00F0FF] transition">Marketplace</a>
             <a href="/boosters" className="text-gray-300 hover:text-[#00F0FF] transition">Boosters</a>
+            <a href="/my-boosters" className="text-gray-300 hover:text-[#00F0FF] transition">Meus Boosters</a>
             <a href="/inventory" className="text-gray-300 hover:text-[#00F0FF] transition">Inventário</a>
             <a href="/transactions" className="text-gray-300 hover:text-[#00F0FF] transition">Transações</a>
             <a href="/wallet" className="text-gray-300 hover:text-[#00F0FF] transition">Wallet</a>

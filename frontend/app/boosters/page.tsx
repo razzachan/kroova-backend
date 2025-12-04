@@ -567,7 +567,7 @@ export default function BoostersPage() {
               <GlitchButton
                 variant="secondary"
                 size="sm"
-                onClick={() => router.push('/inventory?tab=sealed')}
+                onClick={() => router.push('/my-boosters')}
               >
                 Ver Todos →
               </GlitchButton>

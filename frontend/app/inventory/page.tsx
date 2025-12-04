@@ -272,6 +272,16 @@ export default function InventoryPage() {
 
   const handleSellToSystem = async () => {
     const cardsToSell = getCardsToSell();
+    console.log('[handleSellToSystem] Iniciando venda...', {
+      mode: sellMode,
+      quickAction: quickAction,
+      selectedRarities: selectedRarities,
+      maxValue: maxValue,
+      selectedCards: Array.from(selectedCards),
+      cardsToSellCount: cardsToSell.length,
+      cardsToSellIds: cardsToSell.map(c => c.id)
+    });
+    
     if (cardsToSell.length === 0) {
       alert('⚠️ Nenhuma carta disponível para venda!');
       return;
@@ -279,11 +289,16 @@ export default function InventoryPage() {
     
     setSellingSystems(true);
     try {
+      console.log('[handleSellToSystem] Enviando requisição para API...');
       const response = await api.post('/cards/sell-to-system', {
         card_instance_ids: cardsToSell.map(c => c.id)
       });
       
+      console.log('[handleSellToSystem] Resposta da API:', response);
+      
       const data = unwrap<{ cards_sold: number, total_value: number, new_balance: number }>(response);
+      
+      console.log('[handleSellToSystem] Dados após unwrap:', data);
       
       cardAudio.playSuccessChime();
       alert(`✅ ${data.cards_sold} cartas vendidas por R$ ${data.total_value.toFixed(2)}!\nNovo saldo: R$ ${data.new_balance.toFixed(2)}`);
@@ -291,6 +306,12 @@ export default function InventoryPage() {
       setShowSellConfirmModal(false);
       await loadInventory();
     } catch (error: any) {
+      console.error('[handleSellToSystem] Erro na venda:', error);
+      console.error('[handleSellToSystem] Detalhes do erro:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
       cardAudio.playErrorBuzz();
       alert(error.response?.data?.error?.message || 'Erro ao vender cartas');
     } finally {

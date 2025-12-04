@@ -301,6 +301,15 @@ export default function InventoryPage() {
       
       console.log('[handleSellToSystem] Dados após unwrap:', data);
       
+      // 🔍 DEBUG: Mostrar informações de debug se disponíveis
+      if (response.data.debug) {
+        console.log('🔍 [DEBUG] Balance Calculation:', response.data.debug.balance_calculation);
+        console.log('🔍 [DEBUG] Verification:', response.data.debug.verification);
+        if (response.data.debug.update_error) {
+          console.error('❌ [DEBUG] Update Error:', response.data.debug.update_error);
+        }
+      }
+      
       cardAudio.playSuccessChime();
       setSellSuccessData(data);
       setShowSellConfirmModal(false);

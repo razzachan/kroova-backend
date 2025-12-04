@@ -219,6 +219,20 @@ export async function POST(request: NextRequest) {
         cards_sold: cards.length,
         total_value: totalValue,
         new_balance: newBalance
+      },
+      debug: {
+        balance_calculation: {
+          current: currentBalance,
+          added: totalValue,
+          result: newBalance,
+          formula: `${currentBalance} + ${totalValue} = ${newBalance}`
+        },
+        verification: {
+          expected: newBalance,
+          actual: verifyData?.balance_brl,
+          match: verifyData?.balance_brl === newBalance
+        },
+        update_error: balanceError ? balanceError.message : null
       }
     });
     

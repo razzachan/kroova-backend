@@ -773,7 +773,7 @@ export default function InventoryPage() {
                         {getCardsByAdvancedFilters().length} cartas selecionadas
                       </div>
                       <div className="text-[#FFC700] text-xl font-mono">
-                        Valor total: R$ {getCardsByAdvancedFilters().reduce((s, c) => s + c.liquidity_brl, 0).toFixed(2)}
+                        Valor total: R$ {getCardsByAdvancedFilters().reduce((s, c) => s + (c.liquidity_brl || 0), 0).toFixed(2)}
                       </div>
                     </div>
                     <GlitchButton
@@ -834,7 +834,7 @@ export default function InventoryPage() {
                         {selectedCards.size} cartas selecionadas
                       </div>
                       <div className="text-[#FFC700] text-lg">
-                        Valor total: R$ {inventory.filter(c => selectedCards.has(c.id)).reduce((s, c) => s + c.liquidity_brl, 0).toFixed(2)}
+                        Valor total: R$ {inventory.filter(c => selectedCards.has(c.id)).reduce((s, c) => s + (c.liquidity_brl || 0), 0).toFixed(2)}
                       </div>
                     </div>
                     <GlitchButton
@@ -1200,7 +1200,7 @@ export default function InventoryPage() {
                         )}
                       </div>
                       <div className="text-xs text-white truncate">{card.cards_base?.name}</div>
-                      <div className="text-xs text-green-400">R$ {card.liquidity_brl.toFixed(2)}</div>
+                      <div className="text-xs text-green-400">R$ {(card.liquidity_brl || 0).toFixed(2)}</div>
                     </div>
                   ))}
                   {cardsToSell.length > 12 && (

@@ -51,6 +51,9 @@ export default function InventoryPage() {
   const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set());
   const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
   const [sellingSystems, setSellingSystems] = useState(false);
+  
+  // Modal de Valor do Inventário
+  const [showValueModal, setShowValueModal] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -149,6 +152,23 @@ export default function InventoryPage() {
     return inventory
       .filter(card => selectedCards.has(card.id))
       .reduce((sum, card) => sum + (card.liquidity_brl || 0), 0);
+  };
+
+  const calculateInventoryValue = () => {
+    const ownedCards = inventory.filter(c => !listedCards.includes(c.id));
+    const total = ownedCards.reduce((sum, card) => sum + (card.liquidity_brl || 0), 0);
+    
+    const byRarity = ownedCards.reduce((acc, card) => {
+      const rarity = card.cards_base?.rarity || 'unknown';
+      if (!acc[rarity]) {
+        acc[rarity] = { count: 0, value: 0 };
+      }
+      acc[rarity].count++;
+      acc[rarity].value += card.liquidity_brl || 0;
+      return acc;
+    }, {} as Record<string, { count: number, value: number }>);
+    
+    return { total, byRarity, cardCount: ownedCards.length };
   };
 
   const handleSellToSystem = async () => {
@@ -261,6 +281,27 @@ export default function InventoryPage() {
           <h1 className="text-3xl font-bold text-white">
             <TextGlitch delay={300}>🃏 VAULT</TextGlitch>
           </h1>
+          
+          {/* Total Inventory Value Badge */}
+          {inventory.length > 0 && (
+            <button
+              onClick={() => setShowValueModal(true)}
+              className="group relative overflow-hidden bg-gradient-to-r from-green-900/30 to-emerald-900/30 border-2 border-green-500/40 rounded-lg px-6 py-3 hover:border-green-400 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20"
+            >
+              <div className="relative z-10">
+                <div className="text-green-400 text-xs font-bold uppercase tracking-wider mb-1">
+                  💰 Valor do Inventário
+                </div>
+                <div className="text-2xl font-bold text-green-300">
+                  R$ {calculateInventoryValue().total.toFixed(2)}
+                </div>
+                <div className="text-xs text-green-400/70 mt-1">
+                  {calculateInventoryValue().cardCount} cartas disponíveis • Clique para detalhes
+                </div>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </button>
+          )}
           
           {/* Filter Buttons */}
           {inventory.length > 0 && (
@@ -745,6 +786,169 @@ export default function InventoryPage() {
           </div>
         </div>
       )}
+
+      {/* Modal de Valor do Inventário */}
+      {showValueModal && (() => {
+        const { total, byRarity, cardCount } = calculateInventoryValue();
+        const rarityOrder = ['godmode', 'legendary', 'viral', 'meme', 'trash'];
+        const rarityColors: Record<string, string> = {
+          godmode: 'from-purple-600 to-pink-600',
+          legendary: 'from-yellow-600 to-orange-600',
+          viral: 'from-cyan-600 to-blue-600',
+          meme: 'from-green-600 to-emerald-600',
+          trash: 'from-gray-600 to-gray-700'
+        };
+        const rarityIcons: Record<string, string> = {
+          godmode: '👑',
+          legendary: '⚡',
+          viral: '🔥',
+          meme: '😂',
+          trash: '🗑️'
+        };
+        
+        const sortedRarities = Object.entries(byRarity)
+          .sort(([a], [b]) => rarityOrder.indexOf(a) - rarityOrder.indexOf(b));
+        
+        const maxValue = Math.max(...Object.values(byRarity).map(r => r.value));
+        
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border-2 border-green-500/50 rounded-lg p-8 max-w-3xl w-full mx-4 relative overflow-hidden">
+              {/* Background effects */}
+              <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 animate-pulse"></div>
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 via-emerald-400 to-green-500"></div>
+              
+              <div className="relative z-10">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h2 className="text-3xl font-bold text-green-400 mb-2">
+                      <TextGlitch delay={100}>💰 Valor do Inventário</TextGlitch>
+                    </h2>
+                    <p className="text-gray-400 text-sm">
+                      Análise detalhada da liquidez das suas cartas
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowValueModal(false)}
+                    className="text-gray-400 hover:text-white transition text-3xl"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Total Value Card */}
+                <div className="bg-gradient-to-br from-green-900/30 to-emerald-900/30 border-2 border-green-500/50 rounded-lg p-6 mb-8 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-transparent"></div>
+                  <div className="relative z-10">
+                    <div className="text-green-400 text-sm font-bold uppercase tracking-wider mb-2">
+                      Valor Total Garantido
+                    </div>
+                    <div className="text-5xl font-bold text-green-300 mb-3">
+                      R$ {total.toFixed(2)}
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-gray-400">
+                      <span>📊 {cardCount} cartas</span>
+                      <span>•</span>
+                      <span>💵 Média: R$ {cardCount > 0 ? (total / cardCount).toFixed(2) : '0.00'} por carta</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Breakdown by Rarity */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <span>📈</span>
+                    Breakdown por Raridade
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    {sortedRarities.map(([rarity, data]) => {
+                      const percentage = maxValue > 0 ? (data.value / maxValue) * 100 : 0;
+                      const avgValue = data.count > 0 ? data.value / data.count : 0;
+                      
+                      return (
+                        <div key={rarity} className="bg-black/40 rounded-lg p-4 border border-gray-800 hover:border-gray-700 transition-all">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              <span className="text-2xl">{rarityIcons[rarity] || '❓'}</span>
+                              <div>
+                                <div className="font-bold text-white capitalize">{rarity}</div>
+                                <div className="text-xs text-gray-500">{data.count} cartas</div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="font-bold text-green-400">R$ {data.value.toFixed(2)}</div>
+                              <div className="text-xs text-gray-500">Média: R$ {avgValue.toFixed(2)}</div>
+                            </div>
+                          </div>
+                          
+                          {/* Progress bar */}
+                          <div className="relative h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div 
+                              className={`absolute inset-y-0 left-0 bg-gradient-to-r ${rarityColors[rarity] || 'from-gray-500 to-gray-600'} rounded-full transition-all duration-500`}
+                              style={{ width: `${percentage}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Suggestions */}
+                {(() => {
+                  const trashData = byRarity['trash'];
+                  if (trashData && trashData.count >= 10) {
+                    return (
+                      <div className="bg-gradient-to-r from-cyan-900/20 to-blue-900/20 border border-cyan-500/30 rounded-lg p-4 mb-6">
+                        <div className="flex items-start gap-3">
+                          <span className="text-2xl">💡</span>
+                          <div>
+                            <div className="font-bold text-cyan-400 mb-1">Sugestão de Otimização</div>
+                            <p className="text-sm text-gray-300">
+                              Você tem <span className="text-white font-bold">{trashData.count} cartas Trash</span> valendo{' '}
+                              <span className="text-green-400 font-bold">R$ {trashData.value.toFixed(2)}</span>.
+                              {trashData.count >= 25 && (
+                                <> Considere <span className="text-cyan-400 font-bold">reciclar 25 cartas</span> para ganhar 1 booster grátis!</>
+                              )}
+                              {trashData.count < 25 && (
+                                <> Ou venda ao sistema para liberar espaço e ganhar liquidez imediata.</>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+
+                {/* Actions */}
+                <div className="grid grid-cols-2 gap-4">
+                  <GlitchButton
+                    onClick={() => setShowValueModal(false)}
+                    variant="secondary"
+                    size="lg"
+                  >
+                    Fechar
+                  </GlitchButton>
+                  <GlitchButton
+                    onClick={() => {
+                      setShowValueModal(false);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    variant="primary"
+                    size="lg"
+                  >
+                    💰 Vender Cartas
+                  </GlitchButton>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
               <p className="text-gray-300">
                 Sua carta foi listada no marketplace com sucesso!
               </p>

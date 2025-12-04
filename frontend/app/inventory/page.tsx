@@ -201,32 +201,6 @@ export default function InventoryPage() {
     return { total, byRarity, cardCount: ownedCards.length };
   };
 
-  const handleSellToSystem = async () => {
-    if (selectedCards.size === 0) return;
-    
-    setSellingSystems(true);
-    try {
-      const response = await api.post('/cards/sell-to-system', {
-        card_instance_ids: Array.from(selectedCards)
-      });
-      
-      const data = unwrap<{ cards_sold: number, total_value: number, new_balance: number }>(response);
-      
-      cardAudio.playSuccessChime();
-      alert(`✅ ${data.cards_sold} cartas vendidas por R$ ${data.total_value.toFixed(2)}!\nNovo saldo: R$ ${data.new_balance.toFixed(2)}`);
-      
-      // Limpar seleção e recarregar
-      setSelectedCards(new Set());
-      setShowSellConfirmModal(false);
-      await loadInventory();
-    } catch (error: any) {
-      cardAudio.playErrorBuzz();
-      alert(error.response?.data?.error?.message || 'Erro ao vender cartas');
-    } finally {
-      setSellingSystems(false);
-    }
-  };
-
   const handleSell = async (cardInstanceId: string) => {
     const price = parseFloat(salePrice);
     if (!price || price <= 0) {

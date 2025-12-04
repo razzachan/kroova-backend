@@ -22,15 +22,25 @@ export async function GET(request: NextRequest) {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Busca packs com estatísticas
-    const { data: packs, error } = await supabase
-      .from('v_pack_stats')
-      .select('*')
+    // Busca booster_types (não pack_stats) para ter todas as tiers
+    const { data: boosters, error } = await supabase
+      .from('booster_types')
+      .select(`
+        id,
+        name,
+        edition_id,
+        pack_id,
+        price_brl,
+        cards_per_booster,
+        rarity_distribution,
+        booster_packs!inner(pack_name, theme, is_active)
+      `)
       .eq('edition_id', edition)
-      .eq('is_active', true)
-      .order('pack_id', { ascending: true });
+      .eq('booster_packs.is_active', true)
+      .order('pack_id', { ascending: true })
+      .order('price_brl', { ascending: true });
 
-    console.log('[GET /booster-packs] Query result:', { packs: packs?.length, error });
+    console.log('[GET /booster-packs] Query result:', { boosters: boosters?.length, error });
 
     if (error) {
       console.error('[GET /booster-packs] Database error:', error);
@@ -40,7 +50,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (!packs || packs.length === 0) {
+    if (!boosters || boosters.length === 0) {
       return NextResponse.json(
         { ok: false, error: { code: 'NO_PACKS_FOUND', message: `Nenhum pack ativo encontrado para edição ${edition}` } },
         { status: 404 }
@@ -48,25 +58,16 @@ export async function GET(request: NextRequest) {
     }
 
     // Formata resposta
-    const formattedPacks = packs.map(pack => ({
-      pack_id: pack.pack_id,
-      pack_name: pack.pack_name,
-      theme: pack.theme,
-      edition_id: pack.edition_id,
-      price_brl: parseFloat(pack.price_brl),
-      total_cards: pack.total_cards,
-      exclusive_cards: pack.exclusive_cards,
-      shared_cards: pack.shared_cards,
-      rarity_distribution: {
-        trash: pack.trash_count,
-        meme: pack.meme_count,
-        viral: pack.viral_count,
-        legendary: pack.legendary_count,
-        godmode: pack.godmode_count,
-      },
-      avg_liquidity_brl: parseFloat(pack.avg_liquidity),
-      expected_value_per_booster: parseFloat(pack.avg_liquidity) * 5,
-      rtp_percent: Math.round((parseFloat(pack.avg_liquidity) * 5 / parseFloat(pack.price_brl)) * 10000) / 100,
+    const formattedPacks = boosters.map(booster => ({
+      id: booster.id,
+      pack_id: booster.pack_id,
+      pack_name: (booster.booster_packs as any)?.pack_name || booster.name,
+      theme: (booster.booster_packs as any)?.theme,
+      name: booster.name,
+      edition_id: booster.edition_id,
+      price_brl: parseFloat(booster.price_brl as any),
+      cards_per_booster: booster.cards_per_booster || 5,
+      rarity_distribution: booster.rarity_distribution
     }));
 
     return NextResponse.json({

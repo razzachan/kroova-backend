@@ -151,6 +151,13 @@ export async function POST(request: NextRequest) {
     const currentBalance = userData?.balance_brl || 0;
     const newBalance = currentBalance + totalValue;
     
+    console.log('[SELL-TO-SYSTEM] 11.5. Balance calculation:', {
+      currentBalance,
+      totalValue,
+      newBalance,
+      formula: `${currentBalance} + ${totalValue} = ${newBalance}`
+    });
+    
     const { error: balanceError } = await supabaseAdmin
       .from('users')
       .update({ balance_brl: newBalance })
@@ -164,6 +171,19 @@ export async function POST(request: NextRequest) {
       );
     }
     console.log('[SELL-TO-SYSTEM] 12. Balance updated: R$', currentBalance.toFixed(2), '→ R$', newBalance.toFixed(2));
+    
+    // Verificar se o update realmente funcionou
+    const { data: verifyData } = await supabaseAdmin
+      .from('users')
+      .select('balance_brl')
+      .eq('id', user.id)
+      .single();
+    
+    console.log('[SELL-TO-SYSTEM] 12.5. Balance verification after update:', {
+      expectedBalance: newBalance,
+      actualBalance: verifyData?.balance_brl,
+      match: verifyData?.balance_brl === newBalance
+    });
     
     // NOVO: Registrar transação no histórico
     const { error: transactionError } = await supabaseAdmin

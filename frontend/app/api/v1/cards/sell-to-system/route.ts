@@ -136,15 +136,15 @@ export async function POST(request: NextRequest) {
     }
     console.log('[SELL-TO-SYSTEM] 10. Cards deleted');
     
-    // Creditar saldo ao usuário
+    // Creditar saldo ao usuário (usar tabela WALLETS, não USERS)
     const { data: userData, error: updateError } = await supabaseAdmin
-      .from('users')
+      .from('wallets')
       .select('balance_brl')
-      .eq('id', user.id)
+      .eq('user_id', user.id)
       .single();
     
     if (updateError || !userData) {
-      console.error('[SELL-TO-SYSTEM] 11. User balance fetch error:', updateError);
+      console.error('[SELL-TO-SYSTEM] 11. Wallet balance fetch error:', updateError);
       // Se não conseguir buscar saldo, assume 0
     }
     
@@ -159,9 +159,9 @@ export async function POST(request: NextRequest) {
     });
     
     const { error: balanceError } = await supabaseAdmin
-      .from('users')
+      .from('wallets')
       .update({ balance_brl: newBalance })
-      .eq('id', user.id);
+      .eq('user_id', user.id);
     
     if (balanceError) {
       console.error('[SELL-TO-SYSTEM] 12. Balance update error:', balanceError);
@@ -174,9 +174,9 @@ export async function POST(request: NextRequest) {
     
     // Verificar se o update realmente funcionou
     const { data: verifyData } = await supabaseAdmin
-      .from('users')
+      .from('wallets')
       .select('balance_brl')
-      .eq('id', user.id)
+      .eq('user_id', user.id)
       .single();
     
     console.log('[SELL-TO-SYSTEM] 12.5. Balance verification after update:', {

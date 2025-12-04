@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import api from '@/lib/api';
-import TextGlitch from '@/components/TextGlitch';
-import GlitchButton from '@/components/GlitchButton';
+import { api } from '@/lib/api';
+import TextGlitch from '@/components/Effects/TextGlitch';
+import GlitchButton from '@/components/UI/GlitchButton';
 
 interface Transaction {
   id: string;

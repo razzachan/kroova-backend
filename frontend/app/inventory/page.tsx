@@ -50,7 +50,18 @@ export default function InventoryPage() {
   // NOVO: Estados para venda ao sistema
   const [showSellConfirmModal, setShowSellConfirmModal] = useState(false);
   const [sellingSystems, setSellingSystems] = useState(false);
-  const [sellMode, setSellMode] = useState<'trash' | 'trash_meme'>('trash'); // Modo de venda
+  const [sellMode, setSellMode] = useState<'quick' | 'advanced' | 'manual'>('quick'); // Modo de venda
+  
+  // Quick Actions
+  const [quickAction, setQuickAction] = useState<'trash' | 'trash_meme' | 'under_1' | 'under_5' | 'duplicates'>('trash');
+  
+  // Advanced Filters
+  const [selectedRarities, setSelectedRarities] = useState<string[]>(['trash']);
+  const [maxValue, setMaxValue] = useState<number>(1.0);
+  const [keepCopies, setKeepCopies] = useState<number>(1);
+  
+  // Manual Selection
+  const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set());
   
   // Modal de Valor do Inventário
   const [showValueModal, setShowValueModal] = useState(false);
@@ -133,14 +144,14 @@ export default function InventoryPage() {
     }
   };
 
-  // Funções simplificadas de venda ao sistema
+  // Funções de compatibilidade
   const getTrashCards = () => {
     return inventory.filter(c => 
       !listedCards.includes(c.id) && 
       c.cards_base?.rarity === 'trash'
     );
   };
-
+  
   const getTrashAndMemeCards = () => {
     return inventory.filter(c => 
       !listedCards.includes(c.id) && 
@@ -148,12 +159,115 @@ export default function InventoryPage() {
     );
   };
 
+  // Sistema inteligente de filtros
+  const getCardsByQuickAction = (action: string) => {
+    const availableCards = inventory.filter(c => !listedCards.includes(c.id));
+    
+    switch(action) {
+      case 'trash':
+        return availableCards.filter(c => c.cards_base?.rarity === 'trash');
+      case 'trash_meme':
+        return availableCards.filter(c => 
+          c.cards_base?.rarity === 'trash' || c.cards_base?.rarity === 'meme'
+        );
+      case 'under_1':
+        return availableCards.filter(c => (c.liquidity_brl || 0) < 1.0);
+      case 'under_5':
+        return availableCards.filter(c => (c.liquidity_brl || 0) < 5.0);
+      case 'duplicates':
+        return getDuplicateCards(availableCards, keepCopies);
+      default:
+        return [];
+    }
+  };
+
+  const getDuplicateCards = (cards: CardInstance[], keepAmount: number) => {
+    const cardsByBase = cards.reduce((acc, card) => {
+      const baseId = card.base_id;
+      if (!acc[baseId]) acc[baseId] = [];
+      acc[baseId].push(card);
+      return acc;
+    }, {} as Record<string, CardInstance[]>);
+    
+    const duplicates: CardInstance[] = [];
+    Object.values(cardsByBase).forEach(group => {
+      if (group.length > keepAmount) {
+        // Ordenar por liquidez (vender as de menor valor primeiro)
+        const sorted = [...group].sort((a, b) => (a.liquidity_brl || 0) - (b.liquidity_brl || 0));
+        duplicates.push(...sorted.slice(0, sorted.length - keepAmount));
+      }
+    });
+    
+    return duplicates;
+  };
+
+  const getCardsByAdvancedFilters = () => {
+    return inventory.filter(c => {
+      if (listedCards.includes(c.id)) return false;
+      
+      // Filtro de raridade
+      const rarityMatch = selectedRarities.length === 0 || 
+        selectedRarities.includes(c.cards_base?.rarity || '');
+      
+      // Filtro de valor máximo
+      const valueMatch = (c.liquidity_brl || 0) <= maxValue;
+      
+      return rarityMatch && valueMatch;
+    });
+  };
+
   const getCardsToSell = () => {
-    return sellMode === 'trash' ? getTrashCards() : getTrashAndMemeCards();
+    if (sellMode === 'quick') {
+      return getCardsByQuickAction(quickAction);
+    } else if (sellMode === 'advanced') {
+      return getCardsByAdvancedFilters();
+    } else { // manual
+      return inventory.filter(c => selectedCards.has(c.id));
+    }
   };
 
   const calculateSellValue = () => {
     return getCardsToSell().reduce((sum, card) => sum + (card.liquidity_brl || 0), 0);
+  };
+  
+  const toggleCardSelection = (cardId: string) => {
+    const newSelection = new Set(selectedCards);
+    if (newSelection.has(cardId)) {
+      newSelection.delete(cardId);
+    } else {
+      newSelection.add(cardId);
+    }
+    setSelectedCards(newSelection);
+  };
+  
+  const selectAllFiltered = () => {
+    const filteredCards = inventory.filter(card => {
+      const isListed = listedCards.includes(card.id);
+      if (isListed) return false; // Não selecionar cartas já listadas
+      if (showListedFilter === 'owned' && isListed) return false;
+      if (showListedFilter === 'listed' && !isListed) return false;
+      if (rarityFilter !== 'all' && card.cards_base?.rarity !== rarityFilter) return false;
+      if (searchFilter) {
+        const searchLower = searchFilter.toLowerCase();
+        const name = card.cards_base?.name?.toLowerCase() || '';
+        const displayId = card.cards_base?.display_id?.toLowerCase() || '';
+        if (!name.includes(searchLower) && !displayId.includes(searchLower)) return false;
+      }
+      return true;
+    });
+    setSelectedCards(new Set(filteredCards.map(c => c.id)));
+  };
+  
+  const clearSelection = () => {
+    setSelectedCards(new Set());
+  };
+  
+  const toggleRarity = (rarity: string) => {
+    setSelectedRarities(prev => 
+      prev.includes(rarity) 
+        ? prev.filter(r => r !== rarity)
+        : [...prev, rarity]
+    );
   };
 
   const handleSellToSystem = async () => {
@@ -447,53 +561,242 @@ export default function InventoryPage() {
           </div>
         )}
 
-        {/* Seção simplificada de Venda ao Sistema */}
-        {(getTrashCards().length > 0 || getTrashAndMemeCards().length > 0) && (
-          <div className="bg-gradient-to-br from-[#FFC700]/10 to-[#FF006D]/10 backdrop-blur-md border-2 border-[#FFC700]/30 rounded-lg p-4 md:p-6 mb-6">
-            <div className="flex flex-col md:flex-row md:items-center gap-4">
-              <div className="flex-1">
-                <h3 className="text-[#FFC700] text-lg md:text-xl font-bold mb-2">
+        {/* Sistema Inteligente de Venda ao Sistema */}
+        {inventory.filter(c => !listedCards.includes(c.id)).length > 0 && (
+          <div className="bg-gradient-to-br from-[#FFC700]/10 to-[#FF006D]/10 backdrop-blur-md border-2 border-[#FFC700]/30 rounded-lg p-6 mb-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+              <div>
+                <h3 className="text-[#FFC700] text-xl font-bold mb-2">
                   💰 Liquidez Instantânea
                 </h3>
                 <p className="text-gray-400 text-sm">
-                  Venda cartas de baixo valor e receba créditos imediatamente
+                  Venda cartas e receba créditos imediatamente no seu saldo
                 </p>
               </div>
               
-              <div className="grid grid-cols-2 gap-3 md:gap-4">
-                {getTrashCards().length > 0 && (
-                  <GlitchButton
-                    onClick={() => {
-                      setSellMode('trash');
-                      setShowSellConfirmModal(true);
-                    }}
-                    variant="secondary"
-                    size="md"
-                    className="flex flex-col items-center"
-                  >
-                    <span className="text-lg">🗑️</span>
-                    <span className="text-xs mt-1">Trash ({getTrashCards().length})</span>
-                    <span className="text-xs text-green-400">R$ {getTrashCards().reduce((s, c) => s + c.liquidity_brl, 0).toFixed(2)}</span>
-                  </GlitchButton>
-                )}
-                
-                {getTrashAndMemeCards().length > getTrashCards().length && (
-                  <GlitchButton
-                    onClick={() => {
-                      setSellMode('trash_meme');
-                      setShowSellConfirmModal(true);
-                    }}
-                    variant="success"
-                    size="md"
-                    className="flex flex-col items-center"
-                  >
-                    <span className="text-lg">💸</span>
-                    <span className="text-xs mt-1">Trash + Meme ({getTrashAndMemeCards().length})</span>
-                    <span className="text-xs text-green-400">R$ {getTrashAndMemeCards().reduce((s, c) => s + c.liquidity_brl, 0).toFixed(2)}</span>
-                  </GlitchButton>
-                )}
+              {/* Seletor de Modo */}
+              <div className="flex gap-2 bg-black/40 p-1 rounded-lg">
+                <button
+                  onClick={() => setSellMode('quick')}
+                  className={`px-4 py-2 rounded text-sm font-bold transition-all ${
+                    sellMode === 'quick' 
+                      ? 'bg-[#FFC700] text-black' 
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  ⚡ Quick
+                </button>
+                <button
+                  onClick={() => setSellMode('advanced')}
+                  className={`px-4 py-2 rounded text-sm font-bold transition-all ${
+                    sellMode === 'advanced' 
+                      ? 'bg-[#00F0FF] text-black' 
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  🎯 Advanced
+                </button>
+                <button
+                  onClick={() => setSellMode('manual')}
+                  className={`px-4 py-2 rounded text-sm font-bold transition-all ${
+                    sellMode === 'manual' 
+                      ? 'bg-[#FF006D] text-white' 
+                      : 'text-gray-400 hover:text-white'
+                  }`}
+                >
+                  ☑️ Manual
+                </button>
               </div>
             </div>
+            
+            {/* QUICK MODE: Ações Rápidas */}
+            {sellMode === 'quick' && (
+              <div className="space-y-4">
+                <p className="text-gray-400 text-sm mb-4">
+                  Selecione uma ação rápida para vender cartas automaticamente:
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                  {[
+                    { action: 'trash', icon: '🗑️', label: 'Apenas Trash', count: getCardsByQuickAction('trash').length, value: getCardsByQuickAction('trash').reduce((s, c) => s + c.liquidity_brl, 0) },
+                    { action: 'trash_meme', icon: '💸', label: 'Trash + Meme', count: getCardsByQuickAction('trash_meme').length, value: getCardsByQuickAction('trash_meme').reduce((s, c) => s + c.liquidity_brl, 0) },
+                    { action: 'under_1', icon: '💵', label: '< R$ 1.00', count: getCardsByQuickAction('under_1').length, value: getCardsByQuickAction('under_1').reduce((s, c) => s + c.liquidity_brl, 0) },
+                    { action: 'under_5', icon: '💰', label: '< R$ 5.00', count: getCardsByQuickAction('under_5').length, value: getCardsByQuickAction('under_5').reduce((s, c) => s + c.liquidity_brl, 0) },
+                    { action: 'duplicates', icon: '🔄', label: `Duplicatas (manter ${keepCopies})`, count: getCardsByQuickAction('duplicates').length, value: getCardsByQuickAction('duplicates').reduce((s, c) => s + c.liquidity_brl, 0) },
+                  ].map(({ action, icon, label, count, value }) => (
+                    <GlitchButton
+                      key={action}
+                      onClick={() => {
+                        setQuickAction(action as any);
+                        setShowSellConfirmModal(true);
+                      }}
+                      variant="success"
+                      size="md"
+                      disabled={count === 0}
+                      className="flex flex-col items-center justify-center h-24"
+                    >
+                      <span className="text-2xl mb-1">{icon}</span>
+                      <span className="text-xs mb-1">{label}</span>
+                      <span className="text-xs font-bold text-white">{count}x</span>
+                      <span className="text-xs text-green-400">R$ {value.toFixed(2)}</span>
+                    </GlitchButton>
+                  ))}
+                </div>
+                
+                {/* Configuração de Duplicatas */}
+                {quickAction === 'duplicates' && (
+                  <div className="bg-black/40 rounded-lg p-4 mt-4">
+                    <label className="block text-[#00F0FF] text-sm font-bold mb-2">
+                      🔄 Manter quantas cópias de cada carta?
+                    </label>
+                    <div className="flex gap-2">
+                      {[1, 2, 3, 4].map(n => (
+                        <button
+                          key={n}
+                          onClick={() => setKeepCopies(n)}
+                          className={`flex-1 py-2 rounded font-bold transition-all ${
+                            keepCopies === n
+                              ? 'bg-[#00F0FF] text-black'
+                              : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                          }`}
+                        >
+                          {n} cópia{n > 1 ? 's' : ''}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* ADVANCED MODE: Filtros Personalizados */}
+            {sellMode === 'advanced' && (
+              <div className="space-y-4">
+                <p className="text-gray-400 text-sm mb-4">
+                  Configure filtros personalizados para selecionar quais cartas vender:
+                </p>
+                
+                {/* Seletor de Raridades */}
+                <div>
+                  <label className="block text-[#00F0FF] text-sm font-bold mb-3">
+                    ✨ Selecionar Raridades:
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {[
+                      { rarity: 'trash', icon: '🗑️', label: 'Trash' },
+                      { rarity: 'meme', icon: '😂', label: 'Meme' },
+                      { rarity: 'uncommon', icon: '🟢', label: 'Uncommon' },
+                      { rarity: 'rare', icon: '🔵', label: 'Rare' },
+                    ].map(({ rarity, icon, label }) => (
+                      <button
+                        key={rarity}
+                        onClick={() => toggleRarity(rarity)}
+                        className={`py-3 px-4 rounded-lg font-bold transition-all ${
+                          selectedRarities.includes(rarity)
+                            ? 'bg-[#00F0FF] text-black border-2 border-[#00F0FF]'
+                            : 'bg-gray-800 text-gray-400 border-2 border-gray-700 hover:border-gray-600'
+                        }`}
+                      >
+                        <span className="text-xl mr-2">{icon}</span>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Filtro de Valor Máximo */}
+                <div>
+                  <label className="block text-[#00F0FF] text-sm font-bold mb-3">
+                    💵 Valor Máximo por Carta:
+                  </label>
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="range"
+                      min="0.1"
+                      max="20"
+                      step="0.5"
+                      value={maxValue}
+                      onChange={(e) => setMaxValue(parseFloat(e.target.value))}
+                      className="flex-1"
+                    />
+                    <div className="bg-black/40 px-4 py-2 rounded-lg min-w-[120px] text-center">
+                      <span className="text-[#FFC700] font-bold text-lg">R$ {maxValue.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Preview e Botão */}
+                <div className="bg-black/40 rounded-lg p-4 flex items-center justify-between">
+                  <div>
+                    <div className="text-white font-bold text-xl">
+                      {getCardsByAdvancedFilters().length} cartas selecionadas
+                    </div>
+                    <div className="text-[#FFC700] text-lg">
+                      Valor total: R$ {getCardsByAdvancedFilters().reduce((s, c) => s + c.liquidity_brl, 0).toFixed(2)}
+                    </div>
+                  </div>
+                  <GlitchButton
+                    onClick={() => setShowSellConfirmModal(true)}
+                    variant="success"
+                    size="lg"
+                    disabled={getCardsByAdvancedFilters().length === 0}
+                  >
+                    Vender Cartas
+                  </GlitchButton>
+                </div>
+              </div>
+            )}
+            
+            {/* MANUAL MODE: Seleção com Checkboxes */}
+            {sellMode === 'manual' && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-gray-400 text-sm">
+                    Clique nas cartas abaixo para selecioná-las manualmente
+                  </p>
+                  <div className="flex gap-2">
+                    <GlitchButton
+                      onClick={selectAllFiltered}
+                      variant="secondary"
+                      size="sm"
+                    >
+                      Selecionar Tudo
+                    </GlitchButton>
+                    <GlitchButton
+                      onClick={clearSelection}
+                      variant="danger"
+                      size="sm"
+                    >
+                      Limpar
+                    </GlitchButton>
+                  </div>
+                </div>
+                
+                {/* Contador de Selecionados */}
+                {selectedCards.size > 0 && (
+                  <div className="bg-black/40 rounded-lg p-4 flex items-center justify-between">
+                    <div>
+                      <div className="text-white font-bold text-xl">
+                        {selectedCards.size} cartas selecionadas
+                      </div>
+                      <div className="text-[#FFC700] text-lg">
+                        Valor total: R$ {inventory.filter(c => selectedCards.has(c.id)).reduce((s, c) => s + c.liquidity_brl, 0).toFixed(2)}
+                      </div>
+                    </div>
+                    <GlitchButton
+                      onClick={() => setShowSellConfirmModal(true)}
+                      variant="success"
+                      size="lg"
+                    >
+                      Vender Selecionadas
+                    </GlitchButton>
+                  </div>
+                )}
+                
+                <p className="text-xs text-gray-500 text-center">
+                  💡 As cartas selecionáveis aparecerão com checkbox abaixo no inventário
+                </p>
+              </div>
+            )}
           </div>
         )}
 
@@ -565,6 +868,27 @@ export default function InventoryPage() {
                   rarity={card.is_godmode ? 'godmode' : mapRarity(baseCard?.rarity || 'trash')}
                   className="p-4 relative"
                 >
+                  {/* Checkbox para modo manual */}
+                  {sellMode === 'manual' && !listedCards.includes(card.id) && (
+                    <div 
+                      className="absolute top-2 left-2 z-10 cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleCardSelection(card.id);
+                      }}
+                    >
+                      <div className={`w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all ${
+                        selectedCards.has(card.id)
+                          ? 'bg-[#00F0FF] border-[#00F0FF]'
+                          : 'bg-black/60 border-gray-400 hover:border-white'
+                      }`}>
+                        {selectedCards.has(card.id) && (
+                          <span className="text-black font-bold text-lg">✓</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  
                   {/* Card Image */}
                   <div className="aspect-[2/3] bg-gray-700/50 rounded-lg mb-4 overflow-hidden relative">
                     {baseCard?.image_url ? (
@@ -720,14 +1044,38 @@ export default function InventoryPage() {
           acc[rarity].value += card.liquidity_brl || 0;
           return acc;
         }, {} as Record<string, { count: number; value: number }>);
+        
+        // Descrição do modo de venda
+        const getModeDescription = () => {
+          if (sellMode === 'quick') {
+            const descriptions: Record<string, string> = {
+              trash: '🗑️ Vendendo apenas cartas Trash',
+              trash_meme: '💸 Vendendo cartas Trash e Meme',
+              under_1: '💵 Vendendo cartas com valor abaixo de R$ 1.00',
+              under_5: '💰 Vendendo cartas com valor abaixo de R$ 5.00',
+              duplicates: `🔄 Vendendo duplicatas (mantendo ${keepCopies} cópia${keepCopies > 1 ? 's' : ''} de cada)`
+            };
+            return descriptions[quickAction] || 'Vendendo cartas selecionadas';
+          } else if (sellMode === 'advanced') {
+            const raritiesText = selectedRarities.length > 0 
+              ? selectedRarities.map(r => r.charAt(0).toUpperCase() + r.slice(1)).join(', ')
+              : 'Todas';
+            return `🎯 Filtros: ${raritiesText} | Valor máx: R$ ${maxValue.toFixed(2)}`;
+          } else {
+            return '☑️ Seleção Manual';
+          }
+        };
 
         return (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
             <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-[#FFC700] rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-[#FFC700]">
-                  💰 Confirmar Venda ao Sistema
-                </h2>
+                <div>
+                  <h2 className="text-2xl font-bold text-[#FFC700] mb-1">
+                    💰 Confirmar Venda ao Sistema
+                  </h2>
+                  <p className="text-sm text-gray-400">{getModeDescription()}</p>
+                </div>
                 <button
                   onClick={() => setShowSellConfirmModal(false)}
                   className="text-gray-400 hover:text-white transition text-2xl"

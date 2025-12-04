@@ -49,8 +49,7 @@ export async function GET(request: NextRequest) {
         id, 
         booster_type_id, 
         purchased_at, 
-        booster_packs!inner(pack_name, edition_id),
-        booster_types!inner(name, pack_name, price_brl)
+        booster_packs(pack_name, edition_id, price_brl)
       `)
       .eq('user_id', user.id)
       .is('opened_at', null)
@@ -59,7 +58,7 @@ export async function GET(request: NextRequest) {
     if (error) {
       console.error('Error fetching sealed packs:', error);
       return NextResponse.json(
-        { ok: false, error: { code: 'INTERNAL_ERROR', message: 'Erro ao buscar boosters' } },
+        { ok: false, error: { code: 'INTERNAL_ERROR', message: error.message } },
         { status: 500 }
       );
     }
@@ -70,10 +69,10 @@ export async function GET(request: NextRequest) {
         sealed_packs: sealedPacks || [],
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Sealed packs endpoint error:', error);
     return NextResponse.json(
-      { ok: false, error: { code: 'INTERNAL_ERROR', message: 'Erro interno' } },
+      { ok: false, error: { code: 'INTERNAL_ERROR', message: error?.message || 'Erro interno' } },
       { status: 500 }
     );
   }

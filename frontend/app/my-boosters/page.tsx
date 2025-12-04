@@ -37,10 +37,6 @@ interface SealedPack {
   booster_packs?: {
     pack_name: string;
     edition_id: string;
-  };
-  booster_types?: {
-    name: string;
-    pack_name: string;
     price_brl: number;
   };
 }
@@ -200,9 +196,9 @@ export default function MyBoostersPage() {
               </div>
 
               {/* Price Tier Badge (Básico/Premium/Elite...) */}
-              {pack.booster_types?.price_brl && (
+              {pack.booster_packs?.price_brl && (
                 <div className="absolute -top-3 -left-3 z-10 px-3 py-1 rounded-lg text-xs font-bold font-mono bg-black/80 backdrop-blur-sm border border-[#00F0FF]/50 text-[#00F0FF]">
-                  {PRICE_TO_TIER[pack.booster_types.price_brl] || `R$ ${pack.booster_types.price_brl.toFixed(2)}`}
+                  {PRICE_TO_TIER[pack.booster_packs.price_brl] || `R$ ${pack.booster_packs.price_brl.toFixed(2)}`}
                 </div>
               )}
 
@@ -214,7 +210,7 @@ export default function MyBoostersPage() {
                 <div className="relative">
                   <img
                     src={PACK_IMAGES[pack.booster_type_id] || PACK_IMAGES['ED01_ALPHA']}
-                    alt={`${pack.booster_packs?.pack_name || pack.booster_types?.pack_name || 'Booster'} Pack`}
+                    alt={`${pack.booster_packs?.pack_name || 'Booster'} Pack`}
                     className="w-full h-auto object-contain"
                     style={{ minHeight: '300px' }}
                   />
@@ -236,11 +232,11 @@ export default function MyBoostersPage() {
               {/* Info */}
               <div className="mt-4 text-center">
                 <div className="text-sm text-gray-400 mb-1">
-                  {pack.booster_packs?.pack_name || pack.booster_types?.pack_name || 'Booster Pack'}
+                  {pack.booster_packs?.pack_name || 'Booster Pack'}
                 </div>
-                {pack.booster_types?.price_brl && (
+                {pack.booster_packs?.price_brl && (
                   <div className="text-xs text-gray-500">
-                    Valor: R$ {pack.booster_types.price_brl.toFixed(2)}
+                    Valor: R$ {pack.booster_packs.price_brl.toFixed(2)}
                   </div>
                 )}
                 <div className="text-xs text-gray-600 mt-1">

@@ -135,12 +135,16 @@ export default function InventoryPage() {
 
   // NOVO: Funções de seleção de cartas
   const toggleCardSelection = (cardId: string) => {
+    console.log('[toggleCardSelection] Clicado na carta:', cardId);
     const newSelected = new Set(selectedCards);
     if (newSelected.has(cardId)) {
+      console.log('[toggleCardSelection] Removendo carta da seleção');
       newSelected.delete(cardId);
     } else {
+      console.log('[toggleCardSelection] Adicionando carta à seleção');
       newSelected.add(cardId);
     }
+    console.log('[toggleCardSelection] Nova seleção:', Array.from(newSelected));
     setSelectedCards(newSelected);
   };
 
@@ -499,7 +503,16 @@ export default function InventoryPage() {
                 </GlitchButton>
 
                 <GlitchButton
-                  onClick={() => setShowSellConfirmModal(true)}
+                  onClick={() => {
+                    console.log('[Vender Button] Clicado! selectedCards.size:', selectedCards.size);
+                    console.log('[Vender Button] selectedCards:', Array.from(selectedCards));
+                    if (selectedCards.size === 0) {
+                      console.log('[Vender Button] Nenhuma carta selecionada!');
+                      alert('⚠️ Selecione pelo menos uma carta para vender!');
+                      return;
+                    }
+                    setShowSellConfirmModal(true);
+                  }}
                   variant="success"
                   size="md"
                   disabled={selectedCards.size === 0}
@@ -595,9 +608,16 @@ export default function InventoryPage() {
                     <input
                       type="checkbox"
                       checked={selectedCards.has(card.id)}
-                      onChange={() => toggleCardSelection(card.id)}
+                      onChange={(e) => {
+                        console.log('[Checkbox] onChange disparado para carta:', card.id);
+                        console.log('[Checkbox] checked:', e.target.checked);
+                        toggleCardSelection(card.id);
+                      }}
                       className="w-6 h-6 rounded border-2 border-[#FFC700] bg-black/70 checked:bg-[#FFC700] checked:border-[#FFC700] cursor-pointer transition-all hover:scale-110"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        console.log('[Checkbox] onClick disparado');
+                        e.stopPropagation();
+                      }}
                     />
                   </div>
 

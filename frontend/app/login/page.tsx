@@ -45,12 +45,30 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-black/60 backdrop-blur-md rounded-lg shadow-2xl p-8 border-2 border-[#FF006D]/30">
-        <h1 className="text-3xl font-bold text-white text-center mb-2">
-          <TextGlitch delay={200}>🃏 KROOVA</TextGlitch>
-        </h1>
-        <p className="text-gray-400 text-center mb-8">
-          {isLogin ? 'Entre na sua conta' : 'Crie sua conta'}
-        </p>
+        {/* Logo e Título */}
+        <div className="flex flex-col items-center mb-8">
+          <img 
+            src="/logo_icon_transparent.png" 
+            alt="KROOVA" 
+            className="w-20 h-20 mb-4 rounded-lg object-contain" 
+            style={{ 
+              boxShadow: '0 0 20px rgba(255, 0, 109, 0.6), 0 0 40px rgba(0, 240, 255, 0.4)', 
+              border: '2px solid rgba(255, 0, 109, 0.3)' 
+            }} 
+          />
+          <h1 
+            className="text-4xl font-bold text-white tracking-wider mb-2"
+            style={{ 
+              fontFamily: 'var(--font-geist-mono), monospace', 
+              letterSpacing: '0.1em' 
+            }}
+          >
+            KROOVA
+          </h1>
+          <p className="text-gray-400 text-center">
+            {isLogin ? 'Entre na sua conta' : 'Crie sua conta'}
+          </p>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <DataStreamInput

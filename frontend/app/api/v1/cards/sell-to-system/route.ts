@@ -232,7 +232,7 @@ export async function POST(request: NextRequest) {
           actual: verifyData?.balance_brl,
           match: verifyData?.balance_brl === newBalance
         },
-        update_error: balanceError ? balanceError.message : null
+        update_error: balanceError ? String(balanceError) : null
       }
     });
     

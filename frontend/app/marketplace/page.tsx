@@ -190,6 +190,7 @@ export default function MarketplacePage() {
             <a href="/marketplace/analytics" className="text-gray-300 hover:text-[#00F0FF] transition">📊 Analytics</a>
             <a href="/marketplace/my-listings" className="text-gray-300 hover:text-[#00F0FF] transition">💼 Minhas Vendas</a>
             <a href="/boosters" className="text-gray-300 hover:text-[#00F0FF] transition">Boosters</a>
+            <a href="/mystery-box" className="text-gray-300 hover:text-cyan-400 transition">🎰 Mystery Box</a>
             <a href="/wallet" className="text-gray-300 hover:text-[#00F0FF] transition">Wallet</a>
           </div>
         </div>

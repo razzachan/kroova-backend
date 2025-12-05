@@ -100,46 +100,34 @@ export default function InventoryPage() {
 
   const loadInventory = async () => {
     try {
-      // Sempre carrega inventário primeiro
-      const invResponse = await api.get('/inventory');
-      const data = unwrap<{ cards: CardInstance[] }>(invResponse);
-      const allCards = data.cards || [];
-      console.log('[inventory] Total de cartas recebidas da API:', allCards.length); // DEBUG
-      console.log('[inventory] Primeiras 3 cartas:', allCards.slice(0, 3)); // DEBUG
-      setInventory(allCards);
+      // Buscar tudo de uma vez via endpoint otimizado
+      const response = await api.get('/inventory/full');
+      const data = unwrap<{
+        cards: CardInstance[];
+        listed_card_ids: string[];
+        recycles_today: number;
+        total_cards: number;
+        total_listed: number;
+      }>(response);
       
-      // Tenta carregar listings, mas não quebra se falhar
-      try {
-        const listingsResponse = await api.get('/market/my-listings?status=active');
-        const listings = listingsResponse.data?.data?.listings || [];
-        console.log('[inventory] Listings carregados:', listings); // Debug
-        const listedIds = listings.map((l: any) => {
-          // Tenta pegar o card_instance_id de várias formas possíveis
-          return l.card_instance_id || l.card?.instance_id || l.cards_instances?.id;
-        }).filter(Boolean);
-        console.log('[inventory] IDs listados:', listedIds); // Debug
-        setListedCards(listedIds);
-      } catch (listError) {
-      console.warn('Não foi possível carregar listings:', listError);
-        setListedCards([]); // Continua sem listings
-      }
-
-      // Buscar quantidade de reciclagens hoje
-      try {
-        const txResponse = await api.get('/users/transactions?type=recycle&limit=100');
-        if (txResponse.data?.ok) {
-          const today = new Date().setHours(0, 0, 0, 0);
-          const todayRecycles = txResponse.data.data.transactions.filter((tx: any) => {
-            const txDate = new Date(tx.created_at).setHours(0, 0, 0, 0);
-            return txDate === today;
-          });
-          setRecyclesToday(todayRecycles.length);
-        }
-      } catch (error) {
-        console.warn('Não foi possível carregar transações:', error);
-      }
+      console.log('[inventory] Total de cartas recebidas:', data.total_cards);
+      console.log('[inventory] Cartas listadas:', data.total_listed);
+      console.log('[inventory] Reciclagens hoje:', data.recycles_today);
+      
+      setInventory(data.cards || []);
+      setListedCards(data.listed_card_ids || []);
+      setRecyclesToday(data.recycles_today || 0);
+      
     } catch (error) {
       console.error('Erro ao carregar inventário:', error);
+      // Fallback: tentar endpoint antigo
+      try {
+        const invResponse = await api.get('/inventory');
+        const data = unwrap<{ cards: CardInstance[] }>(invResponse);
+        setInventory(data.cards || []);
+      } catch (fallbackError) {
+        console.error('Fallback também falhou:', fallbackError);
+      }
     } finally {
       setLoading(false);
     }
@@ -418,6 +406,7 @@ export default function InventoryPage() {
             <a href="/dashboard" className="text-gray-300 hover:text-[#FF006D] transition">Dashboard</a>
             <a href="/marketplace" className="text-gray-300 hover:text-[#FF006D] transition">Marketplace</a>
             <a href="/boosters" className="text-gray-300 hover:text-[#FF006D] transition">Boosters</a>
+            <a href="/mystery-box" className="text-gray-300 hover:text-cyan-400 transition">🎰 Mystery Box</a>
             <a href="/inventory" className="text-[#FF006D] font-semibold">Inventário</a>
             <a href="/wallet" className="text-gray-300 hover:text-[#FF006D] transition">Wallet</a>
           </div>

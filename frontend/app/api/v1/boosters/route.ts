@@ -10,7 +10,7 @@ export async function GET() {
   try {
     const supabase = createClient(supabaseUrl, anonKey);
 
-    // 1. Buscar boosters
+    // 1. Buscar boosters (incluindo campo mystery_box_bonus_chance)
     const { data: boosters, error } = await supabase
       .from('booster_types')
       .select('*')

@@ -110,6 +110,7 @@ export default function WalletPage() {
             <a href="/dashboard" className="text-gray-300 hover:text-[#FFC700] transition">Dashboard</a>
             <a href="/marketplace" className="text-gray-300 hover:text-[#FFC700] transition">Marketplace</a>
             <a href="/boosters" className="text-gray-300 hover:text-[#FFC700] transition">Boosters</a>
+            <a href="/mystery-box" className="text-gray-300 hover:text-cyan-400 transition">🎰 Mystery Box</a>
             <a href="/wallet" className="text-[#FFC700] font-semibold">Wallet</a>
           </div>
         </div>

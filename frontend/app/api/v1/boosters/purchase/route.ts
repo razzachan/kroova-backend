@@ -44,25 +44,24 @@ export async function POST(request: NextRequest) {
 
     console.log('[PURCHASE] Looking for booster_type_id:', booster_type_id);
 
-    // 1. Buscar booster pack
+    // 1. Buscar booster TYPE (não pack - precisamos do preço correto por tier)
     const { data: boosterType, error: boosterError } = await supabaseAdmin
-      .from('booster_packs')
+      .from('booster_types')
       .select('*')
-      .eq('pack_id', booster_type_id)
-      .eq('is_active', true)
+      .eq('id', booster_type_id)
       .single();
 
-    console.log('[PURCHASE] Booster pack result:', { boosterType, boosterError });
+    console.log('[PURCHASE] Booster type result:', { boosterType, boosterError });
 
     if (boosterError || !boosterType) {
-      // List all available booster packs for debugging
+      // List all available booster types for debugging
       const { data: allTypes } = await supabaseAdmin
-        .from('booster_packs')
-        .select('pack_id, pack_name')
-        .eq('is_active', true)
+        .from('booster_types')
+        .select('id, name, price_brl')
+        .eq('edition_id', 'ED01')
         .limit(5);
       
-      console.log('[PURCHASE] Available booster packs:', allTypes);
+      console.log('[PURCHASE] Available booster types:', allTypes);
       
       return NextResponse.json(
         { ok: false, error: { code: 'NOT_FOUND', message: `Booster type not found. ID received: ${booster_type_id}` } },
@@ -125,8 +124,8 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
         type: 'booster_purchase',
         amount_brl: -totalPrice,
-        description: `Compra: ${quantity}x ${boosterType.pack_name}`,
-        metadata: { booster_type_id, quantity }
+        description: `Compra: ${quantity}x ${boosterType.name}`,
+        metadata: { booster_type_id, quantity, price_per_unit: boosterType.price_brl }
       });
 
     // 5b. Registrar no histórico de transações (nova tabela)
@@ -139,8 +138,9 @@ export async function POST(request: NextRequest) {
         balance_before_brl: wallet.balance_brl,
         balance_after_brl: wallet.balance_brl - totalPrice,
         details: {
-          booster_pack_id: booster_type_id,
-          pack_name: boosterType.pack_name,
+          booster_type_id: booster_type_id,
+          booster_name: boosterType.name,
+          pack_id: boosterType.pack_id,
           quantity: quantity,
           unit_price: boosterType.price_brl
         },
@@ -148,17 +148,30 @@ export async function POST(request: NextRequest) {
       });
 
     // 6. Criar booster_openings (um para cada booster comprado)
+    // IMPORTANTE: booster_type_id na tabela usa pack_id (string), não UUID!
     const openingsToInsert = Array.from({ length: quantity }, () => ({
       user_id: user.id,
-      booster_type_id,
+      booster_type_id: boosterType.pack_id, // ❗ Usa pack_id (ED01_ALPHA) não UUID
+      price_paid_brl: boosterType.price_brl, // ✅ Salva preço pra identificar tier depois
       cards_obtained: [],
       purchased_at: new Date().toISOString()
     }));
+
+    console.log('[PURCHASE] About to insert openings:', {
+      quantity,
+      booster_type_id_uuid: booster_type_id,
+      pack_id_used: boosterType.pack_id,
+      price_paid_brl: boosterType.price_brl,
+      user_id: user.id,
+      sample: openingsToInsert[0]
+    });
 
     const { data: openings, error: openingError } = await supabaseAdmin
       .from('booster_openings')
       .insert(openingsToInsert)
       .select();
+
+    console.log('[PURCHASE] Insert result:', { openings, openingError });
 
     if (openingError || !openings) {
       return NextResponse.json(

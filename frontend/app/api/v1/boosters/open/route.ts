@@ -77,8 +77,41 @@ export async function POST(request: NextRequest) {
       );
     }
     console.log('[OPEN-V2] 7. Opening OK:', opening.id);
+    console.log('[OPEN-V2] Booster type ID (pack_id):', opening.booster_type_id);
+    console.log('[OPEN-V2] Price paid:', opening.price_paid_brl);
     console.log('[OPEN-V2] Edition ID:', opening.booster_pack.edition_id);
     console.log('[OPEN-V2] Pack name:', opening.booster_pack.pack_name);
+    
+    // Buscar booster_type para pegar rarity_distribution correta por tier
+    // Usa pack_id E price_brl para identificar o tier exato
+    const { data: boosterType, error: typeError } = await supabaseAdmin
+      .from('booster_types')
+      .select('rarity_distribution, price_brl, name, market_tier_filter, skin_boost, value_adjustment, mystery_box_bonus_chance')
+      .eq('pack_id', opening.booster_type_id)
+      .eq('price_brl', opening.price_paid_brl || 0.50) // Fallback pra registros antigos
+      .single();
+    
+    if (typeError || !boosterType) {
+      console.error('[OPEN-V2] 7.5. Booster type error:', typeError);
+      return NextResponse.json(
+        { ok: false, error: { code: 'NOT_FOUND', message: 'Booster type not found' } },
+        { status: 404 }
+      );
+    }
+    
+    console.log('[OPEN-V2] 7.5. Booster type:', boosterType.name, 'R$', boosterType.price_brl);
+    console.log('[OPEN-V2] 7.5. Rarity distribution:', boosterType.rarity_distribution);
+    
+    // Pegar price_multiplier do booster_type
+    const { data: boosterTypeMultiplier } = await supabaseAdmin
+      .from('booster_types')
+      .select('price_multiplier')
+      .eq('pack_id', opening.booster_type_id)
+      .eq('price_brl', opening.price_paid_brl || 0.50)
+      .single();
+    
+    const priceMultiplier = boosterTypeMultiplier?.price_multiplier || 1;
+    console.log('[OPEN-V2] 7.6. Price multiplier:', priceMultiplier, '(tier', opening.price_paid_brl, ')');
     
     if (opening.opened_at) {
       console.error('[OPEN-V2] 8. Already opened');
@@ -89,16 +122,16 @@ export async function POST(request: NextRequest) {
     }
     console.log('[OPEN-V2] 8. Not opened yet, OK');
     
-    // Distribuição de raridade correta (todas as raridades existem!)
-    const rarityDist = {
+    // Usar distribuição de raridade do booster_type (varia por tier!)
+    const rarityDist = boosterType.rarity_distribution || {
       trash: 50.0,
       meme: 30.0,
       viral: 15.0,
       legendary: 4.0,
-      godmode: 1.0  // NOTE: banco usa "godmode" não "epica"
+      godmode: 1.0
     };
     
-    console.log('[OPEN-V2] 9. Gerando 5 cartas com distribuição completa');
+    console.log('[OPEN-V2] 9. Gerando 5 cartas com distribuição do tier');
     console.log('[OPEN-V2] Raridades disponíveis:', Object.keys(rarityDist));
     
     // Array para coletar logs de debug
@@ -127,16 +160,20 @@ export async function POST(request: NextRequest) {
       
       console.log(`[OPEN-V2] Carta ${i + 1}: raridade ${selectedRarity}`);
       
-      // Buscar cartas com base_liquidity_brl (usar supabaseAdmin - cards_base é pública)
-      console.log(`[OPEN-V2] Buscando cartas ${selectedRarity} da edição ${opening.booster_pack.edition_id}`);
+      // Buscar cartas respeitando market_tier_filter do booster
+      const marketTierFilter = boosterType.market_tier_filter || { min: 1, max: 5 };
+      console.log(`[OPEN-V2] Buscando cartas ${selectedRarity} da edição ${opening.booster_pack.edition_id}, market_tier ${marketTierFilter.min}-${marketTierFilter.max}`);
+      
       let { data: cardsBase, error: cardsError } = await supabaseAdmin
         .from('cards_base')
-        .select('id, name, rarity, image_url, display_id, base_liquidity_brl')
+        .select('id, name, rarity, image_url, display_id, base_liquidity_brl, market_tier')
         .eq('edition_id', opening.booster_pack.edition_id)
         .eq('rarity', selectedRarity)
+        .gte('market_tier', marketTierFilter.min)
+        .lte('market_tier', marketTierFilter.max)
         .limit(50);
       
-      debugLogs.push(`Query resultado: ${cardsBase?.length || 0} cartas, erro: ${cardsError ? JSON.stringify(cardsError) : 'null'}`);
+      debugLogs.push(`Query resultado: ${cardsBase?.length || 0} cartas (tier ${marketTierFilter.min}-${marketTierFilter.max}), erro: ${cardsError ? JSON.stringify(cardsError) : 'null'}`);
       console.log(`[OPEN-V2] Query result: found ${cardsBase?.length || 0} cards, error:`, cardsError);
       
       // Se não encontrou com a raridade específica, pega qualquer carta
@@ -145,7 +182,7 @@ export async function POST(request: NextRequest) {
         console.warn(`[OPEN-V2] Nenhuma carta ${selectedRarity} encontrada, buscando QUALQUER raridade...`);
         const fallbackQuery = await supabaseAdmin
           .from('cards_base')
-          .select('id, name, rarity, image_url, display_id, base_liquidity_brl')
+          .select('id, name, rarity, image_url, display_id, base_liquidity_brl, market_tier')
           .eq('edition_id', opening.booster_pack.edition_id)
           .limit(50);
         
@@ -172,27 +209,60 @@ export async function POST(request: NextRequest) {
       const randomCard = cardsBase[Math.floor(Math.random() * cardsBase.length)];
       debugLogs.push(`Carta selecionada: ${randomCard.name} (${randomCard.id})`);
       
-      // Calcular liquidez base (NÃO multiplicar por price_multiplier)
+      // Calcular liquidez base
       const baseLiquidity = randomCard.base_liquidity_brl || 0.01;
       
-      // Sortear skin (80% default 1x, 15% premium 1.5x, 5% ghost 3x)
-      const skinRoll = Math.random();
+      // Sortear skin baseado em skin_boost do tier
+      const skinBoost = boosterType.skin_boost || {
+        premium: 15,
+        ghost: 5,
+        holo: 0,
+        dark: 0,
+        glitch: 0
+      };
+      
+      const skinRoll = Math.random() * 100;
       let skinType = 'default';
       let skinMultiplier = 1.0;
       
-      if (skinRoll < 0.05) {
+      // Calcular probabilidades cumulativas para skins
+      let skinCumulative = 0;
+      
+      // Glitch (ultra raro, 6x)
+      skinCumulative += skinBoost.glitch || 0;
+      if (skinRoll < skinCumulative) {
+        skinType = 'glitch';
+        skinMultiplier = 6.0;
+      }
+      // Dark (muito raro, 4x)
+      else if (skinRoll < (skinCumulative += skinBoost.dark || 0)) {
+        skinType = 'dark';
+        skinMultiplier = 4.0;
+      }
+      // Ghost (raro, 3x)
+      else if (skinRoll < (skinCumulative += skinBoost.ghost || 0)) {
         skinType = 'ghost';
         skinMultiplier = 3.0;
-      } else if (skinRoll < 0.20) {
+      }
+      // Holo (incomum, 2.5x)
+      else if (skinRoll < (skinCumulative += skinBoost.holo || 0)) {
+        skinType = 'holo';
+        skinMultiplier = 2.5;
+      }
+      // Premium (comum, 1.5x)
+      else if (skinRoll < (skinCumulative += skinBoost.premium || 0)) {
         skinType = 'premium';
         skinMultiplier = 1.5;
       }
+      // Default (resto, 1x)
       
-      // Liquidez final = base × skin (SEM price_multiplier - RTP 70% fixo para todos)
-      const finalLiquidity = baseLiquidity * skinMultiplier;
+      // Liquidez final = base × skin APENAS (marketplace integrity)
+      // Aplicar value_adjustment do booster tier
+      const valueAdjustment = boosterType.value_adjustment || 1.0;
+      const finalLiquidity = baseLiquidity * skinMultiplier * valueAdjustment;
       
-      debugLogs.push(`Liquidez: R$ ${baseLiquidity.toFixed(4)} × ${skinMultiplier}x = R$ ${finalLiquidity.toFixed(4)}`);
-      console.log(`[OPEN-V2] Liquidez: R$ ${baseLiquidity.toFixed(4)} × ${skinMultiplier}x = R$ ${finalLiquidity.toFixed(4)}`);
+      debugLogs.push(`Skin: ${skinType} (${skinMultiplier}x), Tier adj: ${valueAdjustment}x, Liquidez: R$ ${baseLiquidity.toFixed(4)} × ${skinMultiplier}x × ${valueAdjustment}x = R$ ${finalLiquidity.toFixed(4)}`);
+      console.log(`[OPEN-V2] Skin: ${skinType}, Value adj: ${valueAdjustment}x, Liquidez: R$ ${baseLiquidity.toFixed(4)} × ${skinMultiplier}x × ${valueAdjustment}x = R$ ${finalLiquidity.toFixed(4)}`);
       
       // Criar instância da carta (usar supabaseAdmin para bypass RLS)
       const { data: cardInstance, error: instanceError } = await supabaseAdmin
@@ -251,13 +321,98 @@ export async function POST(request: NextRequest) {
       .update({ opened_at: new Date().toISOString() })
       .eq('id', opening_id);
     
+    // ============================================================================
+    // MYSTERY BOX BONUS SYSTEM
+    // ============================================================================
+    console.log('[OPEN-V2] 10.5. Verificando bônus Mystery Box...');
+    
+    let bonusMysteryBox = null;
+    const bonusChance = boosterType.mystery_box_bonus_chance || 0;
+    
+    if (bonusChance > 0) {
+      const bonusRoll = Math.random() * 100;
+      console.log(`[OPEN-V2] Bonus roll: ${bonusRoll.toFixed(2)}% (chance: ${bonusChance}%)`);
+      
+      if (bonusRoll < bonusChance) {
+        console.log('[OPEN-V2] 🎁 BONUS MYSTERY BOX TRIGGERED!');
+        
+        // Mapear tier do booster para tier da Mystery Box
+        const tierMap: Record<number, string> = {
+          0.50: 'bronze',
+          1.00: 'silver',
+          2.00: 'gold',
+          5.00: 'platinum',
+          10.00: 'diamond'
+        };
+        
+        const mysteryBoxTier = tierMap[opening.price_paid_brl] || 'bronze';
+        
+        // Buscar Mystery Box Type correspondente
+        const { data: mysteryBoxType, error: boxTypeError } = await supabaseAdmin
+          .from('mystery_box_types')
+          .select('box_id, tier, name')
+          .eq('tier', mysteryBoxTier)
+          .single();
+        
+        if (boxTypeError || !mysteryBoxType) {
+          console.error('[OPEN-V2] Erro ao buscar Mystery Box Type:', boxTypeError);
+        } else {
+          // Criar instância da Mystery Box
+          const { data: mysteryInstance, error: instanceError } = await supabaseAdmin
+            .from('mystery_box_instances')
+            .insert({
+              box_id: mysteryBoxType.box_id,
+              user_id: user.id,
+              source_type: 'booster_bonus',
+              status: 'pending',
+              metadata: {
+                booster_opening_id: opening_id,
+                bonus_chance_used: bonusChance
+              }
+            })
+            .select()
+            .single();
+          
+          if (instanceError || !mysteryInstance) {
+            console.error('[OPEN-V2] Erro ao criar Mystery Box instance:', instanceError);
+          } else {
+            console.log('[OPEN-V2] Mystery Box instance criada:', mysteryInstance.instance_id);
+            
+            // Registrar drop no tracking
+            await supabaseAdmin
+              .from('mystery_box_bonus_drops')
+              .insert({
+                user_id: user.id,
+                opening_id: opening_id,
+                instance_id: mysteryInstance.instance_id,
+                booster_tier_price: opening.price_paid_brl,
+                mystery_box_tier: mysteryBoxTier,
+                bonus_chance_used: bonusChance
+              });
+            
+            bonusMysteryBox = {
+              instance_id: mysteryInstance.instance_id,
+              tier: mysteryBoxTier,
+              name: mysteryBoxType.name
+            };
+            
+            console.log('[OPEN-V2] Bonus Mystery Box registrada no tracking');
+          }
+        }
+      } else {
+        console.log('[OPEN-V2] Bonus não caiu (roll muito alto)');
+      }
+    }
+    
     console.log('[OPEN-V2] 11. Retornando', generatedCards.length, 'cartas');
     console.log('[OPEN-V2] Primeira carta:', generatedCards[0]);
+    
     return NextResponse.json({
       ok: true,
       data: {
         opening_id,
-        cards: generatedCards
+        cards: generatedCards,
+        bonus_mystery_box: bonusMysteryBox // Novo campo
         // Pity system será implementado futuramente
         // Por ora, apenas retorna as cartas geradas
       }

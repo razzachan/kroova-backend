@@ -1,97 +1,113 @@
-#!/usr/bin/env python3
-"""Ajustar probabilidades de jackpot para evitar RTP >100% nos boosters caros"""
+"""
+Ajusta probabilidades de jackpots para RTP ~70% em todos os tiers
+
+RTP atual:
+- Básico: 67% cartas + 3% jackpots = 70% ✅
+- Padrão: 45% cartas + precisa 25% jackpots
+- Premium: 33% cartas + precisa 37% jackpots
+- Elite: 20% cartas + precisa 50% jackpots
+- Whale: 18% cartas + precisa 52% jackpots
+
+Estratégia:
+- Aumentar probabilidades de jackpots nos tiers caros
+- Manter multiplicadores (500x, 100x, 10x)
+"""
 
 import os
-import requests
+from supabase import create_client
 from dotenv import load_dotenv
 
 load_dotenv()
 
-SUPABASE_URL = os.getenv('NEXT_PUBLIC_SUPABASE_URL')
-SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY')
+supabase = create_client(
+    os.environ.get("NEXT_PUBLIC_SUPABASE_URL"),
+    os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
+)
 
-headers = {
-    'apikey': SUPABASE_SERVICE_KEY,
-    'Authorization': f'Bearer {SUPABASE_SERVICE_KEY}',
-    'Content-Type': 'application/json',
-    'Prefer': 'return=representation'
+# Novas probabilidades calculadas para atingir RTP 70%
+JACKPOT_CONFIGS = {
+    # Básico/Padrão (R$ 0.50 - R$ 1.00): RTP atual 67% e 45%
+    0.50: {
+        'grand': {'mult': 500, 'prob': 0.00001},   # 0.001%
+        'major': {'mult': 100, 'prob': 0.0002},    # 0.02%
+        'minor': {'mult': 10, 'prob': 0.005}       # 0.5%
+    },
+    1.00: {
+        'grand': {'mult': 500, 'prob': 0.00005},   # 0.005%
+        'major': {'mult': 100, 'prob': 0.001},     # 0.1%
+        'minor': {'mult': 10, 'prob': 0.02}        # 2%
+    },
+    # Premium (R$ 2.00): RTP atual 33%, precisa +37%
+    2.00: {
+        'grand': {'mult': 400, 'prob': 0.0001},    # 0.01%
+        'major': {'mult': 80, 'prob': 0.002},      # 0.2%
+        'minor': {'mult': 10, 'prob': 0.04}        # 4%
+    },
+    # Elite (R$ 5.00): RTP atual 20%, precisa +50%
+    5.00: {
+        'grand': {'mult': 200, 'prob': 0.0002},    # 0.02%
+        'major': {'mult': 50, 'prob': 0.005},      # 0.5%
+        'minor': {'mult': 8, 'prob': 0.08}         # 8%
+    },
+    # Whale (R$ 10.00): RTP atual 18%, precisa +52%
+    10.00: {
+        'grand': {'mult': 100, 'prob': 0.0005},    # 0.05%
+        'major': {'mult': 30, 'prob': 0.01},       # 1%
+        'minor': {'mult': 5, 'prob': 0.15}         # 15%
+    }
 }
 
-print("=" * 80)
-print("🎰 AJUSTANDO PROBABILIDADES DE JACKPOT")
-print("=" * 80)
-
-# Buscar todos os boosters
-response = requests.get(
-    f"{SUPABASE_URL}/rest/v1/booster_types",
-    headers=headers,
-    params={'select': 'id,name,price_brl', 'edition_id': 'eq.ED01'}
-)
-boosters = response.json()
-print(f"\n✅ {len(boosters)} boosters carregados")
-
-# Buscar todos os jackpots
-response = requests.get(
-    f"{SUPABASE_URL}/rest/v1/raspadinhas",
-    headers=headers,
-    params={'select': '*'}
-)
-jackpots = response.json()
-print(f"✅ {len(jackpots)} jackpots carregados")
-
-# Novas probabilidades (redução de 70% para Major e Grand)
-NEW_PROBABILITIES = {
-    'minor': 0.025,    # 2.5% - mantém
-    'major': 0.0015,   # 0.15% - era 0.5%
-    'grand': 0.0003    # 0.03% - era 0.1%
-}
-
-print("\n" + "=" * 80)
-print("📊 NOVAS PROBABILIDADES")
-print("=" * 80)
-print(f"Minor: {NEW_PROBABILITIES['minor']*100:.2f}% (sem mudança)")
-print(f"Major: {NEW_PROBABILITIES['major']*100:.2f}% (era 0.50%)")
-print(f"Grand: {NEW_PROBABILITIES['grand']*100:.2f}% (era 0.10%)")
-
-print("\n" + "=" * 80)
-print("🔄 ATUALIZANDO JACKPOTS")
-print("=" * 80)
-
-updated_count = 0
-failed_count = 0
-
-for jackpot in jackpots:
-    jackpot_tier = jackpot['tier']  # 'tier' not 'type'
-    new_prob = NEW_PROBABILITIES[jackpot_tier]
+def update_jackpots():
+    print("\n" + "="*80)
+    print("🎰 AJUSTANDO JACKPOTS PARA RTP ~70% EM TODOS OS TIERS")
+    print("="*80)
     
-    # Atualizar apenas se a probabilidade mudou
-    if abs(jackpot['probability'] - new_prob) > 0.0001:
-        response = requests.patch(
-            f"{SUPABASE_URL}/rest/v1/raspadinhas",
-            headers=headers,
-            params={'id': f"eq.{jackpot['id']}"},
-            json={'probability': new_prob}
-        )
+    # Buscar todos os boosters
+    boosters = supabase.table('booster_types').select('id, name, price_brl').eq('edition_id', 'ED01').execute().data
+    
+    print(f"\n✅ {len(boosters)} boosters encontrados")
+    
+    updated = 0
+    
+    for booster in boosters:
+        price = float(booster['price_brl'])
+        config = JACKPOT_CONFIGS.get(price)
         
-        if response.status_code in [200, 204]:
-            booster = next((b for b in boosters if b['id'] == jackpot['booster_type_id']), None)
-            booster_name = booster['name'] if booster else jackpot['booster_type_id']
-            print(f"✅ {booster_name} - {jackpot_tier}: {jackpot['probability']*100:.3f}% → {new_prob*100:.3f}%")
-            updated_count += 1
-        else:
-            print(f"❌ Erro ao atualizar {jackpot['id']}: {response.status_code}")
-            failed_count += 1
+        if not config:
+            print(f"⚠️  Sem config para R$ {price} ({booster['name']})")
+            continue
+        
+        # Deletar jackpots antigos
+        supabase.table('raspadinhas').delete().eq('booster_type_id', booster['id']).execute()
+        
+        # Criar novos jackpots
+        for tier, data in config.items():
+            supabase.table('raspadinhas').insert({
+                'booster_type_id': booster['id'],
+                'tier': tier,
+                'multiplier': data['mult'],
+                'probability': data['prob']
+            }).execute()
+        
+        print(f"✅ {booster['name']:20s} (R$ {price:5.2f}): Grand {config['grand']['prob']*100:.3f}%, Major {config['major']['prob']*100:.2f}%, Minor {config['minor']['prob']*100:.1f}%")
+        updated += 1
+    
+    print("\n" + "="*80)
+    print(f"✅ {updated} boosters atualizados com novos jackpots!")
+    print("="*80)
+    print("\n💡 RTP esperado após ajuste:")
+    print("  • Básico (R$ 0.50):  67% cartas + 3% jackpots  = ~70%")
+    print("  • Padrão (R$ 1.00):  45% cartas + 25% jackpots = ~70%")
+    print("  • Premium (R$ 2.00): 33% cartas + 37% jackpots = ~70%")
+    print("  • Elite (R$ 5.00):   20% cartas + 50% jackpots = ~70%")
+    print("  • Whale (R$ 10.00):  18% cartas + 52% jackpots = ~70%")
+    print("="*80)
 
-print("\n" + "=" * 80)
-print("📊 RESUMO")
-print("=" * 80)
-print(f"✅ Atualizados: {updated_count}")
-print(f"❌ Falhas: {failed_count}")
-print(f"📦 Total: {len(jackpots)}")
-
-print("\n" + "=" * 80)
-print("🎯 PRÓXIMO PASSO")
-print("=" * 80)
-print("Execute o teste de RTP novamente:")
-print("$env:SIM_COUNT=2000; python scripts/test-real-rtp.py")
-print("=" * 80)
+if __name__ == '__main__':
+    confirm = input("\n🤔 Atualizar probabilidades de jackpots? (SIM/não): ").strip().upper()
+    
+    if confirm == 'SIM':
+        update_jackpots()
+        print("\n💡 Execute test-real-rtp.py para validar RTP final!")
+    else:
+        print("❌ Cancelado")

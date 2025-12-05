@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 2. Buscar tudo em paralelo
-    const [boosterTypesRes, walletRes, sealedBoostersRes] = await Promise.all([
+    const [boosterTypesRes, walletRes] = await Promise.all([
       // Booster packs disponíveis para compra
       supabase
         .from('booster_types')
@@ -55,18 +55,7 @@ export async function GET(request: NextRequest) {
         .from('wallets')
         .select('balance_brl')
         .eq('user_id', user.id)
-        .single(),
-
-      // Boosters lacrados (não abertos)
-      supabase
-        .from('sealed_boosters')
-        .select(`
-          *,
-          booster_type:booster_types(*)
-        `)
-        .eq('user_id', user.id)
-        .eq('is_opened', false)
-        .order('acquired_at', { ascending: false })
+        .single()
     ]);
 
     // 3. Verificar erros
@@ -86,19 +75,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (sealedBoostersRes.error) {
-      console.error('Erro ao buscar sealed boosters:', sealedBoostersRes.error);
-      return NextResponse.json(
-        { error: 'Erro ao buscar sealed boosters' },
-        { status: 500 }
-      );
-    }
-
     // 4. Retornar dados agregados
     return NextResponse.json({
       booster_types: boosterTypesRes.data || [],
       wallet: walletRes.data || { balance_brl: 0 },
-      sealed_boosters: sealedBoostersRes.data || []
+      sealed_boosters: []
     });
 
   } catch (error) {

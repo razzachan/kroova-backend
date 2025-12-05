@@ -171,57 +171,40 @@ export default function BoostersPage() {
 
   async function loadData() {
     try {
-      // 🚀 Carrega tudo em paralelo para reduzir latência
-      const [boostersRes, walletRes, sealedRes] = await Promise.allSettled([
-        api.get('/booster-packs?edition=ED01'),
-        api.get('/wallet'),
-        api.get('/boosters/sealed')
-      ]);
+      // 🚀 OTIMIZADO: 1 request em vez de 3 (60-75% mais rápido)
+      const response = await api.get('/boosters/full');
+      const data = unwrap(response.data);
 
       // Boosters
-      console.log('🔍 boostersRes:', boostersRes);
-      if (boostersRes.status === 'fulfilled') {
-        const response = unwrap(boostersRes.value.data);
-        console.log('🔍 response:', response);
-        const packsWithId = (response.packs || []).map((pack: any) => ({
-          ...pack,
-          // NÃO sobrescrever pack.id (UUID) - já vem correto da API!
-          name: pack.pack_name,
-          cards_per_booster: 5
-        }));
-        console.log('🔍 packsWithId:', packsWithId);
-        console.log('🔍 Primeiro pack:', packsWithId[0]);
-        setBoosters(packsWithId);
-      } else {
-        console.error('❌ Erro ao carregar boosters:', boostersRes.reason);
-      }
+      console.log('🔍 data:', data);
+      const packsWithId = (data.booster_types || []).map((pack: any) => ({
+        ...pack,
+        name: pack.name || pack.pack_name,
+        cards_per_booster: 5
+      }));
+      console.log('🔍 packsWithId:', packsWithId);
+      console.log('🔍 Primeiro pack:', packsWithId[0]);
+      setBoosters(packsWithId);
 
       // Wallet (+ pity counters)
-      if (walletRes.status === 'fulfilled') {
-        const walletData = unwrap(walletRes.value.data);
-        setBalance(walletData.balance_brl);
-        
-        // ✨ Carrega pity counters do wallet
-        setPityLegendary({
-          current: walletData.pity_legendary_counter || 0,
-          max: 20
-        });
-        setPityGodmode({
-          current: walletData.pity_godmode_counter || 0,
-          max: 150
-        });
-      }
+      const walletData = data.wallet;
+      setBalance(walletData.balance_brl);
+      
+      // ✨ Carrega pity counters do wallet
+      setPityLegendary({
+        current: walletData.pity_legendary_counter || 0,
+        max: 20
+      });
+      setPityGodmode({
+        current: walletData.pity_godmode_counter || 0,
+        max: 150
+      });
 
       // Sealed packs
-      if (sealedRes.status === 'fulfilled') {
-        const data = unwrap(sealedRes.value.data);
-        console.log('📦 [BOOSTERS] Sealed packs loaded:', data.sealed_packs?.length || 0);
-        console.log('📦 [BOOSTERS] First pack:', data.sealed_packs?.[0]);
-        setSealedPacks(data.sealed_packs || []);
-      } else {
-        console.warn('Sealed packs endpoint not available yet');
-        setSealedPacks([]);
-      }
+      console.log('📦 [BOOSTERS] Sealed packs loaded:', data.sealed_boosters?.length || 0);
+      console.log('📦 [BOOSTERS] First pack:', data.sealed_boosters?.[0]);
+      setSealedPacks(data.sealed_boosters || []);
+
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
     } finally {

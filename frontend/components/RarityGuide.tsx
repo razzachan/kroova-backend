@@ -48,14 +48,12 @@ export function RarityGuide({ autoShow = false }: RarityGuideProps) {
 
       {/* Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-[#0a0a0f] border-2 border-[#FF006D] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl shadow-[#FF006D]/20">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pt-24">
+          <div className="bg-[#0a0a0f] border-2 border-[#FF006D] rounded-lg max-w-2xl w-full max-h-[calc(100vh-8rem)] overflow-y-auto shadow-2xl shadow-[#FF006D]/20">
             {/* Header */}
-            <div className="sticky top-0 bg-gradient-to-r from-[#FF006D] to-[#00F0FF] p-4 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            <div className="sticky top-0 bg-[#0a0a0f] border-b-2 border-[#FF006D] p-4 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-[#FF006D] flex items-center gap-2">
+                <span className="text-2xl">ℹ️</span>
                 Guia de Raridades & Skins
               </h2>
               <GlitchButton

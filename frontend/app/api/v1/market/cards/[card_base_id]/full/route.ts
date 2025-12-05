@@ -21,9 +21,10 @@ const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { card_base_id: string } }
+  { params }: { params: Promise<{ card_base_id: string }> }
 ) {
   try {
+    const { card_base_id } = await params;
     const authHeader = request.headers.get('authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Não autenticado' }, { status: 401 });
@@ -31,7 +32,6 @@ export async function GET(
 
     const { searchParams } = new URL(request.url);
     const days = parseInt(searchParams.get('days') || '30', 10);
-    const cardBaseId = params.card_base_id;
 
     const token = authHeader.substring(7);
     const supabase = createClient(supabaseUrl, anonKey, {
@@ -48,21 +48,21 @@ export async function GET(
       supabase
         .from('cards')
         .select('*')
-        .eq('card_base_id', cardBaseId)
+        .eq('card_base_id', card_base_id)
         .single(),
 
       // 2. Estatísticas de mercado
-      supabase.rpc('get_card_market_stats', { target_card_id: cardBaseId }),
+      supabase.rpc('get_card_market_stats', { target_card_id: card_base_id }),
 
       // 3. Histórico de preços
       supabase.rpc('get_price_history', { 
-        target_card_id: cardBaseId,
+        target_card_id: card_base_id,
         days_back: days 
       }),
 
       // 4. Vendas recentes
       supabase.rpc('get_recent_sales', { 
-        target_card_id: cardBaseId,
+        target_card_id: card_base_id,
         sale_limit: 10 
       }),
 
@@ -87,7 +87,7 @@ export async function GET(
             card_number
           )
         `)
-        .eq('card_base_id', cardBaseId)
+        .eq('card_base_id', card_base_id)
         .eq('status', 'active')
         .order('price_brl', { ascending: true })
     ]);

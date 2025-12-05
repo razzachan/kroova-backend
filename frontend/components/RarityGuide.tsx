@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import GlitchButton from '@/components/UI/GlitchButton';
 
 interface RarityGuideProps {
   autoShow?: boolean;
@@ -32,34 +33,23 @@ export function RarityGuide({ autoShow = false }: RarityGuideProps) {
 
   return (
     <>
-      {/* Botão Flutuante */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed top-24 right-6 z-40 bg-gradient-to-r from-[#FF006D] to-[#00F0FF] p-3 rounded-full shadow-lg hover:scale-110 transition-transform duration-200 group"
-        title="Ver guia de raridades"
-      >
-        <svg
-          className="w-6 h-6 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      {/* Botão Flutuante com Glitch Style */}
+      <div className="fixed top-28 right-6 z-40">
+        <GlitchButton
+          onClick={() => setIsOpen(true)}
+          variant="primary"
+          size="md"
+          className="!w-12 !h-12 !p-0 shadow-lg hover:shadow-xl"
+          aria-label="Guia de Raridades"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <span className="absolute -bottom-8 right-0 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-          Guia de Raridades
-        </span>
-      </button>
+          <span className="text-xl">ℹ️</span>
+        </GlitchButton>
+      </div>
 
       {/* Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-gradient-to-b from-[#1a0033] to-[#0d001a] border-2 border-[#FF006D] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+          <div className="bg-[#0a0a0f] border-2 border-[#FF006D] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl shadow-[#FF006D]/20">
             {/* Header */}
             <div className="sticky top-0 bg-gradient-to-r from-[#FF006D] to-[#00F0FF] p-4 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-white flex items-center gap-2">
@@ -68,12 +58,14 @@ export function RarityGuide({ autoShow = false }: RarityGuideProps) {
                 </svg>
                 Guia de Raridades & Skins
               </h2>
-              <button
+              <GlitchButton
                 onClick={handleClose}
-                className="text-white hover:bg-white/20 rounded-full p-1 transition-colors"
+                variant="secondary"
+                size="sm"
+                className="!w-10 !h-10 !p-0"
               >
-                <X className="w-6 h-6" />
-              </button>
+                <X className="w-5 h-5" />
+              </GlitchButton>
             </div>
 
             {/* Content */}
@@ -202,13 +194,15 @@ export function RarityGuide({ autoShow = false }: RarityGuideProps) {
             </div>
 
             {/* Footer */}
-            <div className="sticky bottom-0 bg-gradient-to-r from-[#FF006D]/10 to-[#00F0FF]/10 p-4 border-t border-[#FF006D]/30">
-              <button
+            <div className="sticky bottom-0 bg-[#0a0a0f]/90 backdrop-blur-sm p-4 border-t border-[#FF006D]/30">
+              <GlitchButton
                 onClick={handleClose}
-                className="w-full bg-gradient-to-r from-[#FF006D] to-[#00F0FF] text-white font-bold py-3 px-6 rounded-lg hover:opacity-90 transition-opacity"
+                variant="primary"
+                size="lg"
+                className="w-full"
               >
                 Entendi! Vamos abrir pacotes 🎯
-              </button>
+              </GlitchButton>
             </div>
           </div>
         </div>

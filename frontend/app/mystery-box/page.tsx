@@ -50,44 +50,26 @@ export default function MysteryBoxPage() {
 
   async function loadData() {
     try {
-      // Usar Supabase client corretamente (não localStorage)
+      // Verificar auth no cliente
       const supabase = createClient(supabaseUrl, anonKey);
-      
-      // Verificar se está logado
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         window.location.href = '/login';
         return;
       }
 
-      // Carregar boxes (DISTINCT por tier para evitar duplicatas)
-      const { data: boxesData, error: boxesError } = await supabase
-        .from('mystery_box_types')
-        .select('*')
-        .eq('is_active', true)
-        .order('price_brl');
+      // Buscar tudo de uma vez via API serverless (1 request, dados já agregados)
+      const res = await api.get('/mystery-box');
+      const data = unwrap<{ boxes: MysteryBoxType[]; balance: number }>(res.data);
       
-      // Remover duplicatas por tier (pega o primeiro de cada tier)
-      const uniqueBoxes = boxesData?.filter((box, index, self) => 
-        index === self.findIndex((b) => b.tier === box.tier)
-      );
-
-      if (boxesError) throw boxesError;
-      setBoxes(uniqueBoxes || []);
-
-      // Carregar saldo do usuário
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: userData } = await supabase
-          .from('users')
-          .select('balance_brl')
-          .eq('id', user.id)
-          .single();
-        
-        setBalance(userData?.balance_brl || 0);
-      }
+      setBoxes(data.boxes);
+      setBalance(data.balance);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
+      // Se 401, redirecionar para login
+      if ((error as any)?.response?.status === 401) {
+        window.location.href = '/login';
+      }
     } finally {
       setLoading(false);
     }

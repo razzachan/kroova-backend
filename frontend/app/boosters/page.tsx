@@ -16,6 +16,7 @@ import GlitchButton from '@/components/UI/GlitchButton';
 import TextGlitch from '@/components/Effects/TextGlitch';
 import HolographicCard from '@/components/UI/HolographicCard';
 import BoosterCard3D from '@/components/UI/BoosterCard3D';
+import { RarityGuide } from '@/components/RarityGuide';
 
 // Mapeamento de pack_id para imagem do booster
 const PACK_IMAGES: Record<string, string> = {
@@ -467,6 +468,9 @@ export default function BoostersPage() {
     >
       {/* Overlay escuro para melhor legibilidade */}
       <div className="absolute inset-0 bg-black/50 pointer-events-none" />
+      
+      {/* Educational Rarity Guide */}
+      <RarityGuide autoShow={true} />
       
       <nav className="bg-black/40 backdrop-blur-md border-b border-[#FFC700]/30 relative z-50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">

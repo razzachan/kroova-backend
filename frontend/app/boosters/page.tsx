@@ -173,7 +173,7 @@ export default function BoostersPage() {
     try {
       // 🚀 OTIMIZADO: 1 request em vez de 3 (60-75% mais rápido)
       const response = await api.get('/boosters/full');
-      const data = unwrap(response.data);
+      const data = unwrap(response);
 
       // Boosters
       console.log('🔍 data:', data);

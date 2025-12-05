@@ -140,16 +140,20 @@ export async function POST(request: NextRequest) {
     // Gerar 5 cartas baseado na distribuição de raridade
     const generatedCards = [];
     
+    // IMPORTANTE: Ordem fixa para garantir distribuição correta
+    const rarityOrder = ['trash', 'meme', 'viral', 'legendary', 'godmode'];
+    
     for (let i = 0; i < 5; i++) {
       debugLogs.push(`=== Carta ${i + 1} ===`);
       
-      // Selecionar raridade baseado na distribuição
+      // Selecionar raridade baseado na distribuição (ordem garantida!)
       const rand = Math.random() * 100;
       let cumulative = 0;
       let selectedRarity = 'trash';
       
-      for (const [rarity, prob] of Object.entries(rarityDist)) {
-        cumulative += (prob as number);
+      for (const rarity of rarityOrder) {
+        const prob = rarityDist[rarity] || 0;
+        cumulative += prob;
         if (rand < cumulative) {
           selectedRarity = rarity;
           break;

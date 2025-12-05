@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
       supabase
         .from('booster_types')
         .select('*')
-        .eq('edition', 'ED01')
+        .eq('edition_id', 'ED01')
         .order('price_brl', { ascending: true }),
 
       // Saldo do usuário

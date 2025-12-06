@@ -264,11 +264,26 @@ export async function POST(request: NextRequest) {
       // value_adjustment DIVIDE para REDUZIR o valor (RTP control)
       const valueAdjustment = boosterType.value_adjustment || 1.0;
       const calculatedLiquidity = (baseLiquidity * skinMultiplier) / valueAdjustment;
-      // Garantir mínimo de R$ 0.01 para evitar cartas com R$ 0.00
-      const finalLiquidity = Math.max(0.01, calculatedLiquidity);
       
-      debugLogs.push(`Skin: ${skinType} (${skinMultiplier}x), Tier adj: /${valueAdjustment}, Liquidez: R$ ${baseLiquidity.toFixed(4)} × ${skinMultiplier}x / ${valueAdjustment} = R$ ${calculatedLiquidity.toFixed(4)} → R$ ${finalLiquidity.toFixed(2)} (min)`);
-      console.log(`[OPEN-V2] Skin: ${skinType}, Value adj: /${valueAdjustment}, Liquidez: R$ ${baseLiquidity.toFixed(4)} × ${skinMultiplier}x / ${valueAdjustment} = R$ ${calculatedLiquidity.toFixed(4)} → R$ ${finalLiquidity.toFixed(2)}`);
+      // LIMITAR valor máximo por tier para controlar variância extrema
+      // Isso previne godmodes/legendaries de explodir o RTP
+      const maxLiquidityByTier: Record<string, number> = {
+        'Básico': 0.40,    // R$ 0.50 × 80% = R$ 0.40 max por carta
+        'Padrão': 0.70,    // R$ 1.00 × 70% = R$ 0.70 max por carta  
+        'Premium': 1.50,   // R$ 2.00 × 75% = R$ 1.50 max por carta
+        'Elite': 3.50,     // R$ 5.00 × 70% = R$ 3.50 max por carta
+        'Whale': 7.00      // R$ 10.00 × 70% = R$ 7.00 max por carta
+      };
+      
+      const tierPrefix = boosterType.name.split(' ')[0]; // "Básico", "Padrão", etc
+      const maxValue = maxLiquidityByTier[tierPrefix] || 999;
+      const cappedLiquidity = Math.min(calculatedLiquidity, maxValue);
+      
+      // Garantir mínimo de R$ 0.01 para evitar cartas com R$ 0.00
+      const finalLiquidity = Math.max(0.01, cappedLiquidity);
+      
+      debugLogs.push(`Skin: ${skinType} (${skinMultiplier}x), Tier adj: /${valueAdjustment}, Liquidez: R$ ${baseLiquidity.toFixed(4)} × ${skinMultiplier}x / ${valueAdjustment} = R$ ${calculatedLiquidity.toFixed(4)} → CAP R$ ${maxValue} → R$ ${finalLiquidity.toFixed(2)} final`);
+      console.log(`[OPEN-V2] Skin: ${skinType}, Value adj: /${valueAdjustment}, Liquidez: R$ ${baseLiquidity.toFixed(4)} × ${skinMultiplier}x / ${valueAdjustment} = R$ ${calculatedLiquidity.toFixed(4)} → CAP ${maxValue} → R$ ${finalLiquidity.toFixed(2)}`);
       
       // Criar instância da carta (usar supabaseAdmin para bypass RLS)
       const { data: cardInstance, error: instanceError } = await supabaseAdmin

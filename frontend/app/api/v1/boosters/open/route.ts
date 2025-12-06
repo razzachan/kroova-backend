@@ -260,15 +260,15 @@ export async function POST(request: NextRequest) {
       }
       // Default (resto, 1x)
       
-      // Liquidez final = base × skin APENAS (marketplace integrity)
-      // Aplicar value_adjustment do booster tier
+      // Liquidez final = (base × skin) / value_adjustment
+      // value_adjustment DIVIDE para REDUZIR o valor (RTP control)
       const valueAdjustment = boosterType.value_adjustment || 1.0;
-      const calculatedLiquidity = baseLiquidity * skinMultiplier * valueAdjustment;
+      const calculatedLiquidity = (baseLiquidity * skinMultiplier) / valueAdjustment;
       // Garantir mínimo de R$ 0.01 para evitar cartas com R$ 0.00
       const finalLiquidity = Math.max(0.01, calculatedLiquidity);
       
-      debugLogs.push(`Skin: ${skinType} (${skinMultiplier}x), Tier adj: ${valueAdjustment}x, Liquidez: R$ ${baseLiquidity.toFixed(4)} × ${skinMultiplier}x × ${valueAdjustment}x = R$ ${calculatedLiquidity.toFixed(4)} → R$ ${finalLiquidity.toFixed(2)} (min)`);
-      console.log(`[OPEN-V2] Skin: ${skinType}, Value adj: ${valueAdjustment}x, Liquidez: R$ ${baseLiquidity.toFixed(4)} × ${skinMultiplier}x × ${valueAdjustment}x = R$ ${calculatedLiquidity.toFixed(4)} → R$ ${finalLiquidity.toFixed(2)}`);
+      debugLogs.push(`Skin: ${skinType} (${skinMultiplier}x), Tier adj: /${valueAdjustment}, Liquidez: R$ ${baseLiquidity.toFixed(4)} × ${skinMultiplier}x / ${valueAdjustment} = R$ ${calculatedLiquidity.toFixed(4)} → R$ ${finalLiquidity.toFixed(2)} (min)`);
+      console.log(`[OPEN-V2] Skin: ${skinType}, Value adj: /${valueAdjustment}, Liquidez: R$ ${baseLiquidity.toFixed(4)} × ${skinMultiplier}x / ${valueAdjustment} = R$ ${calculatedLiquidity.toFixed(4)} → R$ ${finalLiquidity.toFixed(2)}`);
       
       // Criar instância da carta (usar supabaseAdmin para bypass RLS)
       const { data: cardInstance, error: instanceError } = await supabaseAdmin

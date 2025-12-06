@@ -277,6 +277,7 @@ export async function POST(request: NextRequest) {
       
       const tierPrefix = boosterType.name.split(' ')[0]; // "Básico", "Padrão", etc
       const maxValue = maxLiquidityByTier[tierPrefix] || 999;
+      console.log(`🔥🔥🔥 CAP DEBUG: Tier=${tierPrefix}, Calculated=${calculatedLiquidity.toFixed(2)}, MaxCap=${maxValue}, WillBe=${Math.min(calculatedLiquidity, maxValue).toFixed(2)}`);
       const cappedLiquidity = Math.min(calculatedLiquidity, maxValue);
       
       // Garantir mínimo de R$ 0.01 para evitar cartas com R$ 0.00

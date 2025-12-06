@@ -267,7 +267,7 @@ export async function POST(request: NextRequest) {
       
       // LIMITAR valor máximo por tier para controlar variância extrema
       // Isso previne godmodes/legendaries de explodir o RTP
-      // UPDATED: 2025-12-06 13:30 - FORCE CACHE BUST
+      // UPDATED: 2025-12-06 16:35 - FORCE DEPLOY #7 EMERGENCY
       const maxLiquidityByTier: Record<string, number> = {
         'Básico': 0.40,    // R$ 0.50 × 80% = R$ 0.40 max por carta
         'Padrão': 0.70,    // R$ 1.00 × 70% = R$ 0.70 max por carta  

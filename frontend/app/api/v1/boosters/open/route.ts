@@ -267,6 +267,7 @@ export async function POST(request: NextRequest) {
       
       // LIMITAR valor máximo por tier para controlar variância extrema
       // Isso previne godmodes/legendaries de explodir o RTP
+      // UPDATED: 2025-12-06 13:30 - FORCE CACHE BUST
       const maxLiquidityByTier: Record<string, number> = {
         'Básico': 0.40,    // R$ 0.50 × 80% = R$ 0.40 max por carta
         'Padrão': 0.70,    // R$ 1.00 × 70% = R$ 0.70 max por carta  
@@ -278,6 +279,12 @@ export async function POST(request: NextRequest) {
       const tierPrefix = boosterType.name.split(' ')[0]; // "Básico", "Padrão", etc
       const maxValue = maxLiquidityByTier[tierPrefix] || 999;
       console.log(`🔥🔥🔥 CAP DEBUG: Tier=${tierPrefix}, Calculated=${calculatedLiquidity.toFixed(2)}, MaxCap=${maxValue}, WillBe=${Math.min(calculatedLiquidity, maxValue).toFixed(2)}`);
+      
+      // DEBUG TEMPORÁRIO - FORÇAR ERRO SE CAP NÃO EXISTIR
+      if (!maxLiquidityByTier[tierPrefix]) {
+        throw new Error(`❌ TIER PREFIX NOT FOUND: "${tierPrefix}" from booster name "${boosterType.name}"`);
+      }
+      
       const cappedLiquidity = Math.min(calculatedLiquidity, maxValue);
       
       // Garantir mínimo de R$ 0.01 para evitar cartas com R$ 0.00

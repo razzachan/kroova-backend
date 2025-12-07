@@ -962,12 +962,14 @@ export default function BoostersPage() {
           <>
             {/* Background fixo para sessão de flip */}
             <div 
-              className="fixed inset-0 z-[100]"
+              className="fixed inset-0 z-[100] w-screen h-screen"
               style={{
                 backgroundImage: 'url(/kroova-background.png)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                backgroundAttachment: 'fixed'
+                backgroundRepeat: 'no-repeat',
+                minHeight: '100vh',
+                minWidth: '100vw'
               }}
             >
               <div className="absolute inset-0 bg-black/60" />

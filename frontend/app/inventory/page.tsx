@@ -75,6 +75,10 @@ export default function InventoryPage() {
   // Recycle Points
   const [recyclePoints, setRecyclePoints] = useState(0);
   const [showRecycleModal, setShowRecycleModal] = useState<string | null>(null);
+  
+  // Confirmação de resgate de cashback
+  const [showRedeemAllModal, setShowRedeemAllModal] = useState(false);
+  const [redeemAllData, setRedeemAllData] = useState<{ cards: CardInstance[], total: number }>({ cards: [], total: 0 });
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -457,9 +461,13 @@ export default function InventoryPage() {
     
     const totalCashback = cardsWithCashback.reduce((sum, c) => sum + (c.prize_amount_brl || 0), 0);
     
-    if (!confirm(`💰 Resgatar tudo?\n\n${cardsWithCashback.length} cartas com cashback\nTotal: R$ ${totalCashback.toFixed(4)}\n\nAs cartas continuarão suas.`)) {
-      return;
-    }
+    // Mostrar modal customizado ao invés de confirm
+    setRedeemAllData({ cards: cardsWithCashback, total: totalCashback });
+    setShowRedeemAllModal(true);
+  };
+  
+  const confirmRedeemAll = async () => {
+    const { cards: cardsWithCashback } = redeemAllData;
     
     try {
       let totalRedeemed = 0;
@@ -479,13 +487,16 @@ export default function InventoryPage() {
       }
       
       cardAudio.playSuccessChime();
-      alert(`✅ Cashback resgatado!\n\n${successCount}/${cardsWithCashback.length} cartas\nTotal: R$ ${totalRedeemed.toFixed(4)}`);
-      
+      setShowRedeemAllModal(false);
       setShowValueModal(false);
       await loadInventory();
+      
+      // Mostrar toast de sucesso customizado
+      alert(`✅ Cashback resgatado!\n\n${successCount}/${cardsWithCashback.length} cartas\nTotal: R$ ${totalRedeemed.toFixed(4)}`);
     } catch (error: any) {
       cardAudio.playErrorBuzz();
       alert('Erro ao resgatar cashback');
+      setShowRedeemAllModal(false);
     }
   };
 
@@ -1194,6 +1205,71 @@ export default function InventoryPage() {
           </div>
         );
       })()}
+
+      {/* Redeem All Confirmation Modal */}
+      {showRedeemAllModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border-2 border-green-500/50 rounded-lg p-8 max-w-md w-full mx-4 relative overflow-hidden">
+            {/* Background effects */}
+            <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 animate-pulse"></div>
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 via-emerald-400 to-green-500"></div>
+            
+            <div className="relative z-10">
+              {/* Header */}
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-green-400 mb-2">
+                  <TextGlitch delay={100}>💰 Resgatar Tudo?</TextGlitch>
+                </h2>
+              </div>
+
+              {/* Info Box */}
+              <div className="bg-black/40 border border-green-500/30 rounded-lg p-5 mb-6">
+                <div className="text-center space-y-3">
+                  <div className="text-4xl font-bold text-green-400">
+                    R$ {redeemAllData.total.toFixed(4)}
+                  </div>
+                  <div className="text-sm text-gray-300">
+                    <span className="text-white font-bold">{redeemAllData.cards.length}</span> carta{redeemAllData.cards.length !== 1 ? 's' : ''} com cashback disponível
+                  </div>
+                </div>
+              </div>
+
+              {/* Success Info */}
+              <div className="bg-gradient-to-r from-green-900/20 to-emerald-900/20 border border-green-500/30 rounded-lg p-4 mb-6">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">✅</span>
+                  <div className="text-sm">
+                    <div className="text-green-400 font-bold mb-1">As cartas continuarão suas!</div>
+                    <div className="text-gray-400">
+                      Você receberá o dinheiro e poderá vender as cartas no marketplace depois, se quiser.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3">
+                <GlitchButton
+                  onClick={confirmRedeemAll}
+                  variant="success"
+                  size="lg"
+                  className="flex-1"
+                >
+                  💰 CONFIRMAR RESGATE
+                </GlitchButton>
+                <GlitchButton
+                  onClick={() => setShowRedeemAllModal(false)}
+                  variant="secondary"
+                  size="lg"
+                  className="flex-1"
+                >
+                  CANCELAR
+                </GlitchButton>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Recycle Confirmation Modal */}
       {showRecycleModal && (() => {

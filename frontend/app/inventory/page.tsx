@@ -472,7 +472,7 @@ export default function InventoryPage() {
             >
               <div className="relative z-10">
                 <div className="text-green-400 text-xs font-bold uppercase tracking-wider mb-1">
-                  💰 Valor do Inventário
+                  💰 Cashback Disponível
                 </div>
                 <div className="text-2xl font-bold text-green-300">
                   R$ {calculateInventoryValue().total.toFixed(2)}
@@ -907,10 +907,10 @@ export default function InventoryPage() {
                 <div className="flex items-center justify-between mb-8">
                   <div>
                     <h2 className="text-3xl font-bold text-green-400 mb-2">
-                      <TextGlitch delay={100}>💰 Valor do Inventário</TextGlitch>
+                      <TextGlitch delay={100}>💰 Cashback Disponível</TextGlitch>
                     </h2>
                     <p className="text-gray-400 text-sm">
-                      Análise detalhada da liquidez das suas cartas
+                      Total de cashback que você pode resgatar agora
                     </p>
                   </div>
                   <button
@@ -926,7 +926,7 @@ export default function InventoryPage() {
                   <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-transparent"></div>
                   <div className="relative z-10">
                     <div className="text-green-400 text-sm font-bold uppercase tracking-wider mb-2">
-                      Valor Total Garantido
+                      💰 Cashback Total Disponível
                     </div>
                     <div className="text-5xl font-bold text-green-300 mb-3">
                       R$ {total.toFixed(2)}
@@ -1017,57 +1017,50 @@ export default function InventoryPage() {
                     );
                   }
                   
-                  // Sugestão de venda (se tiver muitas cartas de baixo valor mas já reciclou hoje)
-                  if ((trashData && trashData.count >= 10) || (memeData && memeData.count >= 15)) {
-                    const totalLowValue = (trashData?.count || 0) + (memeData?.count || 0);
-                    const totalLowValueBrl = (trashData?.value || 0) + (memeData?.value || 0);
-                    
-                    return (
-                      <div className="bg-gradient-to-r from-green-900/20 to-emerald-900/20 border border-green-500/30 rounded-lg p-4 mb-6">
-                        <div className="flex items-start gap-3">
-                          <span className="text-2xl">💡</span>
-                          <div className="flex-1">
-                            <div className="font-bold text-green-400 mb-1">
-                              Liquidez Disponível
-                            </div>
-                            <p className="text-sm text-gray-300 mb-2">
-                              Você tem <span className="text-white font-bold">{totalLowValue} cartas de baixo valor</span> (Trash + Meme) 
-                              valendo <span className="text-green-400 font-bold">R$ {totalLowValueBrl.toFixed(2)}</span>.
-                            </p>
-                            <p className="text-sm text-gray-400">
-                              {recyclesLeft === 0 ? (
-                                <>Você já usou todas as reciclagens hoje. <span className="text-green-300">Venda ao sistema para liquidez imediata!</span></>
-                              ) : (
-                                <>Venda ao sistema para liberar espaço e ganhar liquidez instantânea.</>
-                              )}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  }
-                  
+                  // Nada mais a exibir após o breakdown
                   return null;
                 })()}
 
+                {/* System Options Info */}
+                <div className="bg-gray-900/40 border border-gray-700 rounded-lg p-6 mb-6">
+                  <h4 className="text-white font-bold mb-4 flex items-center gap-2">
+                    <span>🎯</span>
+                    O que fazer com suas cartas?
+                  </h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-start gap-3">
+                      <span className="text-xl">💰</span>
+                      <div>
+                        <div className="text-green-400 font-bold">1. Resgatar Cashback</div>
+                        <div className="text-gray-400">Resgate o prêmio de abertura e mantenha a carta para vender depois</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-xl">🏪</span>
+                      <div>
+                        <div className="text-blue-400 font-bold">2. Vender no Marketplace</div>
+                        <div className="text-gray-400">Liste para outros jogadores comprarem (você define o preço)</div>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <span className="text-xl">♻️</span>
+                      <div>
+                        <div className="text-purple-400 font-bold">3. Reciclar por Boosters</div>
+                        <div className="text-gray-400">25 cartas = 1 booster grátis (cartas são destruídas)</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Actions */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="flex justify-center">
                   <GlitchButton
                     onClick={() => setShowValueModal(false)}
-                    variant="secondary"
+                    variant="success"
                     size="lg"
+                    className="min-w-[200px]"
                   >
-                    Fechar
-                  </GlitchButton>
-                  <GlitchButton
-                    onClick={() => {
-                      setShowValueModal(false);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                    variant="primary"
-                    size="lg"
-                  >
-                    💰 Vender Cartas
+                    ✓ Entendi
                   </GlitchButton>
                 </div>
               </div>
@@ -1076,62 +1069,6 @@ export default function InventoryPage() {
         );
       })()}
 
-      {/* Modal de Sucesso da Venda */}
-      {sellSuccessData && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border-2 border-[#00F0FF] rounded-lg p-8 max-w-md mx-4 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-[#00F0FF]/10 to-[#FF006D]/10 animate-pulse"></div>
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#00F0FF] via-[#FF006D] to-[#00F0FF]"></div>
-            
-            <div className="relative z-10 text-center">
-              <div className="text-6xl mb-4 animate-bounce">💰</div>
-              <h2 className="text-3xl font-bold text-[#00F0FF] mb-3">
-                <TextGlitch delay={0}>VENDA CONCLUÍDA!</TextGlitch>
-              </h2>
-              
-              <div className="space-y-3 mb-6">
-                <div className="bg-black/40 rounded-lg p-4">
-                  <div className="text-gray-400 text-sm mb-1">Cartas vendidas</div>
-                  <div className="text-white font-bold text-2xl">{sellSuccessData.cards_sold}x</div>
-                </div>
-                
-                <div className="bg-gradient-to-r from-green-900/30 to-emerald-900/30 border border-green-500/30 rounded-lg p-4">
-                  <div className="text-green-400 text-sm mb-1">Valor recebido</div>
-                  <div className="text-green-300 font-bold text-3xl font-mono">
-                    R$ {sellSuccessData.total_value.toFixed(2)}
-                  </div>
-                </div>
-                
-                <div className="bg-black/40 rounded-lg p-4">
-                  <div className="text-gray-400 text-sm mb-1">Novo saldo</div>
-                  <div className="text-[#FFC700] font-bold text-2xl font-mono">
-                    R$ {sellSuccessData.new_balance.toFixed(2)}
-                  </div>
-                </div>
-              </div>
-              
-              <GlitchButton
-                onClick={() => {
-                  console.log('🔄 [RELOAD] Fechando modal e recarregando página...');
-                  setSellSuccessData(null);
-                  // Dispara evento para atualizar saldo no dashboard
-                  window.dispatchEvent(new CustomEvent('balance-updated', { 
-                    detail: { new_balance: sellSuccessData.new_balance } 
-                  }));
-                  console.log('🔄 [RELOAD] Executando window.location.reload()...');
-                  // Recarrega a página para garantir sincronização completa
-                  window.location.reload();
-                }}
-                variant="success"
-                size="lg"
-                className="w-full"
-              >
-                ✓ FECHAR
-              </GlitchButton>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

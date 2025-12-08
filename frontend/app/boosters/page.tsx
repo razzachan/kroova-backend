@@ -444,7 +444,7 @@ export default function BoostersPage() {
               renderer: 'svg',
               loop: true,
               autoplay: true,
-              path: '/animations/jackpot-coins.json'
+              path: '/animations/kroova-jackpot.json'
             });
             
             // Stop after counter completes
@@ -458,18 +458,23 @@ export default function BoostersPage() {
       // Mount particles (sparkles)
       const particlesMount = document.getElementById('particles-mount');
       if (particlesMount) {
-        for (let i = 0; i < 8; i++) {
+        const colors = ['#00ff41', '#00d9ff', '#b026ff']; // Neon green, cyan, purple
+        for (let i = 0; i < 12; i++) {
           const particle = document.createElement('div');
-          const angle = (Math.PI * 2 * i) / 8;
+          const angle = (Math.PI * 2 * i) / 12;
           const distance = 80 + Math.random() * 40;
           const x = Math.cos(angle) * distance;
           const y = Math.sin(angle) * distance;
           const delay = Math.random() * 300;
+          const color = colors[i % colors.length];
+          const isSquare = Math.random() > 0.5; // Mix squares and circles
           
-          particle.className = 'absolute w-2 h-2 bg-yellow-400 rounded-full';
+          particle.className = `absolute w-2 h-2 ${isSquare ? '' : 'rounded-full'}`;
           particle.style.cssText = `
             left: 50%;
             top: 50%;
+            background: ${color};
+            box-shadow: 0 0 8px ${color};
             animation: sparkle-burst 1s ease-out ${delay}ms;
             --tx: ${x}px;
             --ty: ${y}px;
@@ -501,20 +506,27 @@ export default function BoostersPage() {
             
             // Dynamic color based on RTP
             let textColor = 'text-white';
+            let shadowColor = '0 2px 4px rgba(0,0,0,0.3)';
+            
             if (isAnimating) {
-              textColor = 'text-yellow-300';
+              textColor = 'text-cyan-300';
+              shadowColor = '0 0 10px rgba(0, 217, 255, 0.8), 0 0 20px rgba(0, 217, 255, 0.4)';
             } else if (isJackpot) {
-              textColor = 'text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-200 to-yellow-300';
+              textColor = 'text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-cyan-400 to-purple-500';
+              shadowColor = '0 0 15px rgba(0, 255, 65, 0.5)';
             } else if (pendingPrizeData.rtp_percentage >= 100) {
-              textColor = 'text-green-300';
+              textColor = 'text-green-400';
+              shadowColor = '0 0 10px rgba(0, 255, 65, 0.6)';
             } else if (pendingPrizeData.rtp_percentage >= 80) {
-              textColor = 'text-yellow-200';
+              textColor = 'text-cyan-300';
+              shadowColor = '0 0 8px rgba(0, 217, 255, 0.5)';
             } else {
-              textColor = 'text-red-300';
+              textColor = 'text-purple-400';
+              shadowColor = '0 0 8px rgba(176, 38, 255, 0.5)';
             }
             
             mountPoint.innerHTML = `
-              <span class="text-3xl font-bold font-mono ${textColor}" style="text-shadow: ${isAnimating ? '0 0 10px rgba(250, 204, 21, 0.8), 0 0 20px rgba(250, 204, 21, 0.4)' : '0 2px 4px rgba(0,0,0,0.3)'}">
+              <span class="text-3xl font-bold font-mono ${textColor}" style="text-shadow: ${shadowColor}">
                 R$ ${currentValue.toFixed(2)}
               </span>
             `;

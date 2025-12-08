@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import Lottie, { LottieRefCurrentProps } from 'lottie-react';
-import jackpotAnimation from '@/public/animations/jackpot-coins.json';
+import jackpotAnimation from '@/public/animations/kroova-jackpot.json';
 
 interface LottieJackpotProps {
   isPlaying: boolean;

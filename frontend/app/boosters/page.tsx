@@ -655,10 +655,10 @@ export default function BoostersPage() {
       
       // Criar toast de saldo no canto superior direito (glitch style)
       const balanceToast = document.createElement('div');
-      balanceToast.className = 'fixed top-24 right-6 z-[10000] backdrop-blur-xl';
+      balanceToast.className = 'fixed top-24 right-6 z-[10000] backdrop-blur-xl cursor-pointer';
       balanceToast.style.animation = 'balance-popup 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
       balanceToast.innerHTML = `
-        <div class="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border-2 border-green-500/50 rounded-lg px-6 py-4 shadow-2xl overflow-hidden">
+        <div class="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border-2 border-green-500/50 rounded-lg px-6 py-4 shadow-2xl overflow-hidden hover:border-green-400 transition-colors">
           <!-- Background effects -->
           <div class="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 animate-pulse"></div>
           <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 via-emerald-400 to-green-500"></div>
@@ -673,6 +673,11 @@ export default function BoostersPage() {
               </div>
               <div class="text-xs text-green-400 font-bold">+ R$ ${pendingPrizeData.amount_brl.toFixed(2)}</div>
             </div>
+          </div>
+          
+          <!-- Click hint -->
+          <div class="relative z-10 text-center mt-2 pt-2 border-t border-green-500/20">
+            <div class="text-xs text-green-400/60 animate-pulse">Clique para fechar</div>
           </div>
         </div>
       `;
@@ -689,8 +694,8 @@ export default function BoostersPage() {
       `;
       document.head.appendChild(balanceStyle);
       
-      // Remover toast de saldo após 5s
-      setTimeout(() => {
+      // Remover toast apenas ao clicar
+      balanceToast.addEventListener('click', () => {
         balanceToast.style.transition = 'all 0.6s ease-out';
         balanceToast.style.transform = 'translateX(400px)';
         balanceToast.style.opacity = '0';
@@ -698,7 +703,7 @@ export default function BoostersPage() {
           balanceToast.remove();
           balanceStyle.remove();
         }, 600);
-      }, 5000);
+      });
       
       setTimeout(() => {
         const mountPoint = document.getElementById('prize-counter-mount');

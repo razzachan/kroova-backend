@@ -411,13 +411,15 @@ export default function BoostersPage() {
           : 'bg-gradient-to-r from-red-800 to-rose-800';
       
       prizeToast.innerHTML = `
-        <div class="${bgColor} border-2 ${isJackpot ? 'border-yellow-300 animate-pulse' : 'border-white/30'} rounded-xl px-6 py-4 shadow-2xl backdrop-blur-sm ${isJackpot ? 'animate-bounce' : ''}">
-          <div class="text-center">
+        <div class="${bgColor} border-2 ${isJackpot ? 'border-yellow-300 animate-pulse' : 'border-white/30'} rounded-xl px-6 py-4 shadow-2xl backdrop-blur-sm ${isJackpot ? 'animate-bounce' : ''} relative overflow-visible">
+          <div class="text-center relative z-10">
+            <div id="lottie-animation-mount" class="absolute -top-16 left-1/2 -translate-x-1/2 pointer-events-none"></div>
             <div class="text-4xl mb-2">${isJackpot ? '🎰💰🎰' : pendingPrizeData.rtp_percentage >= 100 ? '💵' : '💸'}</div>
             <div class="text-2xl font-black ${isJackpot ? 'text-yellow-200' : 'text-white'} mb-1 font-mono">
               ${isJackpot ? 'JACKPOT!' : pendingPrizeData.rtp_percentage >= 100 ? 'GANHOU!' : 'PRÊMIO'}
             </div>
             <div id="prize-counter-mount" class="mb-1"></div>
+            <div id="particles-mount" class="absolute inset-0 pointer-events-none"></div>
             <div class="text-sm ${rtpColor} font-mono">
               ${pendingPrizeData.rtp_percentage.toFixed(0)}% RTP
             </div>
@@ -425,6 +427,56 @@ export default function BoostersPage() {
         </div>
       `;
       document.body.appendChild(prizeToast);
+
+      // Mount Lottie animation (coins falling)
+      const lottieMount = document.getElementById('lottie-animation-mount');
+      if (lottieMount) {
+        lottieMount.innerHTML = `
+          <div id="lottie-container" style="width: 150px; height: 150px;"></div>
+        `;
+        
+        // Import and mount Lottie dynamically
+        import('lottie-web').then(lottie => {
+          const container = document.getElementById('lottie-container');
+          if (container) {
+            const animation = lottie.default.loadAnimation({
+              container: container,
+              renderer: 'svg',
+              loop: true,
+              autoplay: true,
+              path: '/animations/jackpot-coins.json'
+            });
+            
+            // Stop after counter completes
+            setTimeout(() => {
+              animation.stop();
+            }, 2100);
+          }
+        });
+      }
+
+      // Mount particles (sparkles)
+      const particlesMount = document.getElementById('particles-mount');
+      if (particlesMount) {
+        for (let i = 0; i < 8; i++) {
+          const particle = document.createElement('div');
+          const angle = (Math.PI * 2 * i) / 8;
+          const distance = 80 + Math.random() * 40;
+          const x = Math.cos(angle) * distance;
+          const y = Math.sin(angle) * distance;
+          const delay = Math.random() * 300;
+          
+          particle.className = 'absolute w-2 h-2 bg-yellow-400 rounded-full';
+          particle.style.cssText = `
+            left: 50%;
+            top: 50%;
+            animation: sparkle-burst 1s ease-out ${delay}ms;
+            --tx: ${x}px;
+            --ty: ${y}px;
+          `;
+          particlesMount.appendChild(particle);
+        }
+      }
 
       // Mount React counter component dynamically
       setTimeout(() => {
@@ -446,8 +498,23 @@ export default function BoostersPage() {
             currentValue = easedProgress * targetValue;
             
             const isAnimating = progress < 1;
+            
+            // Dynamic color based on RTP
+            let textColor = 'text-white';
+            if (isAnimating) {
+              textColor = 'text-yellow-300';
+            } else if (isJackpot) {
+              textColor = 'text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-200 to-yellow-300';
+            } else if (pendingPrizeData.rtp_percentage >= 100) {
+              textColor = 'text-green-300';
+            } else if (pendingPrizeData.rtp_percentage >= 80) {
+              textColor = 'text-yellow-200';
+            } else {
+              textColor = 'text-red-300';
+            }
+            
             mountPoint.innerHTML = `
-              <span class="text-3xl font-bold font-mono ${isAnimating ? 'text-yellow-300' : 'text-white'}" style="text-shadow: ${isAnimating ? '0 0 10px rgba(250, 204, 21, 0.8), 0 0 20px rgba(250, 204, 21, 0.4)' : '0 2px 4px rgba(0,0,0,0.3)'}">
+              <span class="text-3xl font-bold font-mono ${textColor}" style="text-shadow: ${isAnimating ? '0 0 10px rgba(250, 204, 21, 0.8), 0 0 20px rgba(250, 204, 21, 0.4)' : '0 2px 4px rgba(0,0,0,0.3)'}">
                 R$ ${currentValue.toFixed(2)}
               </span>
             `;

@@ -799,12 +799,6 @@ export default function BoostersPage() {
         }
       }, 100);
       
-      // Remove após 5 segundos (jackpot fica mais tempo)
-      setTimeout(() => {
-        prizeToast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
-        setTimeout(() => document.body.removeChild(prizeToast), 500);
-      }, isJackpot ? 8000 : 5000);
-      
       setPendingPrizeData(null); // Limpar para próxima abertura
     }
   }

@@ -486,6 +486,11 @@ export default function BoostersPage() {
       `;
       document.body.appendChild(prizeToast);
 
+      // Play cyberpunk prize soundtrack
+      const prizeSoundtrack = new Audio('/sfx/prize_reveal_soundtrack.mp3');
+      prizeSoundtrack.volume = 0.6; // Not too loud
+      prizeSoundtrack.play().catch(err => console.log('Audio autoplay blocked:', err));
+
       // Premium animation with Imagen 4 assets
       const animContainer = document.getElementById('premium-jackpot-animation');
       if (animContainer) {

@@ -8,6 +8,7 @@ import { PityProgressDual } from '@/components/PityProgressDual';
 import { CristalPity } from '@/components/CristalPity';
 import { PityExplosion } from '@/components/PityExplosion';
 import { OpeningSession } from '@/components/OpeningSession';
+import { SlotMachineCounter } from '@/components/SlotMachineCounter';
 // import { VaultMilestonesPanel } from '@/components/VaultMilestonesPanel'; // Removido até implementação backend
 import { cardAudio, triggerHaptic } from '@/lib/cardAudio';
 import { PackOpeningAnimation } from '@/components/PackOpeningAnimation';
@@ -390,7 +391,13 @@ export default function BoostersPage() {
   }
 
   function handlePackOpenComplete() {
-    // Mostrar toast de prêmio AGORA (depois da explosão do pack)
+    // Pack exploded, now show cards flying
+    // Prize will show AFTER all cards are revealed (in handleAllCardsRevealed)
+    setAnimationStage('flight');
+  }
+
+  function handleAllCardsRevealed() {
+    // Todas as 5 cartas foram reveladas - AGORA mostrar prêmio com animação slot-machine!
     if (pendingPrizeData) {
       const prizeToast = document.createElement('div');
       prizeToast.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 z-[999]';
@@ -410,9 +417,7 @@ export default function BoostersPage() {
             <div class="text-2xl font-black ${isJackpot ? 'text-yellow-200' : 'text-white'} mb-1 font-mono">
               ${isJackpot ? 'JACKPOT!' : pendingPrizeData.rtp_percentage >= 100 ? 'GANHOU!' : 'PRÊMIO'}
             </div>
-            <div class="text-3xl font-bold text-white mb-1">
-              R$ ${pendingPrizeData.amount_brl.toFixed(2)}
-            </div>
+            <div id="prize-counter-mount" class="mb-1"></div>
             <div class="text-sm ${rtpColor} font-mono">
               ${pendingPrizeData.rtp_percentage.toFixed(0)}% RTP
             </div>
@@ -420,6 +425,44 @@ export default function BoostersPage() {
         </div>
       `;
       document.body.appendChild(prizeToast);
+
+      // Mount React counter component dynamically
+      setTimeout(() => {
+        const mountPoint = document.getElementById('prize-counter-mount');
+        if (mountPoint) {
+          // Use innerHTML with inline styles to simulate SlotMachineCounter
+          let currentValue = 0;
+          const targetValue = pendingPrizeData.amount_brl;
+          const duration = 2000;
+          const startTime = Date.now();
+
+          const animate = () => {
+            const now = Date.now();
+            const progress = Math.min((now - startTime) / duration, 1);
+            // Cubic ease-in-out
+            const easedProgress = progress < 0.5 
+              ? 4 * progress * progress * progress 
+              : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+            currentValue = easedProgress * targetValue;
+            
+            const isAnimating = progress < 1;
+            mountPoint.innerHTML = `
+              <span class="text-3xl font-bold font-mono ${isAnimating ? 'text-yellow-300' : 'text-white'}" style="text-shadow: ${isAnimating ? '0 0 10px rgba(250, 204, 21, 0.8), 0 0 20px rgba(250, 204, 21, 0.4)' : '0 2px 4px rgba(0,0,0,0.3)'}">
+                R$ ${currentValue.toFixed(2)}
+              </span>
+            `;
+
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              // Play ding sound on completion
+              cardAudio.playSuccessChime();
+            }
+          };
+
+          requestAnimationFrame(animate);
+        }
+      }, 100);
       
       // Remove após 5 segundos (jackpot fica mais tempo)
       setTimeout(() => {
@@ -429,9 +472,6 @@ export default function BoostersPage() {
       
       setPendingPrizeData(null); // Limpar para próxima abertura
     }
-    
-    // Pack exploded, now show cards flying
-    setAnimationStage('flight');
   }
 
   async function openAllBoosters() {
@@ -1136,6 +1176,7 @@ export default function BoostersPage() {
                 skin: c.skin,
               }))} 
               mode={flipMode}
+              onCheckpoint={handleAllCardsRevealed}
             />
             
             {/* Action Buttons After Reveal */}

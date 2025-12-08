@@ -321,7 +321,12 @@ export default function InventoryPage() {
 
   const calculateInventoryValue = () => {
     const ownedCards = inventory.filter(c => !listedCards.includes(c.id));
-    const total = ownedCards.reduce((sum, card) => sum + (card.liquidity_brl || 0), 0);
+    
+    // Somar apenas cashback disponível (não resgatado)
+    const total = ownedCards.reduce((sum, card) => {
+      const cashback = (!card.prize_redeemed && card.prize_amount_brl) ? card.prize_amount_brl : 0;
+      return sum + cashback;
+    }, 0);
     
     const byRarity = ownedCards.reduce((acc, card) => {
       const rarity = card.cards_base?.rarity || 'unknown';
@@ -329,7 +334,9 @@ export default function InventoryPage() {
         acc[rarity] = { count: 0, value: 0 };
       }
       acc[rarity].count++;
-      acc[rarity].value += card.liquidity_brl || 0;
+      // Somar apenas cashback disponível por raridade
+      const cashback = (!card.prize_redeemed && card.prize_amount_brl) ? card.prize_amount_brl : 0;
+      acc[rarity].value += cashback;
       return acc;
     }, {} as Record<string, { count: number, value: number }>);
     

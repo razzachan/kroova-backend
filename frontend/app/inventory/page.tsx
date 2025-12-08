@@ -432,39 +432,60 @@ export default function InventoryPage() {
         card_instance_id: cardInstanceId
       });
       
-      const data = unwrap<{ 
-        cashback_amount: number; 
-        new_balance: number;
-        card_name: string;
-      }>(response);
+      const data = unwrap<{ prize_amount_brl: number; new_balance: number }>(response);
       
       cardAudio.playSuccessChime();
+      alert(`💰 Cashback resgatado!\n\nR$ ${data.prize_amount_brl.toFixed(4)} adicionado à sua carteira.\nSaldo atual: R$ ${data.new_balance.toFixed(2)}`);
       
-      // Notificação de sucesso
-      const toast = document.createElement('div');
-      toast.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-50 animate-slide-in';
-      toast.innerHTML = `
-        <div class="flex items-center gap-3">
-          <span class="text-2xl">💰</span>
-          <div>
-            <div class="font-bold">Cashback Resgatado!</div>
-            <div class="text-sm">R$ ${data.cashback_amount.toFixed(4)} → Wallet</div>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(toast);
-      setTimeout(() => document.body.removeChild(toast), 3000);
-      
-      // Recarregar inventário
       await loadInventory();
-      
-      // Disparar evento para atualizar saldo no header (se houver)
-      window.dispatchEvent(new Event('walletUpdated'));
-      
     } catch (error: any) {
-      console.error('Erro ao resgatar cashback:', error);
       cardAudio.playErrorBuzz();
-      alert(error.response?.data?.error || 'Erro ao resgatar cashback');
+      alert(error.response?.data?.error?.message || 'Erro ao resgatar cashback');
+    }
+  };
+  
+  // 💰 FUNÇÃO PARA RESGATAR TODO CASHBACK DE UMA VEZ
+  const handleRedeemAllCashback = async () => {
+    const cardsWithCashback = inventory.filter(c => 
+      !c.prize_redeemed && c.prize_amount_brl && c.prize_amount_brl > 0
+    );
+    
+    if (cardsWithCashback.length === 0) {
+      alert('Nenhum cashback disponível para resgatar!');
+      return;
+    }
+    
+    const totalCashback = cardsWithCashback.reduce((sum, c) => sum + (c.prize_amount_brl || 0), 0);
+    
+    if (!confirm(`💰 Resgatar tudo?\n\n${cardsWithCashback.length} cartas com cashback\nTotal: R$ ${totalCashback.toFixed(4)}\n\nAs cartas continuarão suas.`)) {
+      return;
+    }
+    
+    try {
+      let totalRedeemed = 0;
+      let successCount = 0;
+      
+      for (const card of cardsWithCashback) {
+        try {
+          const response = await api.post('/cards/redeem-prize', {
+            card_instance_id: card.id
+          });
+          const data = unwrap<{ prize_amount_brl: number }>(response);
+          totalRedeemed += data.prize_amount_brl;
+          successCount++;
+        } catch (error) {
+          console.error(`Erro ao resgatar carta ${card.id}:`, error);
+        }
+      }
+      
+      cardAudio.playSuccessChime();
+      alert(`✅ Cashback resgatado!\n\n${successCount}/${cardsWithCashback.length} cartas\nTotal: R$ ${totalRedeemed.toFixed(4)}`);
+      
+      setShowValueModal(false);
+      await loadInventory();
+    } catch (error: any) {
+      cardAudio.playErrorBuzz();
+      alert('Erro ao resgatar cashback');
     }
   };
 
@@ -991,42 +1012,42 @@ export default function InventoryPage() {
         const maxValue = Math.max(...Object.values(byRarity).map(r => r.value));
         
         return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-            <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border-2 border-green-500/50 rounded-lg p-8 max-w-3xl w-full mx-4 relative overflow-hidden">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
+            <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border-2 border-green-500/50 rounded-lg p-6 max-w-3xl w-full mx-4 my-8 relative overflow-hidden">
               {/* Background effects */}
               <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 animate-pulse"></div>
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 via-emerald-400 to-green-500"></div>
               
               <div className="relative z-10">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-3xl font-bold text-green-400 mb-2">
+                    <h2 className="text-2xl md:text-3xl font-bold text-green-400 mb-2">
                       <TextGlitch delay={100}>💰 Cashback Disponível</TextGlitch>
                     </h2>
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-gray-400 text-xs md:text-sm">
                       Total de cashback que você pode resgatar agora
                     </p>
                   </div>
                   <button
                     onClick={() => setShowValueModal(false)}
-                    className="text-gray-400 hover:text-white transition text-3xl"
+                    className="text-gray-400 hover:text-white transition text-2xl md:text-3xl"
                   >
                     ✕
                   </button>
                 </div>
 
                 {/* Total Value Card */}
-                <div className="bg-gradient-to-br from-green-900/30 to-emerald-900/30 border-2 border-green-500/50 rounded-lg p-6 mb-8 relative overflow-hidden">
+                <div className="bg-gradient-to-br from-green-900/30 to-emerald-900/30 border-2 border-green-500/50 rounded-lg p-4 md:p-6 mb-6 relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-transparent"></div>
                   <div className="relative z-10">
-                    <div className="text-green-400 text-sm font-bold uppercase tracking-wider mb-2">
+                    <div className="text-green-400 text-xs md:text-sm font-bold uppercase tracking-wider mb-2">
                       💰 Cashback Total Disponível
                     </div>
-                    <div className="text-5xl font-bold text-green-300 mb-3">
+                    <div className="text-3xl md:text-5xl font-bold text-green-300 mb-2 md:mb-3">
                       R$ {total.toFixed(2)}
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-400">
+                    <div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm text-gray-400">
                       <span>📊 {cardCount} cartas</span>
                       <span>•</span>
                       <span>💵 Média: R$ {cardCount > 0 ? (total / cardCount).toFixed(2) : '0.00'} por carta</span>
@@ -1035,13 +1056,13 @@ export default function InventoryPage() {
                 </div>
 
                 {/* Breakdown by Rarity */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <div className="mb-6 max-h-[40vh] overflow-y-auto pr-2">
+                  <h3 className="text-base md:text-lg font-bold text-white mb-3 md:mb-4 flex items-center gap-2">
                     <span>📈</span>
                     Breakdown por Raridade
                   </h3>
                   
-                  <div className="space-y-4">
+                  <div className="space-y-3 md:space-y-4">
                     {sortedRarities.map(([rarity, data]) => {
                       const percentage = maxValue > 0 ? (data.value / maxValue) * 100 : 0;
                       const avgValue = data.count > 0 ? data.value / data.count : 0;
@@ -1148,14 +1169,24 @@ export default function InventoryPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex justify-center">
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  {total > 0 && (
+                    <GlitchButton
+                      onClick={handleRedeemAllCashback}
+                      variant="primary"
+                      size="lg"
+                      className="min-w-[200px]"
+                    >
+                      💰 RESGATAR TUDO (R$ {total.toFixed(4)})
+                    </GlitchButton>
+                  )}
                   <GlitchButton
                     onClick={() => setShowValueModal(false)}
-                    variant="success"
+                    variant="secondary"
                     size="lg"
                     className="min-w-[200px]"
                   >
-                    ✓ Entendi
+                    {total > 0 ? 'Resgatar Depois' : '✓ Entendi'}
                   </GlitchButton>
                 </div>
               </div>

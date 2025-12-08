@@ -55,9 +55,15 @@ export async function GET(request: NextRequest) {
     }
 
     // Query paralela: inventário + listings + transações
-    const [inventoryResult, listingsResult, transactionsResult] = await Promise.all([
-      // 1. Inventário (usando admin para bypass RLS se necessário)
-      supabaseAdmin
+    
+    // 1. INVENTÁRIO COM PAGINAÇÃO (buscar TODAS as cartas, não apenas 1000)
+    let allCards: CardInstance[] = [];
+    let page = 0;
+    const pageSize = 1000;
+    let hasMore = true;
+
+    while (hasMore) {
+      const { data, error } = await supabaseAdmin
         .from('cards_instances')
         .select(`
           id,
@@ -77,8 +83,30 @@ export async function GET(request: NextRequest) {
           )
         `)
         .eq('owner_id', user.id)
-        .order('minted_at', { ascending: false }),
+        .order('minted_at', { ascending: false })
+        .range(page * pageSize, (page + 1) * pageSize - 1);
 
+      if (error) {
+        console.error('❌ Erro ao buscar inventário (página ' + page + '):', error);
+        return NextResponse.json(
+          { error: 'Erro ao buscar inventário' },
+          { status: 500 }
+        );
+      }
+
+      if (data) {
+        allCards = allCards.concat(data as any); // Supabase retorna formato correto
+        hasMore = data.length === pageSize; // Se retornou menos que pageSize, acabou
+        page++;
+      } else {
+        hasMore = false;
+      }
+    }
+
+    console.log(`✅ Inventário carregado: ${allCards.length} cartas (${page} páginas)`);
+
+    // 2 e 3. Listings e transações em paralelo
+    const [listingsResult, transactionsResult] = await Promise.all([
       // 2. Listings ativos
       supabaseAdmin
         .from('marketplace_listings')
@@ -96,14 +124,6 @@ export async function GET(request: NextRequest) {
         .limit(100)
     ]);
 
-    if (inventoryResult.error) {
-      console.error('❌ Erro ao buscar inventário:', inventoryResult.error);
-      return NextResponse.json(
-        { error: 'Erro ao buscar inventário' },
-        { status: 500 }
-      );
-    }
-
     // Contar reciclagens de hoje
     const today = new Date().setHours(0, 0, 0, 0);
     const recyclesToday = (transactionsResult.data || []).filter((tx: any) => {
@@ -115,10 +135,10 @@ export async function GET(request: NextRequest) {
     const listedCardIds = (listingsResult.data || []).map((l: any) => l.card_instance_id);
 
     return NextResponse.json({
-      cards: inventoryResult.data || [],
+      cards: allCards,
       listed_card_ids: listedCardIds,
       recycles_today: recyclesToday,
-      total_cards: inventoryResult.data?.length || 0,
+      total_cards: allCards.length,
       total_listed: listedCardIds.length
     });
 

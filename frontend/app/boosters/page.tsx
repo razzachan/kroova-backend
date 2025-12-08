@@ -280,6 +280,44 @@ export default function BoostersPage() {
       const res = await api.post('/boosters/open', { opening_id: openingId });
       const data = unwrap(res.data);
 
+      // 🎰 MOSTRAR PRÊMIO EM BRL
+      if (data.prize) {
+        const prizeToast = document.createElement('div');
+        prizeToast.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 z-[999]';
+        
+        const isJackpot = data.prize.is_jackpot;
+        const rtpColor = data.prize.rtp_percentage >= 100 ? 'text-green-400' : 'text-red-400';
+        const bgColor = isJackpot 
+          ? 'bg-gradient-to-r from-yellow-600 via-amber-500 to-yellow-600' 
+          : data.prize.rtp_percentage >= 100
+            ? 'bg-gradient-to-r from-green-700 to-emerald-700'
+            : 'bg-gradient-to-r from-red-800 to-rose-800';
+        
+        prizeToast.innerHTML = `
+          <div class="${bgColor} border-2 ${isJackpot ? 'border-yellow-300 animate-pulse' : 'border-white/30'} rounded-xl px-6 py-4 shadow-2xl backdrop-blur-sm ${isJackpot ? 'animate-bounce' : ''}">
+            <div class="text-center">
+              <div class="text-4xl mb-2">${isJackpot ? '🎰💰🎰' : data.prize.rtp_percentage >= 100 ? '💵' : '💸'}</div>
+              <div class="text-2xl font-black ${isJackpot ? 'text-yellow-200' : 'text-white'} mb-1 font-mono">
+                ${isJackpot ? 'JACKPOT!' : data.prize.rtp_percentage >= 100 ? 'GANHOU!' : 'PRÊMIO'}
+              </div>
+              <div class="text-3xl font-bold text-white mb-1">
+                R$ ${data.prize.amount_brl.toFixed(2)}
+              </div>
+              <div class="text-sm ${rtpColor} font-mono">
+                ${data.prize.rtp_percentage.toFixed(0)}% RTP
+              </div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(prizeToast);
+        
+        // Remove após 5 segundos (jackpot fica mais tempo)
+        setTimeout(() => {
+          prizeToast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+          setTimeout(() => document.body.removeChild(prizeToast), 500);
+        }, isJackpot ? 8000 : 5000);
+      }
+
       // ✨ DETECTA PITY TRIGGER
       if (data.pity_triggered && data.pity_type) {
         setPityExplosion(data.pity_type); // 'legendary' ou 'godmode'

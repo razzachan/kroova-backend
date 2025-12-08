@@ -1,118 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { calculateBoosterPrize } from '@/lib/prizeCalculator';
 
 export const runtime = 'edge';
 
-// ==========================================================================
-// PRIZE CALCULATOR INLINED (Edge runtime não consegue importar módulos externos)
-// ==========================================================================
-interface PrizeResult {
-  prize_amount_brl: number;
-  rtp_percentage: number;
-  prize_tier: 'loss' | 'near_even' | 'small_win' | 'jackpot';
-  calculation_details: {
-    booster_cost: number;
-    random_roll: number;
-    distribution_hit: string;
-    multiplier_used: number;
-  };
-}
-
-const RTP_DISTRIBUTION_BY_TIER = {
-  'Básico': {
-    loss: { weight: 50, rtp_range: [0.20, 0.50] },
-    near_even: { weight: 35, rtp_range: [0.60, 0.90] },
-    small_win: { weight: 14, rtp_range: [1.00, 1.50] },
-    jackpot: { weight: 1, rtp_range: [3.00, 5.00] }
-  },
-  'Padrão': {
-    loss: { weight: 60, rtp_range: [0.15, 0.45] },
-    near_even: { weight: 30, rtp_range: [0.60, 0.90] },
-    small_win: { weight: 9, rtp_range: [1.00, 2.00] },
-    jackpot: { weight: 1, rtp_range: [5.00, 8.00] }
-  },
-  'Premium': {
-    loss: { weight: 65, rtp_range: [0.10, 0.40] },
-    near_even: { weight: 27, rtp_range: [0.60, 0.90] },
-    small_win: { weight: 7, rtp_range: [1.00, 2.50] },
-    jackpot: { weight: 1, rtp_range: [6.00, 10.00] }
-  },
-  'Elite': {
-    loss: { weight: 70, rtp_range: [0.08, 0.35] },
-    near_even: { weight: 23, rtp_range: [0.60, 0.90] },
-    small_win: { weight: 6, rtp_range: [1.00, 2.00] },
-    jackpot: { weight: 1, rtp_range: [7.00, 12.00] }
-  },
-  'Whale': {
-    loss: { weight: 75, rtp_range: [0.05, 0.30] },
-    near_even: { weight: 20, rtp_range: [0.60, 0.85] },
-    small_win: { weight: 4, rtp_range: [1.00, 1.80] },
-    jackpot: { weight: 1, rtp_range: [8.00, 15.00] }
-  }
-};
-
-function calculateBoosterPrize(
-  boosterType: { id: string; name: string; price_brl: number; tier: string },
-  droppedCards: any[]
-): PrizeResult {
-  const boosterCost = boosterType.price_brl;
-  const tierName = boosterType.name.split(' ')[0] as keyof typeof RTP_DISTRIBUTION_BY_TIER;
-  const distribution = RTP_DISTRIBUTION_BY_TIER[tierName] || RTP_DISTRIBUTION_BY_TIER['Padrão'];
-  
-  const totalWeight = 
-    distribution.loss.weight +
-    distribution.near_even.weight +
-    distribution.small_win.weight +
-    distribution.jackpot.weight;
-  
-  const randomRoll = Math.random() * totalWeight;
-  
-  let cumulativeWeight = 0;
-  let selectedTier: 'loss' | 'near_even' | 'small_win' | 'jackpot' = 'loss';
-  let rtpRange: [number, number] = [0.20, 0.50];
-  
-  cumulativeWeight += distribution.loss.weight;
-  if (randomRoll < cumulativeWeight) {
-    selectedTier = 'loss';
-    rtpRange = distribution.loss.rtp_range as [number, number];
-  } else {
-    cumulativeWeight += distribution.near_even.weight;
-    if (randomRoll < cumulativeWeight) {
-      selectedTier = 'near_even';
-      rtpRange = distribution.near_even.rtp_range as [number, number];
-    } else {
-      cumulativeWeight += distribution.small_win.weight;
-      if (randomRoll < cumulativeWeight) {
-        selectedTier = 'small_win';
-        rtpRange = distribution.small_win.rtp_range as [number, number];
-      } else {
-        selectedTier = 'jackpot';
-        rtpRange = distribution.jackpot.rtp_range as [number, number];
-      }
-    }
-  }
-  
-  const [minRtp, maxRtp] = rtpRange;
-  const rtpMultiplier = minRtp + (Math.random() * (maxRtp - minRtp));
-  const prizeAmount = boosterCost * rtpMultiplier;
-  const rtpPercentage = rtpMultiplier * 100;
-  
-  return {
-    prize_amount_brl: Math.max(0.01, parseFloat(prizeAmount.toFixed(2))),
-    rtp_percentage: parseFloat(rtpPercentage.toFixed(2)),
-    prize_tier: selectedTier,
-    calculation_details: {
-      booster_cost: boosterCost,
-      random_roll: parseFloat(randomRoll.toFixed(2)),
-      distribution_hit: selectedTier,
-      multiplier_used: parseFloat(rtpMultiplier.toFixed(4))
-    }
-  };
-}
-// ==========================================================================
-
 export async function GET() {
-  return NextResponse.json({ ok: true, message: 'Prize System V4 - INLINE CODE' });
+  return NextResponse.json({ ok: true, message: 'GET working - Prize System V3' });
 }
 
 export async function POST(request: NextRequest) {
@@ -155,9 +48,7 @@ export async function POST(request: NextRequest) {
     });
     
     // Supabase client para operações administrativas (bypass RLS)
-    const supabaseAdmin = createClient(supabaseUrl, serviceKey, {
-      auth: { persistSession: false, autoRefreshToken: false }
-    });
+    const supabaseAdmin = createClient(supabaseUrl, serviceKey);
     console.log('[OPEN-V3-PRIZE] 5. Supabase clients criados');
     
     // Get user (usando client com auth)
@@ -301,13 +192,7 @@ export async function POST(request: NextRequest) {
       
       console.log(`[OPEN-V3-PRIZE] Skin: ${skinType}, Card: ${randomCard.name}, Base liquidity: R$ ${randomCard.base_liquidity_brl}`);
       
-      // Calcular cashback: 1% do custo do booster dividido por 5 cartas
-      const cashbackPerCard = (boosterType.price_brl * 0.01) / 5;
-      
-      // DEBUG: Log detalhado do cálculo
-      console.log(`[DEBUG-CASHBACK] Booster Price: ${boosterType.price_brl}, Cashback Calc: (${boosterType.price_brl} * 0.01) / 5 = ${cashbackPerCard}, Type: ${typeof cashbackPerCard}`);
-      
-      // Criar instância da carta (usa base_liquidity_brl FIXO + cashback resgatável)
+      // Criar instância da carta (usa base_liquidity_brl FIXO)
       const { data: cardInstance, error: instanceError } = await supabaseAdmin
         .from('cards_instances')
         .insert({
@@ -316,15 +201,10 @@ export async function POST(request: NextRequest) {
           edition_id: opening.booster_pack.edition_id,
           skin: skinType,
           is_godmode: false,
-          liquidity_brl: randomCard.base_liquidity_brl, // FIXO! Não varia por booster
-          prize_amount_brl: cashbackPerCard, // Cashback de 1% resgatável
-          prize_redeemed: false
+          liquidity_brl: randomCard.base_liquidity_brl // FIXO! Não varia por booster
         })
         .select()
         .single();
-      
-      // DEBUG: Log do resultado inserido
-      console.log(`[DEBUG-CASHBACK] Inserted Card ID: ${cardInstance?.id}, Prize Amount: ${cardInstance?.prize_amount_brl}`);
       
       if (instanceError || !cardInstance) {
         console.error('[OPEN-V3-PRIZE] Erro ao criar instância:', instanceError);

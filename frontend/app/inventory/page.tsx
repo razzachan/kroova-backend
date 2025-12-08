@@ -30,6 +30,9 @@ interface CardInstance {
   liquidity_brl: number;
   minted_at: string;
   cards_base?: CardBase;
+  prize_amount_brl?: number;       // ✅ Cashback resgatável
+  prize_redeemed?: boolean;         // ✅ Se já foi resgatado
+  prize_redeemed_at?: string;       // ✅ Data do resgate
 }
 
 export default function InventoryPage() {
@@ -345,6 +348,64 @@ export default function InventoryPage() {
       await api.post('/market/listings', {
         card_instance_id: cardInstanceId,
         price_brl: price
+      });
+
+      cardAudio.playSuccessChime();
+      setShowSuccessModal(true);
+      setTimeout(() => setShowSuccessModal(false), 3000);
+      setSellingCard(null);
+      setSalePrice('');
+      await loadInventory();
+    } catch (error: any) {
+      cardAudio.playErrorBuzz();
+      alert(error.response?.data?.error || 'Erro ao criar anúncio');
+    }
+  };
+  
+  // 💰 FUNÇÃO PARA RESGATAR CASHBACK
+  const handleRedeemCashback = async (cardInstanceId: string) => {
+    try {
+      cardAudio.playClickSound();
+      const response = await api.post('/cards/redeem-prize', {
+        card_instance_id: cardInstanceId
+      });
+      
+      const data = unwrap<{ 
+        cashback_amount: number; 
+        new_balance: number;
+        card_name: string;
+      }>(response);
+      
+      cardAudio.playSuccessChime();
+      triggerHaptic('success');
+      
+      // Notificação de sucesso
+      const toast = document.createElement('div');
+      toast.className = 'fixed top-20 right-4 bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg z-50 animate-slide-in';
+      toast.innerHTML = `
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">💰</span>
+          <div>
+            <div class="font-bold">Cashback Resgatado!</div>
+            <div class="text-sm">R$ ${data.cashback_amount.toFixed(4)} → Wallet</div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      setTimeout(() => document.body.removeChild(toast), 3000);
+      
+      // Recarregar inventário
+      await loadInventory();
+      
+      // Disparar evento para atualizar saldo no header (se houver)
+      window.dispatchEvent(new Event('walletUpdated'));
+      
+    } catch (error: any) {
+      console.error('Erro ao resgatar cashback:', error);
+      cardAudio.playErrorBuzz();
+      alert(error.response?.data?.error || 'Erro ao resgatar cashback');
+    }
+  };
       });
       cardAudio.playSuccessChime();
       setShowSuccessModal(true);
@@ -976,7 +1037,35 @@ export default function InventoryPage() {
                     <div className="text-xs text-gray-400">
                       <div>ID: {baseCard?.display_id}</div>
                       <div>Liquidez: R$ {card.liquidity_brl?.toFixed(2) || '0.00'}</div>
+                      
+                      {/* 💰 CASHBACK BADGE */}
+                      {!card.prize_redeemed && card.prize_amount_brl && card.prize_amount_brl > 0 && (
+                        <div className="mt-2 bg-green-500/20 border border-green-500 rounded px-2 py-1 text-green-400 font-bold text-xs flex items-center gap-1">
+                          <span>💰</span>
+                          <span>Cashback: R$ {card.prize_amount_brl.toFixed(4)}</span>
+                        </div>
+                      )}
+                      
+                      {/* ✅ CASHBACK RESGATADO */}
+                      {card.prize_redeemed && card.prize_amount_brl && card.prize_amount_brl > 0 && (
+                        <div className="mt-2 bg-gray-700/50 border border-gray-600 rounded px-2 py-1 text-gray-500 text-xs flex items-center gap-1">
+                          <span>✅</span>
+                          <span>Cashback resgatado</span>
+                        </div>
+                      )}
                     </div>
+                    
+                    {/* 💰 BOTÃO DE RESGATAR CASHBACK */}
+                    {!card.prize_redeemed && card.prize_amount_brl && card.prize_amount_brl > 0 && !sellingCard && !listedCards.includes(card.id) && (
+                      <GlitchButton
+                        onClick={() => handleRedeemCashback(card.id)}
+                        variant="success"
+                        size="sm"
+                        className="w-full mt-2"
+                      >
+                        💰 RESGATAR R$ {card.prize_amount_brl.toFixed(4)}
+                      </GlitchButton>
+                    )}
                     
                     {sellingCard === card.id ? (
                       <div className="space-y-3 mt-4">

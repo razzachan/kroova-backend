@@ -64,15 +64,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 1. Verificar saldo
-    const { data: users, error: userError } = await supabase.from('users').select('balance_brl').eq('id', user_id);
+    // 1. Verificar saldo na WALLET (não users)
+    const { data: wallet, error: walletError } = await supabase
+      .from('wallets')
+      .select('balance_brl')
+      .eq('user_id', user_id)
+      .single();
     
-    const user = users?.[0];
-    console.log('DEBUG user query:', { user_id, found: !!user, count: users?.length, error: userError?.message });
+    console.log('DEBUG wallet query:', { user_id, found: !!wallet, balance: wallet?.balance_brl, error: walletError?.message });
     
-    if (userError || !user) {
+    if (walletError || !wallet) {
       return NextResponse.json(
-        { ok: false, error: { code: 'USER_NOT_FOUND', message: `User not found: ${userError?.message || 'no data'}` } },
+        { ok: false, error: { code: 'WALLET_NOT_FOUND', message: `Wallet not found: ${walletError?.message || 'no data'}` } },
         { status: 404 }
       );
     }
@@ -105,9 +108,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (user.balance_brl < booster.price_brl) {
+    if (wallet.balance_brl < booster.price_brl) {
       return NextResponse.json(
-        { ok: false, error: { code: 'INSUFFICIENT_BALANCE', message: `Saldo insuficiente. Você tem R$ ${user.balance_brl}, precisa de R$ ${booster.price_brl}` } },
+        { ok: false, error: { code: 'INSUFFICIENT_BALANCE', message: `Saldo insuficiente. Você tem R$ ${wallet.balance_brl}, precisa de R$ ${booster.price_brl}` } },
         { status: 400 }
       );
     }
@@ -179,11 +182,11 @@ export async function POST(request: NextRequest) {
       await supabase.rpc('increment_pity_counter', { p_user_id: user_id, p_edition_id: booster.edition_id });
     }
 
-    // 8. Debitar saldo
+    // 8. Debitar saldo da WALLET (não users)
     await supabase
-      .from('users')
-      .update({ balance_brl: user.balance_brl - booster.price_brl })
-      .eq('id', user_id);
+      .from('wallets')
+      .update({ balance_brl: wallet.balance_brl - booster.price_brl })
+      .eq('user_id', user_id);
 
     // 8. Retornar resultado
     return NextResponse.json({

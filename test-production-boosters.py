@@ -11,7 +11,7 @@ from datetime import datetime
 # Configuração
 SUPABASE_URL = "https://mmcytphoeyxeylvaqjgr.supabase.co"
 SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1tY3l0cGhvZXl4ZXlsdmFxamdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMTQyMjAsImV4cCI6MjA3OTY5MDIyMH0.i1bcSAGL_J-vxc6gxwXZZxfn7GJl8puL5eYwe9UkZAs"
-FRONTEND_URL = "https://frontend-3psxfgumo-razzachans-projects.vercel.app"
+FRONTEND_URL = "https://frontend-7efzij7zx-razzachans-projects.vercel.app"  # FINAL - Clean version
 
 EMAIL = "akroma.julio@gmail.com"
 PASSWORD = "Akroma!t8g86v8t!3159"

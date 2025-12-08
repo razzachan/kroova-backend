@@ -1,0 +1,20 @@
+﻿
+================================================================================
+python : Traceback (most recent call last):
+No linha:1 caractere:1
++ python c:\Kroova\test-cashback-system.py 2>&1 | Out-File -Encoding UT ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call la 
+   st)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "c:\Kroova\test-cashback-system.py", line 313, in <module>
+    main()
+  File "c:\Kroova\test-cashback-system.py", line 288, in main
+    print("\U0001f9ea TESTE COMPLETO: SISTEMA DE CASHBACK E PONTOS")
+  File "C:\Users\akrom\AppData\Local\Programs\Python\Python312\Lib\encodings
+\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f9ea' in 
+position 0: character maps to <undefined>

@@ -61,33 +61,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verificar saldo do usuário (CORREÇÃO: campo é 'id' não 'user_id')
-    const { data: userData, error: userError } = await supabase
-      .from('users')
+    // Verificar saldo do usuário na tabela WALLETS (não users)
+    const { data: wallet, error: walletError } = await supabase
+      .from('wallets')
       .select('balance_brl')
-      .eq('id', user.id)
+      .eq('user_id', user.id)
       .single();
 
-    if (userError || !userData) {
-      console.error('❌ Usuário não encontrado:', userError);
+    if (walletError || !wallet) {
+      console.error('❌ Wallet não encontrada:', walletError);
       return NextResponse.json(
-        { error: 'Usuário não encontrado' },
+        { error: 'Wallet não encontrada' },
         { status: 404 }
       );
     }
 
-    if (userData.balance_brl < boxType.price_brl) {
+    if (wallet.balance_brl < boxType.price_brl) {
       return NextResponse.json(
-        { error: 'Saldo insuficiente', required: boxType.price_brl, current: userData.balance_brl },
+        { error: 'Saldo insuficiente', required: boxType.price_brl, current: wallet.balance_brl },
         { status: 400 }
       );
     }
 
-    // Debitar saldo
+    // Debitar saldo da WALLET
     const { error: debitError } = await supabase
-      .from('users')
-      .update({ balance_brl: userData.balance_brl - boxType.price_brl })
-      .eq('id', user.id);
+      .from('wallets')
+      .update({ balance_brl: wallet.balance_brl - boxType.price_brl })
+      .eq('user_id', user.id);
 
     if (debitError) {
       console.error('❌ Erro ao debitar saldo:', debitError);
@@ -111,11 +111,11 @@ export async function POST(request: NextRequest) {
     if (instanceError || !instance) {
       console.error('❌ Erro ao criar instância:', instanceError);
       
-      // Rollback: devolver saldo (CORREÇÃO: campo é 'id' não 'user_id')
+      // Rollback: devolver saldo na WALLET (não users)
       await supabase
-        .from('users')
-        .update({ balance_brl: userData.balance_brl })
-        .eq('id', user.id);
+        .from('wallets')
+        .update({ balance_brl: wallet.balance_brl })
+        .eq('user_id', user.id);
 
       return NextResponse.json(
         { error: 'Erro ao criar Mystery Box' },
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
       box_tier: boxType.tier,
       price_paid: boxType.price_brl,
       purchased_at: instance.purchased_at,
-      new_balance: userData.balance_brl - boxType.price_brl
+      new_balance: wallet.balance_brl - boxType.price_brl
     });
 
   } catch (error) {

@@ -365,7 +365,6 @@ export default function InventoryPage() {
   // 💰 FUNÇÃO PARA RESGATAR CASHBACK
   const handleRedeemCashback = async (cardInstanceId: string) => {
     try {
-      cardAudio.playClickSound();
       const response = await api.post('/cards/redeem-prize', {
         card_instance_id: cardInstanceId
       });

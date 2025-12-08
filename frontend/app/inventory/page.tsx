@@ -376,7 +376,6 @@ export default function InventoryPage() {
       }>(response);
       
       cardAudio.playSuccessChime();
-      triggerHaptic('success');
       
       // Notificação de sucesso
       const toast = document.createElement('div');

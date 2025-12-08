@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Kroova Card Image Generator - Google Vertex AI (Imagen 4)
+Kroova Card Image Generator - Google Vertex AI (Imagen 4 ULTRA)
 Gera imagens fotorealísticas 2K (3:4 aspect ratio) para todas as 354 cartas ED01
 usando Imagen 4 Ultra via Vertex AI API
 
@@ -8,6 +8,31 @@ usando Imagen 4 Ultra via Vertex AI API
    - Not generic templates, but SPECIFIC visual narratives
    - Props, objects, poses extracted from card story
    - Character design reflects their actual personality/lore
+
+🔧 SETUP (Google Cloud SDK CLI):
+   1. Install Google Cloud SDK: https://cloud.google.com/sdk/docs/install
+   2. Authenticate: gcloud auth application-default login
+   3. Set project: gcloud config set project YOUR_PROJECT_ID
+   4. Enable Vertex AI API: gcloud services enable aiplatform.googleapis.com
+   5. Install dependencies: pip install google-genai requests python-dotenv
+
+📦 AVAILABLE MODELS (quality vs speed):
+   - imagen-4.0-ultra-generate-001 (BEST quality, slowest, default)
+   - imagen-4.0-generate-001 (balanced)
+   - imagen-4.0-fast-generate-001 (fastest, lower quality)
+
+🚀 USAGE:
+   # Generate all cards (resume supported):
+   python scripts/generate-card-images-gemini.py --yes --resume
+   
+   # Generate from specific position:
+   python scripts/generate-card-images-gemini.py --start 50 --limit 10
+   
+   # Use different model:
+   python scripts/generate-card-images-gemini.py --model fast --yes
+   
+   # With fallback models:
+   python scripts/generate-card-images-gemini.py --model ultra --fallback-models generate,fast --yes
 """
 
 import os
@@ -41,11 +66,11 @@ except ImportError as e:
 
 # Google Gemini API (Imagen 4) settings
 IMAGEN_CONFIG = {
-    'model': 'imagen-4.0-ultra-generate-001',  # default model (can be overridden via --model)
+    'model': 'imagen-4.0-ultra-generate-001',  # ULTRA = best quality (default)
     'number_of_images': 1,
     'aspect_ratio': '3:4',  # Portrait orientation
-    'image_size': '2K',  # Maximum quality (2048px)
     'person_generation': 'allow_adult',
+    # Note: image_size not supported in ultra/fast variants
 }
 
 # Branding constants from KROOVA_BRANDING.md

@@ -71,6 +71,10 @@ export default function InventoryPage() {
   const [showValueModal, setShowValueModal] = useState(false);
   const [recyclesToday, setRecyclesToday] = useState(0);
   const MAX_RECYCLES = 3;
+  
+  // Recycle Points
+  const [recyclePoints, setRecyclePoints] = useState(0);
+  const [showRecycleModal, setShowRecycleModal] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -120,6 +124,15 @@ export default function InventoryPage() {
       setInventory(data.cards || []);
       setListedCards(data.listed_card_ids || []);
       setRecyclesToday(data.recycles_today || 0);
+      
+      // Load recycle points
+      try {
+        const pointsResponse = await api.get('/recycle/progress');
+        const pointsData = unwrap<{ total_points: number }>(pointsResponse);
+        setRecyclePoints(pointsData.total_points || 0);
+      } catch (error) {
+        console.log('[inventory] Sem pontos de reciclagem ainda');
+      }
       
     } catch (error) {
       console.error('Erro ao carregar inventário:', error);
@@ -371,9 +384,14 @@ export default function InventoryPage() {
   
   // ♻️ FUNÇÃO PARA RECICLAR 1 CARTA
   const handleRecycleSingle = async (cardInstanceId: string) => {
-    if (!confirm('♻️ Reciclar esta carta?\n\nA carta será destruída e você ganhará pontos.')) {
-      return;
-    }
+    setShowRecycleModal(cardInstanceId);
+  };
+  
+  const confirmRecycleSingle = async () => {
+    if (!showRecycleModal) return;
+    
+    const cardInstanceId = showRecycleModal;
+    setShowRecycleModal(null);
     
     try {
       const response = await api.post('/cards/recycle-for-points', {
@@ -399,6 +417,7 @@ export default function InventoryPage() {
       document.body.appendChild(toast);
       setTimeout(() => document.body.removeChild(toast), 3000);
       
+      setRecyclePoints(data.total_points);
       await loadInventory();
     } catch (error: any) {
       cardAudio.playErrorBuzz();
@@ -508,12 +527,33 @@ export default function InventoryPage() {
             <TextGlitch delay={300}>🃏 VAULT</TextGlitch>
           </h1>
           
-          {/* Total Inventory Value Badge */}
-          {inventory.length > 0 && (
+          {/* Stats Badges */}
+          <div className="flex gap-3">
+            {/* Recycle Points Badge */}
             <button
-              onClick={() => setShowValueModal(true)}
-              className="group relative overflow-hidden bg-gradient-to-r from-green-900/30 to-emerald-900/30 border-2 border-green-500/40 rounded-lg px-6 py-3 hover:border-green-400 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20"
+              onClick={() => router.push('/boosters')}
+              className="group relative overflow-hidden bg-gradient-to-r from-purple-900/30 to-pink-900/30 border-2 border-purple-500/40 rounded-lg px-6 py-3 hover:border-purple-400 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20"
             >
+              <div className="relative z-10">
+                <div className="text-purple-400 text-xs font-bold uppercase tracking-wider mb-1">
+                  ♻️ Pontos de Reciclagem
+                </div>
+                <div className="text-2xl font-bold text-purple-300">
+                  {recyclePoints.toLocaleString()} pts
+                </div>
+                <div className="text-xs text-purple-400/70 mt-1">
+                  Clique para trocar por boosters
+                </div>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </button>
+            
+            {/* Cashback Badge */}
+            {inventory.length > 0 && (
+              <button
+                onClick={() => setShowValueModal(true)}
+                className="group relative overflow-hidden bg-gradient-to-r from-green-900/30 to-emerald-900/30 border-2 border-green-500/40 rounded-lg px-6 py-3 hover:border-green-400 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/20"
+              >
               <div className="relative z-10">
                 <div className="text-green-400 text-xs font-bold uppercase tracking-wider mb-1">
                   💰 Cashback Disponível
@@ -527,7 +567,8 @@ export default function InventoryPage() {
               </div>
               <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
-          )}
+            )}
+          </div>
           
           {/* Filter Buttons */}
           {inventory.length > 0 && (
@@ -1115,6 +1156,89 @@ export default function InventoryPage() {
                     className="min-w-[200px]"
                   >
                     ✓ Entendi
+                  </GlitchButton>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Recycle Confirmation Modal */}
+      {showRecycleModal && (() => {
+        const card = inventory.find(c => c.id === showRecycleModal);
+        if (!card) return null;
+        
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border-2 border-purple-500/50 rounded-lg p-8 max-w-md w-full mx-4 relative overflow-hidden">
+              {/* Background effects */}
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 animate-pulse"></div>
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-pink-400 to-purple-500"></div>
+              
+              <div className="relative z-10">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-purple-400 mb-2">
+                      <TextGlitch delay={100}>♻️ Reciclar esta carta?</TextGlitch>
+                    </h2>
+                  </div>
+                  <button
+                    onClick={() => setShowRecycleModal(null)}
+                    className="text-gray-400 hover:text-white transition text-3xl"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Card Preview */}
+                <div className="bg-black/40 border border-purple-500/30 rounded-lg p-4 mb-6">
+                  <div className="flex items-center gap-4">
+                    {card.cards_base?.image_url && (
+                      <img 
+                        src={card.cards_base.image_url} 
+                        alt={card.cards_base.name}
+                        className="w-20 h-28 object-cover rounded"
+                      />
+                    )}
+                    <div>
+                      <div className="text-white font-bold text-lg">{card.cards_base?.name}</div>
+                      <div className="text-purple-400 text-sm capitalize">{card.cards_base?.rarity}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Warning */}
+                <div className="bg-gradient-to-r from-red-900/20 to-orange-900/20 border border-red-500/30 rounded-lg p-4 mb-6">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">⚠️</span>
+                    <div className="text-sm">
+                      <div className="text-red-400 font-bold mb-1">A carta será destruída</div>
+                      <div className="text-gray-400">
+                        Você ganhará pontos de reciclagem que podem ser trocados por boosters na loja.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3">
+                  <GlitchButton
+                    onClick={() => setShowRecycleModal(null)}
+                    variant="secondary"
+                    size="lg"
+                    className="flex-1"
+                  >
+                    Cancelar
+                  </GlitchButton>
+                  <GlitchButton
+                    onClick={confirmRecycleSingle}
+                    variant="danger"
+                    size="lg"
+                    className="flex-1"
+                  >
+                    ♻️ Reciclar
                   </GlitchButton>
                 </div>
               </div>

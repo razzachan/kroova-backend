@@ -15,6 +15,9 @@ interface CardInstance {
   is_godmode: boolean;
   liquidity_brl: number;
   minted_at: string;
+  prize_amount_brl?: number;
+  prize_redeemed?: boolean;
+  prize_redeemed_at?: string;
   cards_base?: {
     id: string;
     name: string;
@@ -73,6 +76,9 @@ export async function GET(request: NextRequest) {
           is_godmode,
           liquidity_brl,
           minted_at,
+          prize_amount_brl,
+          prize_redeemed,
+          prize_redeemed_at,
           cards_base:base_id (
             id,
             name,

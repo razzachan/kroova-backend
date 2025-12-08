@@ -406,20 +406,6 @@ export default function InventoryPage() {
       alert(error.response?.data?.error || 'Erro ao resgatar cashback');
     }
   };
-      });
-      cardAudio.playSuccessChime();
-      setShowSuccessModal(true);
-      setSellingCard(null);
-      setSalePrice('');
-      setTimeout(() => {
-        setShowSuccessModal(false);
-        loadInventory();
-      }, 2000);
-    } catch (error: any) {
-      cardAudio.playErrorBuzz();
-      alert(error.response?.data?.error?.message || 'Erro ao listar carta');
-    }
-  };
 
   const handleCancelListing = async (cardInstanceId: string) => {
     if (!confirm('Cancelar venda desta carta?')) return;

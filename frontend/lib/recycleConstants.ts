@@ -17,12 +17,28 @@ export const RECYCLE_POINTS_BY_RARITY: Record<string, number> = {
 // ============================================================================
 // BOOSTER COSTS IN POINTS
 // ============================================================================
+// Economy design: Points cost = 150% of booster price
+// This prevents exploit loops (buy → open → sell → recycle → repeat)
+// 
+// Math:
+// - Básico R$ 0.50 × 150% = R$ 0.75 = 75 points
+// - Padrão R$ 1.00 × 150% = R$ 1.50 = 150 points
+// - Premium R$ 2.00 × 150% = R$ 3.00 = 300 points
+// - Elite R$ 5.00 × 150% = R$ 7.50 = 750 points
+// - Whale R$ 10.00 × 150% = R$ 15.00 = 1500 points
+//
+// Why 150%?
+// - Boosters have 65-72% RTP (return to player)
+// - Even with max RTP (72%), player gets R$ 0.72 from R$ 1.00 booster
+// - To get 150 points, need to recycle R$ 1.50 worth of cards
+// - But cards only return 65-72% of value, so actual cost is ~R$ 2.00+
+// - This creates sustainable sink: players trade excess trash for variety
 export const BOOSTER_POINTS_COST: Record<string, number> = {
-  'Básico': 50,    // R$ 0.50 / 0.01 = 50 points
-  'Padrão': 100,   // R$ 1.00 / 0.01 = 100 points
-  'Premium': 200,  // R$ 2.00 / 0.01 = 200 points
-  'Elite': 500,    // R$ 5.00 / 0.01 = 500 points
-  'Whale': 1000    // R$ 10.00 / 0.01 = 1000 points
+  'Básico': 75,     // R$ 0.50 × 150% = 75 points (requires ~R$ 1.00 in recycled cards)
+  'Padrão': 150,    // R$ 1.00 × 150% = 150 points (requires ~R$ 2.00 in recycled cards)
+  'Premium': 300,   // R$ 2.00 × 150% = 300 points (requires ~R$ 4.00 in recycled cards)
+  'Elite': 750,     // R$ 5.00 × 150% = 750 points (requires ~R$ 10.00 in recycled cards)
+  'Whale': 1500     // R$ 10.00 × 150% = 1500 points (requires ~R$ 20.00 in recycled cards)
 };
 
 // ============================================================================

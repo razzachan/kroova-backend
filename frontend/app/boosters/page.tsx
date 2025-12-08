@@ -17,6 +17,7 @@ import TextGlitch from '@/components/Effects/TextGlitch';
 import HolographicCard from '@/components/UI/HolographicCard';
 import BoosterCard3D from '@/components/UI/BoosterCard3D';
 import { RarityGuide } from '@/components/RarityGuide';
+import { getBoosterPointsCost } from '@/lib/recycleConstants';
 
 // Mapeamento de pack_id para imagem do booster
 const PACK_IMAGES: Record<string, string> = {
@@ -97,6 +98,11 @@ export default function BoostersPage() {
   const [showMultipleModal, setShowMultipleModal] = useState(false);
   const [currentBoosterIndex, setCurrentBoosterIndex] = useState(0);
   const [sealedPacks, setSealedPacks] = useState<any[]>([]);
+  
+  // Recycle points exchange
+  const [recyclePoints, setRecyclePoints] = useState(0);
+  const [showExchangeModal, setShowExchangeModal] = useState<string | null>(null);
+  const [exchanging, setExchanging] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -191,6 +197,15 @@ export default function BoostersPage() {
       const walletData = data.wallet;
       setBalance(walletData.balance_brl);
       
+      // Load recycle points
+      try {
+        const pointsResponse = await api.get('/recycle/progress');
+        const pointsData = unwrap(pointsResponse);
+        setRecyclePoints(pointsData.total_points || 0);
+      } catch (error) {
+        console.log('[boosters] Sem pontos de reciclagem ainda');
+      }
+      
       // ✨ Carrega pity counters do wallet
       setPityLegendary({
         current: walletData.pity_legendary_counter || 0,
@@ -266,6 +281,47 @@ export default function BoostersPage() {
       cardAudio.setAmbientIntensity('active');
     } finally {
       setPurchasing(null);
+    }
+  }
+
+  async function handleExchangePoints(boosterTier: string) {
+    setExchanging(true);
+    
+    try {
+      const res = await api.post('/recycle/exchange', {
+        booster_tier: boosterTier
+      });
+      const data = unwrap(res);
+      
+      cardAudio.playSuccessChime();
+      
+      // Mostrar toast de sucesso
+      const toast = document.createElement('div');
+      toast.className = 'fixed top-24 right-4 z-50 bg-gradient-to-r from-purple-900 to-pink-900 border-2 border-purple-500 rounded-lg p-4 shadow-lg';
+      toast.innerHTML = `
+        <div class="flex items-center gap-3">
+          <span class="text-3xl">✅</span>
+          <div>
+            <div class="text-white font-bold">Booster Adquirido!</div>
+            <div class="text-purple-300 text-sm">Trocou ${data.points_spent} pontos por 1 ${boosterTier}</div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      setTimeout(() => document.body.removeChild(toast), 3000);
+      
+      // Atualizar pontos e fechar modal
+      setRecyclePoints(data.remaining_points);
+      setShowExchangeModal(null);
+      
+      // Recarregar dados para mostrar booster lacrado
+      await loadData();
+      
+    } catch (error: any) {
+      cardAudio.playErrorBuzz();
+      alert(error.response?.data?.error || 'Erro ao trocar pontos');
+    } finally {
+      setExchanging(false);
     }
   }
 
@@ -533,8 +589,14 @@ export default function BoostersPage() {
           <h1 className="text-4xl font-bold">
             <TextGlitch delay={300}>DIGITAL BAZAAR</TextGlitch>
           </h1>
-          <div className="text-2xl font-mono">
-            💰 <span className="text-[#00F0FF]">R$ {balance.toFixed(2)}</span>
+          <div className="flex gap-4 items-center">
+            <div className="text-2xl font-mono">
+              💰 <span className="text-[#00F0FF]">R$ {balance.toFixed(2)}</span>
+            </div>
+            <div className="bg-gradient-to-r from-purple-900/40 to-pink-900/40 border-2 border-purple-500/40 rounded-lg px-4 py-2">
+              <div className="text-xs text-purple-400 uppercase tracking-wider">Pontos</div>
+              <div className="text-xl font-bold text-purple-300">♻️ {recyclePoints.toLocaleString()}</div>
+            </div>
           </div>
         </div>
 
@@ -884,33 +946,50 @@ export default function BoostersPage() {
                     </div>
                   </div>
                   
-                  <GlitchButton
-                    onClick={() => {
-                      const booster = boosters.find(b => b.id === selectedVariant);
-                      if (booster) {
-                        handlePurchase(booster.id, quantityByBooster[selectedVariant] || 1);
+                  <div className="flex gap-3">
+                    <GlitchButton
+                      onClick={() => {
+                        const booster = boosters.find(b => b.id === selectedVariant);
+                        if (booster) {
+                          handlePurchase(booster.id, quantityByBooster[selectedVariant] || 1);
+                        }
+                      }}
+                      disabled={
+                        purchasing === selectedVariant || 
+                        opening !== null || 
+                        balance < (boosters.find(b => b.id === selectedVariant)?.price_brl || 0) * (quantityByBooster[selectedVariant] || 1)
                       }
-                    }}
-                    disabled={
-                      purchasing === selectedVariant || 
-                      opening !== null || 
-                      balance < (boosters.find(b => b.id === selectedVariant)?.price_brl || 0) * (quantityByBooster[selectedVariant] || 1)
-                    }
-                    variant={
-                      balance < (boosters.find(b => b.id === selectedVariant)?.price_brl || 0) * (quantityByBooster[selectedVariant] || 1)
-                        ? 'danger' 
-                        : 'primary'
-                    }
-                    size="lg"
-                    isLoading={purchasing === selectedVariant}
-                    className="px-8"
-                  >
-                    {purchasing === selectedVariant
-                      ? 'PROCESSANDO'
-                      : balance < (boosters.find(b => b.id === selectedVariant)?.price_brl || 0) * (quantityByBooster[selectedVariant] || 1)
-                      ? 'SALDO INSUFICIENTE'
-                      : 'COMPRAR AGORA'}
-                  </GlitchButton>
+                      variant={
+                        balance < (boosters.find(b => b.id === selectedVariant)?.price_brl || 0) * (quantityByBooster[selectedVariant] || 1)
+                          ? 'danger' 
+                          : 'primary'
+                      }
+                      size="lg"
+                      isLoading={purchasing === selectedVariant}
+                      className="px-8"
+                    >
+                      {purchasing === selectedVariant
+                        ? 'PROCESSANDO'
+                        : balance < (boosters.find(b => b.id === selectedVariant)?.price_brl || 0) * (quantityByBooster[selectedVariant] || 1)
+                        ? 'SALDO INSUFICIENTE'
+                        : 'COMPRAR AGORA'}
+                    </GlitchButton>
+                    
+                    <GlitchButton
+                      onClick={() => {
+                        const booster = boosters.find(b => b.id === selectedVariant);
+                        if (booster) {
+                          setShowExchangeModal(booster.name);
+                        }
+                      }}
+                      disabled={exchanging || opening !== null || (quantityByBooster[selectedVariant] || 1) > 1}
+                      variant="secondary"
+                      size="lg"
+                      className="px-6 border-purple-500/50 hover:border-purple-400"
+                    >
+                      ♻️ TROCAR PONTOS
+                    </GlitchButton>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1132,6 +1211,115 @@ export default function BoostersPage() {
           onComplete={() => setPityExplosion(null)}
         />
       )}
+      
+      {/* Exchange Points Modal */}
+      {showExchangeModal && (() => {
+        const pointsCost = getBoosterPointsCost(showExchangeModal);
+        const canAfford = recyclePoints >= pointsCost;
+        
+        return (
+          <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border-2 border-purple-500/50 rounded-lg p-8 max-w-md w-full mx-4 relative overflow-hidden">
+              {/* Background effects */}
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 animate-pulse"></div>
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-pink-400 to-purple-500"></div>
+              
+              <div className="relative z-10">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-purple-400">
+                    <TextGlitch delay={100}>♻️ Trocar Pontos</TextGlitch>
+                  </h2>
+                  <button
+                    onClick={() => setShowExchangeModal(null)}
+                    className="text-gray-400 hover:text-white transition text-3xl"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Booster Info */}
+                <div className="bg-black/40 border border-purple-500/30 rounded-lg p-6 mb-6">
+                  <div className="text-center mb-4">
+                    <div className="text-white font-bold text-xl mb-2">{showExchangeModal}</div>
+                    <div className="text-purple-400">Booster Pack</div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Custo:</span>
+                      <span className="text-purple-300 font-bold">{pointsCost.toLocaleString()} pontos</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Seus pontos:</span>
+                      <span className={`font-bold ${canAfford ? 'text-green-400' : 'text-red-400'}`}>
+                        {recyclePoints.toLocaleString()} pontos
+                      </span>
+                    </div>
+                    <div className="h-px bg-gray-700"></div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Restante:</span>
+                      <span className={`font-bold ${canAfford ? 'text-white' : 'text-red-400'}`}>
+                        {(recyclePoints - pointsCost).toLocaleString()} pontos
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Warning or Info */}
+                {!canAfford ? (
+                  <div className="bg-gradient-to-r from-red-900/20 to-orange-900/20 border border-red-500/30 rounded-lg p-4 mb-6">
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl">⚠️</span>
+                      <div className="text-sm">
+                        <div className="text-red-400 font-bold mb-1">Pontos Insuficientes</div>
+                        <div className="text-gray-400">
+                          Você precisa de mais {(pointsCost - recyclePoints).toLocaleString()} pontos.
+                          Recicle cartas no inventário para ganhar pontos!
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border border-purple-500/30 rounded-lg p-4 mb-6">
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl">✨</span>
+                      <div className="text-sm">
+                        <div className="text-purple-400 font-bold mb-1">Troca Disponível!</div>
+                        <div className="text-gray-400">
+                          Você receberá 1 booster {showExchangeModal} lacrado.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex gap-3">
+                  <GlitchButton
+                    onClick={() => setShowExchangeModal(null)}
+                    variant="secondary"
+                    size="lg"
+                    className="flex-1"
+                  >
+                    Cancelar
+                  </GlitchButton>
+                  <GlitchButton
+                    onClick={() => handleExchangePoints(showExchangeModal)}
+                    variant={canAfford ? "primary" : "danger"}
+                    size="lg"
+                    className="flex-1"
+                    disabled={!canAfford || exchanging}
+                    isLoading={exchanging}
+                  >
+                    {exchanging ? 'TROCANDO...' : canAfford ? '♻️ Confirmar' : 'Sem Pontos'}
+                  </GlitchButton>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

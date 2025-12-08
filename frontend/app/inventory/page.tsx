@@ -376,7 +376,7 @@ export default function InventoryPage() {
     }
     
     try {
-      const response = await api.post('/cards/recycle', {
+      const response = await api.post('/cards/recycle-for-points', {
         card_instance_ids: [cardInstanceId]
       });
       

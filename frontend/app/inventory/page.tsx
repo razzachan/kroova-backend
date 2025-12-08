@@ -369,6 +369,43 @@ export default function InventoryPage() {
     }
   };
   
+  // ♻️ FUNÇÃO PARA RECICLAR 1 CARTA
+  const handleRecycleSingle = async (cardInstanceId: string) => {
+    if (!confirm('♻️ Reciclar esta carta?\n\nA carta será destruída e você ganhará pontos.')) {
+      return;
+    }
+    
+    try {
+      const response = await api.post('/cards/recycle', {
+        card_instance_ids: [cardInstanceId]
+      });
+      
+      const data = unwrap<{ points_earned: number; total_points: number }>(response);
+      
+      cardAudio.playSuccessChime();
+      
+      // Toast notification
+      const toast = document.createElement('div');
+      toast.className = 'fixed top-24 right-4 z-50 bg-gradient-to-r from-purple-900 to-pink-900 border-2 border-purple-500 rounded-lg p-4 shadow-lg animate-slide-in-right';
+      toast.innerHTML = `
+        <div class="flex items-center gap-3">
+          <span class="text-3xl">♻️</span>
+          <div>
+            <div class="text-white font-bold">Carta Reciclada!</div>
+            <div class="text-purple-300 text-sm">+${data.points_earned} pontos (Total: ${data.total_points})</div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      setTimeout(() => document.body.removeChild(toast), 3000);
+      
+      await loadInventory();
+    } catch (error: any) {
+      cardAudio.playErrorBuzz();
+      alert(error.response?.data?.error?.message || 'Erro ao reciclar carta');
+    }
+  };
+  
   // 💰 FUNÇÃO PARA RESGATAR CASHBACK
   const handleRedeemCashback = async (cardInstanceId: string) => {
     try {
@@ -601,7 +638,7 @@ export default function InventoryPage() {
         )}
 
         {/* Recycle Bulk Button */}
-        {inventory.length >= 25 && (
+        {inventory.length >= 5 && (
           <div className="mb-6">
             <GlitchButton
               onClick={() => setShowRecycleBulk(!showRecycleBulk)}
@@ -609,14 +646,14 @@ export default function InventoryPage() {
               size="lg"
               className="w-full flex items-center justify-between"
             >
-              <span>♻️ RECICLAR 25 CARTAS E GANHAR 1 BOOSTER</span>
+              <span>♻️ RECICLAR 5 CARTAS E GANHAR 1 BOOSTER (TESTE)</span>
               <span className="text-2xl">{showRecycleBulk ? '▼' : '▶'}</span>
             </GlitchButton>
           </div>
         )}
 
         {/* Recycle Bulk Component */}
-        {showRecycleBulk && inventory.length >= 25 && (
+        {showRecycleBulk && inventory.length >= 5 && (
           <div className="mb-8">
             <RecycleBulk 
               cards={inventory.map(c => ({
@@ -811,14 +848,24 @@ export default function InventoryPage() {
                         </GlitchButton>
                       </div>
                     ) : (
-                      <GlitchButton
-                        onClick={() => setSellingCard(card.id)}
-                        variant="success"
-                        size="md"
-                        className="w-full mt-4"
-                      >
-                        💰 VENDER
-                      </GlitchButton>
+                      <div className="mt-4 space-y-2">
+                        <GlitchButton
+                          onClick={() => setSellingCard(card.id)}
+                          variant="success"
+                          size="md"
+                          className="w-full"
+                        >
+                          💰 VENDER
+                        </GlitchButton>
+                        <GlitchButton
+                          onClick={() => handleRecycleSingle(card.id)}
+                          variant="secondary"
+                          size="sm"
+                          className="w-full"
+                        >
+                          ♻️ RECICLAR
+                        </GlitchButton>
+                      </div>
                     )}
                   </div>
                 </HolographicCard>

@@ -1,0 +1,8 @@
+Esta é a função completa de handleAllCardsRevealed do /boosters incluindo:
+- Full HTML com contador animado
+- Toast de saldo atualizado
+- Animações de moedas e coroa
+- Keyframes CSS dinâmicos
+- SlotMachineCounter simulado
+
+Copiar isso para /my-boosters substituindo a função atual completamente.

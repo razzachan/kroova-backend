@@ -130,132 +130,185 @@ export default function MyBoostersPage() {
   }
   
   function handleAllCardsRevealed() {
-    // Todas as cartas foram reveladas - AGORA mostrar prêmio com animação!
-    console.log('🎯 [MY-BOOSTERS] handleAllCardsRevealed called, pendingPrizeData:', pendingPrizeData);
-    
+    // Todas as 5 cartas foram reveladas - AGORA mostrar prêmio com animação slot-machine!
     if (pendingPrizeData) {
-      console.log('✅ [MY-BOOSTERS] Showing prize animation...');
-      showPrizeAnimation(pendingPrizeData);
-      return; // Não limpar ainda, prêmio vai limpar
-    }
-    
-    console.warn('⚠️ [MY-BOOSTERS] No pending prize data, cleaning up...');
-    // Se não tem prêmio, limpar tudo
-    setOpening(null);
-    setAnimationStage('none');
-    setShowCards(false);
-    setRevealedCards([]);
-    cardAudio.setAmbientIntensity('active');
-  }
-
-  function showPrizeAnimation(prizeData: any) {
-    console.log('🎰 [MY-BOOSTERS] Prize data:', prizeData);
-    
-    // Validar dados do prêmio (campo é amount_brl, não prize_amount_brl)
-    const prizeAmount = prizeData?.amount_brl || prizeData?.prize_amount_brl;
-    if (!prizeData || typeof prizeAmount !== 'number') {
-      console.error('❌ [MY-BOOSTERS] Invalid prize data:', prizeData);
-      // Limpar estado e sair
-      setPendingPrizeData(null);
-      setOpening(null);
-      setAnimationStage('none');
-      setShowCards(false);
-      setRevealedCards([]);
-      cardAudio.setAmbientIntensity('active');
-      return;
-    }
-    
-    const prizeToast = document.createElement('div');
-    
-    prizeToast.className = 'fixed inset-0 z-[9999] flex items-center justify-center';
-    prizeToast.style.cssText = `
-      background: radial-gradient(ellipse at center, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.95) 100%);
-      backdrop-filter: blur(12px);
-      animation: overlay-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    `;
-    
-    const isJackpot = prizeData.is_jackpot || false;
-    const rtpPercentage = prizeData.rtp_percentage || 0;
-    const rtpColor = rtpPercentage >= 100 ? 'text-green-400' : 'text-purple-400';
-    
-    prizeToast.innerHTML = `
-      <div class="relative w-[95vw] max-w-3xl" style="animation: overlay-fade-in 0.6s ease-out;">
-        <div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-yellow-500/20 rounded-3xl blur-3xl animate-pulse"></div>
-        
-        <div class="relative bg-gradient-to-br from-black/90 via-purple-950/70 to-black/90 backdrop-blur-2xl rounded-3xl overflow-hidden" style="
-          border: 2px solid transparent;
-          background-clip: padding-box;
-          box-shadow: 
-            0 0 0 2px #00ff41,
-            0 0 30px rgba(0, 255, 65, 0.4),
-            0 30px 90px rgba(0, 0, 0, 0.9),
-            inset 0 2px 0 rgba(255, 255, 255, 0.1);
-          animation: casino-glow 3s ease-in-out infinite;
-        ">
-          <div class="absolute inset-0 opacity-10 pointer-events-none" style="
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 65, 0.3) 2px, rgba(0, 255, 65, 0.3) 4px);
-            animation: scanline-move 10s linear infinite;
-          "></div>
+      const prizeToast = document.createElement('div');
+      
+      // Full-screen overlay (Vegas casino style)
+      prizeToast.className = 'fixed inset-0 z-[9999] flex items-center justify-center';
+      prizeToast.style.cssText = `
+        background: radial-gradient(ellipse at center, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.95) 100%);
+        backdrop-filter: blur(12px);
+        animation: overlay-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      `;
+      
+      const isJackpot = pendingPrizeData.is_jackpot;
+      const rtpColor = pendingPrizeData.rtp_percentage >= 100 ? 'text-green-400' : 'text-purple-400';
+      
+      prizeToast.innerHTML = `
+        <div class="relative w-[95vw] max-w-3xl" style="animation: overlay-fade-in 0.6s ease-out;">
+          <div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-yellow-500/20 rounded-3xl blur-3xl animate-pulse"></div>
           
-          <div class="relative z-10 px-12 py-20 text-center">
-            <div class="inline-block mb-8 px-8 py-3 bg-gradient-to-r from-yellow-600/30 to-orange-600/30 border-2 border-yellow-400/60 rounded-full backdrop-blur-md">
-              <span class="text-yellow-300 font-black text-base tracking-widest uppercase" style="text-shadow: 0 0 15px rgba(255, 215, 0, 1), 0 2px 4px rgba(0,0,0,0.8);">
-                ${isJackpot ? '👑 JACKPOT ROYALE 👑' : rtpPercentage >= 100 ? '💎 MEGA WIN 💎' : '⭐ WINNER ⭐'}
-              </span>
+          <div class="relative bg-gradient-to-br from-black/90 via-purple-950/70 to-black/90 backdrop-blur-2xl rounded-3xl overflow-hidden" style="
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            box-shadow: 
+              0 0 0 2px #00ff41,
+              0 0 30px rgba(0, 255, 65, 0.4),
+              0 30px 90px rgba(0, 0, 0, 0.9),
+              inset 0 2px 0 rgba(255, 255, 255, 0.1);
+            animation: casino-glow 3s ease-in-out infinite;
+          ">
+            <div class="absolute inset-0 opacity-10 pointer-events-none" style="
+              background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 65, 0.3) 2px, rgba(0, 255, 65, 0.3) 4px);
+              animation: scanline-move 10s linear infinite;
+            "></div>
+            
+            <div class="relative z-10 px-12 py-20 text-center">
+              <div class="inline-block mb-8 px-8 py-3 bg-gradient-to-r from-yellow-600/30 to-orange-600/30 border-2 border-yellow-400/60 rounded-full backdrop-blur-md">
+                <span class="text-yellow-300 font-black text-base tracking-widest uppercase" style="text-shadow: 0 0 15px rgba(255, 215, 0, 1), 0 2px 4px rgba(0,0,0,0.8);">
+                  ${isJackpot ? '👑 JACKPOT ROYALE 👑' : pendingPrizeData.rtp_percentage >= 100 ? '💎 MEGA WIN 💎' : '⭐ WINNER ⭐'}
+                </span>
+              </div>
+              
+              <h2 class="text-8xl font-black tracking-tighter mb-10" style="
+                background: linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #FF69B4 50%, #00D9FF 75%, #B026FF 100%);
+                background-size: 200% 200%;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                animation: rainbow-slide 3s ease-in-out infinite, title-glitch 4s ease-in-out infinite;
+                filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.6)) drop-shadow(0 6px 12px rgba(0, 0, 0, 0.9));
+              ">
+                ${isJackpot ? 'JACKPOT!' : pendingPrizeData.rtp_percentage >= 100 ? 'BIG WIN!' : 'GANHOU!'}
+              </h2>
+              
+              <!-- Counter -->
+              <div id="prize-counter-mount" class="mb-10"></div>
+              
+              <div class="inline-flex items-center gap-4 px-8 py-4 bg-black/60 border-2 border-white/30 rounded-full backdrop-blur-md">
+                <div class="w-3 h-3 rounded-full ${rtpColor} animate-pulse" style="box-shadow: 0 0 15px currentColor;"></div>
+                <span class="${rtpColor} font-black text-xl tracking-wide" style="text-shadow: 0 0 15px currentColor;">
+                  ${pendingPrizeData.rtp_percentage.toFixed(0)}% RTP
+                </span>
+              </div>
+              
+              <div class="mt-10 text-white/50 text-sm font-medium animate-pulse tracking-wide">
+                Clique em qualquer lugar para continuar
+              </div>
             </div>
             
-            <h2 class="text-8xl font-black tracking-tighter mb-10" style="
-              background: linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #FF69B4 50%, #00D9FF 75%, #B026FF 100%);
-              background-size: 200% 200%;
-              -webkit-background-clip: text;
-              -webkit-text-fill-color: transparent;
-              background-clip: text;
-              animation: rainbow-slide 3s ease-in-out infinite;
-              filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.6));
-            ">
-              ${isJackpot ? 'JACKPOT!' : rtpPercentage >= 100 ? 'BIG WIN!' : 'GANHOU!'}
-            </h2>
-            
-            <div class="text-6xl font-black mb-10 text-white" style="text-shadow: 0 0 20px rgba(255,215,0,0.8);">
-              R$ ${prizeAmount.toFixed(2)}
-            </div>
-            
-            <div class="inline-flex items-center gap-4 px-8 py-4 bg-black/60 border-2 border-white/30 rounded-full backdrop-blur-md">
-              <div class="w-3 h-3 rounded-full ${rtpColor} animate-pulse" style="box-shadow: 0 0 15px currentColor;"></div>
-              <span class="${rtpColor} font-black text-xl tracking-wide" style="text-shadow: 0 0 15px currentColor;">
-                ${rtpPercentage.toFixed(0)}% RTP
-              </span>
-            </div>
-            
-            <div class="mt-10 text-white/50 text-sm font-medium animate-pulse tracking-wide">
-              Clique em qualquer lugar para continuar
-            </div>
+            <div class="absolute top-6 left-6 w-16 h-16 border-l-4 border-t-4 border-cyan-400/60 rounded-tl-lg"></div>
+            <div class="absolute top-6 right-6 w-16 h-16 border-r-4 border-t-4 border-cyan-400/60 rounded-tr-lg"></div>
+            <div class="absolute bottom-6 left-6 w-16 h-16 border-l-4 border-b-4 border-purple-400/60 rounded-bl-lg"></div>
+            <div class="absolute bottom-6 right-6 w-16 h-16 border-r-4 border-b-4 border-purple-400/60 rounded-br-lg"></div>
           </div>
-          
-          <div class="absolute top-6 left-6 w-16 h-16 border-l-4 border-t-4 border-cyan-400/60 rounded-tl-lg"></div>
-          <div class="absolute top-6 right-6 w-16 h-16 border-r-4 border-t-4 border-cyan-400/60 rounded-tr-lg"></div>
-          <div class="absolute bottom-6 left-6 w-16 h-16 border-l-4 border-b-4 border-purple-400/60 rounded-bl-lg"></div>
-          <div class="absolute bottom-6 right-6 w-16 h-16 border-r-4 border-b-4 border-purple-400/60 rounded-br-lg"></div>
         </div>
-      </div>
-    `;
-    document.body.appendChild(prizeToast);
+      `;
+      document.body.appendChild(prizeToast);
 
-    // Play prize soundtrack
-    const prizeSoundtrack = new Audio('/sfx/prize_reveal_soundtrack.mp3');
-    prizeSoundtrack.volume = 0.6;
-    prizeSoundtrack.play().catch(err => console.log('Audio autoplay blocked:', err));
+      // Play prize soundtrack
+      const prizeSoundtrack = new Audio('/sfx/prize_reveal_soundtrack.mp3');
+      prizeSoundtrack.volume = 0.6;
+      prizeSoundtrack.play().catch(err => console.log('Audio autoplay blocked:', err));
 
-    // Click to dismiss
-    prizeToast.addEventListener('click', () => {
-      prizeToast.remove();
-      setPendingPrizeData(null);
-      setOpening(null);
-      setAnimationStage('none');
-      setShowCards(false);
-      setRevealedCards([]);
-      cardAudio.setAmbientIntensity('active');
-    });
+      // Animated counter
+      setTimeout(() => {
+        const mountPoint = document.getElementById('prize-counter-mount');
+        if (mountPoint) {
+          let currentValue = 0;
+          const targetValue = pendingPrizeData.amount_brl;
+          const duration = 3500;
+          const startTime = Date.now();
+
+          const animate = () => {
+            const now = Date.now();
+            const progress = Math.min((now - startTime) / duration, 1);
+            const easedProgress = progress < 0.5 
+              ? 4 * progress * progress * progress 
+              : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+            currentValue = easedProgress * targetValue;
+            
+            const isAnimating = progress < 1;
+            
+            let textStyle = '';
+            if (isAnimating) {
+              textStyle = `
+                font-size: 4.5rem;
+                font-weight: 900;
+                background: linear-gradient(90deg, #00ff41 0%, #00d9ff 50%, #b026ff 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                animation: gradient-shift 1s linear infinite;
+                text-shadow: 0 0 30px rgba(0, 255, 65, 0.5);
+                filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.8));
+              `;
+            } else if (isJackpot) {
+              textStyle = `
+                font-size: 5rem;
+                font-weight: 900;
+                background: linear-gradient(45deg, #FFD700 0%, #FFA500 50%, #FF1493 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                text-shadow: 
+                  0 0 40px rgba(255, 215, 0, 0.8),
+                  0 0 80px rgba(255, 165, 0, 0.5),
+                  0 4px 16px rgba(0, 0, 0, 0.9);
+                filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
+                animation: jackpot-pulse 1.5s ease-in-out infinite;
+              `;
+            } else if (pendingPrizeData.rtp_percentage >= 100) {
+              textStyle = `
+                font-size: 4.5rem;
+                font-weight: 900;
+                color: #00ff41;
+                text-shadow: 
+                  0 0 30px rgba(0, 255, 65, 0.8),
+                  0 0 60px rgba(0, 255, 65, 0.4),
+                  0 4px 12px rgba(0, 0, 0, 0.8);
+                filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.6));
+              `;
+            } else {
+              textStyle = `
+                font-size: 4rem;
+                font-weight: 800;
+                background: linear-gradient(135deg, #b026ff 0%, #00d9ff 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                text-shadow: 0 0 20px rgba(176, 38, 255, 0.6);
+                filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6));
+              `;
+            }
+            
+            mountPoint.innerHTML = `
+              <span style="${textStyle}">${currentValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+            `;
+
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              cardAudio.playSuccessChime();
+            }
+          };
+
+          requestAnimationFrame(animate);
+        }
+      }, 100);
+
+      // Click to dismiss
+      prizeToast.addEventListener('click', () => {
+        prizeToast.remove();
+        setPendingPrizeData(null);
+        setOpening(null);
+        setAnimationStage('none');
+        setShowCards(false);
+        setRevealedCards([]);
+        cardAudio.setAmbientIntensity('active');
+      });
+    }
   }
 
   const filteredPacks = filterTier

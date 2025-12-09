@@ -283,15 +283,26 @@ export default function MyBoostersPage() {
 
               {/* Info */}
               <div className="mt-4 text-center">
-                <div className="text-sm text-gray-400 mb-1">
-                  {pack.booster_packs?.pack_name || 'Booster Pack'}
+                <div className="text-lg font-bold mb-1" style={{
+                  color: pack.booster_type_id === 'ED01_ALPHA' ? '#FCD34D' :
+                         pack.booster_type_id === 'ED01_BETA' ? '#D1D5DB' :
+                         '#FB923C',
+                  textShadow: `0 0 10px ${
+                    pack.booster_type_id === 'ED01_ALPHA' ? 'rgba(252, 211, 77, 0.5)' :
+                    pack.booster_type_id === 'ED01_BETA' ? 'rgba(209, 213, 219, 0.5)' :
+                    'rgba(251, 146, 60, 0.5)'
+                  }`
+                }}>
+                  {pack.booster_type_id === 'ED01_ALPHA' ? 'Alpha Pack' : 
+                   pack.booster_type_id === 'ED01_BETA' ? 'Beta Pack' : 
+                   'Gamma Pack'}
                 </div>
                 {pack.booster_packs?.price_brl && (
-                  <div className="text-xs text-gray-500">
+                  <div className="text-sm text-gray-300 font-medium">
                     Valor: R$ {pack.booster_packs.price_brl.toFixed(2)}
                   </div>
                 )}
-                <div className="text-xs text-gray-600 mt-1">
+                <div className="text-xs text-gray-400 mt-1">
                   {new Date(pack.purchased_at).toLocaleDateString('pt-BR', { 
                     day: '2-digit', 
                     month: '2-digit', 

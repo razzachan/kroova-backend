@@ -65,6 +65,8 @@ export default function MyBoostersPage() {
     try {
       const response = await api.get('/boosters/sealed');
       const data = unwrap<{ sealed_packs: SealedPack[] }>(response);
+      console.log('🔍 [MY-BOOSTERS] Sealed packs loaded:', data.sealed_packs);
+      console.log('🔍 [MY-BOOSTERS] First pack:', data.sealed_packs?.[0]);
       setSealedPacks(data.sealed_packs || []);
     } catch (error) {
       console.error('Erro ao carregar boosters:', error);
@@ -240,14 +242,27 @@ export default function MyBoostersPage() {
               key={pack.id}
               className="relative group"
             >
-              {/* Variant Badge (ALPHA/BETA/GAMMA) - Estilo cyberpunk */}
-              <div className={`absolute -top-3 -right-3 z-10 px-4 py-2 rounded-lg text-xs font-bold font-mono bg-gradient-to-r ${TIER_INFO[pack.booster_type_id]?.color || 'from-gray-600 to-gray-800'} shadow-lg border-2 border-black/50`}>
-                <div className="flex items-center gap-1">
-                  <span className="text-base">{TIER_INFO[pack.booster_type_id]?.badge}</span>
-                  <span className={`${TIER_INFO[pack.booster_type_id]?.textColor || 'text-white'} tracking-wider`}>
-                    {TIER_INFO[pack.booster_type_id]?.name || pack.booster_type_id}
-                  </span>
-                </div>
+              {/* Variant Badge (ALPHA/BETA/GAMMA) - Estilo cyberpunk igual boosters page */}
+              <div className={`absolute -top-3 -right-3 z-10 px-4 py-2 rounded-md text-sm font-bold font-mono uppercase tracking-wider border-2 backdrop-blur-md shadow-lg transition-all group-hover:scale-110 ${
+                pack.booster_type_id === 'ED01_ALPHA' 
+                  ? 'bg-gradient-to-br from-yellow-500/30 to-yellow-700/30 border-yellow-400/60 text-yellow-300 shadow-yellow-400/50' :
+                pack.booster_type_id === 'ED01_BETA' 
+                  ? 'bg-gradient-to-br from-gray-500/30 to-gray-700/30 border-gray-400/60 text-gray-200 shadow-gray-400/50' :
+                'bg-gradient-to-br from-orange-500/30 to-orange-700/30 border-orange-400/60 text-orange-300 shadow-orange-400/50'
+              }`}
+              style={{
+                textShadow: '0 0 10px currentColor',
+                boxShadow: `0 0 15px ${
+                  pack.booster_type_id === 'ED01_ALPHA' ? 'rgba(251, 191, 36, 0.4)' :
+                  pack.booster_type_id === 'ED01_BETA' ? 'rgba(156, 163, 175, 0.4)' :
+                  'rgba(249, 115, 22, 0.4)'
+                }`
+              }}
+              >
+                <span className="flex items-center gap-2">
+                  <span>{pack.booster_type_id === 'ED01_ALPHA' ? '🏆' : pack.booster_type_id === 'ED01_BETA' ? '⚡' : '💎'}</span>
+                  {pack.booster_type_id === 'ED01_ALPHA' ? 'ALPHA' : pack.booster_type_id === 'ED01_BETA' ? 'BETA' : 'GAMMA'}
+                </span>
               </div>
 
               {/* Price Tier Badge (Básico/Premium/Elite...) */}

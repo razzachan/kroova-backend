@@ -151,8 +151,9 @@ export default function MyBoostersPage() {
   function showPrizeAnimation(prizeData: any) {
     console.log('🎰 [MY-BOOSTERS] Prize data:', prizeData);
     
-    // Validar dados do prêmio
-    if (!prizeData || typeof prizeData.prize_amount_brl !== 'number') {
+    // Validar dados do prêmio (campo é amount_brl, não prize_amount_brl)
+    const prizeAmount = prizeData?.amount_brl || prizeData?.prize_amount_brl;
+    if (!prizeData || typeof prizeAmount !== 'number') {
       console.error('❌ [MY-BOOSTERS] Invalid prize data:', prizeData);
       // Limpar estado e sair
       setPendingPrizeData(null);
@@ -216,7 +217,7 @@ export default function MyBoostersPage() {
             </h2>
             
             <div class="text-6xl font-black mb-10 text-white" style="text-shadow: 0 0 20px rgba(255,215,0,0.8);">
-              R$ ${prizeData.prize_amount_brl.toFixed(2)}
+              R$ ${prizeAmount.toFixed(2)}
             </div>
             
             <div class="inline-flex items-center gap-4 px-8 py-4 bg-black/60 border-2 border-white/30 rounded-full backdrop-blur-md">

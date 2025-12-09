@@ -59,8 +59,8 @@ export async function GET(request: NextRequest) {
 
       // Boosters comprados mas não abertos
       supabase
-        .from('booster_instances')
-        .select('id, booster_type_id, purchased_at')
+        .from('booster_openings')
+        .select('id, booster_type_id, purchased_at, price_paid_brl')
         .eq('user_id', user.id)
         .is('opened_at', null)
         .order('purchased_at', { ascending: true })

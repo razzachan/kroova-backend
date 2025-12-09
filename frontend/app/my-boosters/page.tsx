@@ -261,9 +261,51 @@ export default function MyBoostersPage() {
           animContainer.appendChild(coin);
         }
         
-        // Premium CSS animations for crown and coins
-        const animStyle = document.createElement('style');
-        animStyle.textContent = `
+        // Premium CSS animations (single <style> element for ALL animations)
+        const style = document.createElement('style');
+        style.textContent = `
+          @keyframes overlay-fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+          
+          @keyframes casino-glow {
+            0%, 100% {
+              box-shadow: 0 0 0 2px #00ff41, 0 0 30px rgba(0, 255, 65, 0.4), 0 30px 90px rgba(0, 0, 0, 0.9), inset 0 2px 0 rgba(255, 255, 255, 0.1);
+            }
+            33% {
+              box-shadow: 0 0 0 2px #00d9ff, 0 0 30px rgba(0, 217, 255, 0.4), 0 30px 90px rgba(0, 0, 0, 0.9), inset 0 2px 0 rgba(255, 255, 255, 0.1);
+            }
+            66% {
+              box-shadow: 0 0 0 2px #b026ff, 0 0 30px rgba(176, 38, 255, 0.4), 0 30px 90px rgba(0, 0, 0, 0.9), inset 0 2px 0 rgba(255, 255, 255, 0.1);
+            }
+          }
+          
+          @keyframes scanline-move {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+          }
+          
+          @keyframes rainbow-slide {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+          }
+          
+          @keyframes title-glitch {
+            0%, 92%, 100% {
+              transform: translate(0);
+            }
+            93% {
+              transform: translate(-3px, 3px);
+            }
+            94% {
+              transform: translate(3px, -3px);
+            }
+            95% {
+              transform: translate(-2px, -2px);
+            }
+          }
+          
           @keyframes crown-epic-drop {
             0% {
               transform: translate(-50%, -300%) scale(0.3) rotate(-540deg);
@@ -327,13 +369,13 @@ export default function MyBoostersPage() {
             `;
           }).join('\n')}
         `;
-        document.head.appendChild(animStyle);
+        document.head.appendChild(style);
         
         // Fade out animations after 8s (but keep overlay visible for click)
         setTimeout(() => {
           animContainer.style.transition = 'opacity 1.2s';
           animContainer.style.opacity = '0';
-          setTimeout(() => animStyle.remove(), 1200);
+          setTimeout(() => style.remove(), 1200);
         }, 8000);
       }
       
@@ -466,28 +508,38 @@ export default function MyBoostersPage() {
 
       // Click to dismiss
       prizeToast.addEventListener('click', () => {
-        prizeToast.remove();
-        setPendingPrizeData(null);
-        setOpening(null);
-        setAnimationStage('none');
-        setShowCards(false);
-        setRevealedCards([]);
-        cardAudio.setAmbientIntensity('active');
-        
-        // Agendar remoção automática do toast de saldo após 3 segundos
+        prizeToast.style.animation = 'overlay-fade-in 0.4s cubic-bezier(0.4, 0, 1, 1) reverse';
         setTimeout(() => {
-          const balanceToastElement = document.querySelector('.fixed.top-24.right-6.z-\\[10000\\]') as HTMLElement;
-          if (balanceToastElement) {
-            balanceToastElement.style.transition = 'all 0.6s ease-out';
-            balanceToastElement.style.transform = 'translateX(400px)';
-            balanceToastElement.style.opacity = '0';
-            setTimeout(() => {
-              balanceToastElement.remove();
-              const balanceStyleElement = document.querySelector('style:has([class*="balance-popup"])');
-              if (balanceStyleElement) balanceStyleElement.remove();
-            }, 600);
-          }
-        }, 3000);
+          // Remove ALL style elements (animations + balance toast)
+          const styleElements = document.querySelectorAll('style');
+          styleElements.forEach(s => {
+            const content = s.textContent || '';
+            if (content.includes('crown-epic-drop') || content.includes('balance-popup')) {
+              s.remove();
+            }
+          });
+          
+          prizeToast.remove();
+          setPendingPrizeData(null);
+          setOpening(null);
+          setAnimationStage('none');
+          setShowCards(false);
+          setRevealedCards([]);
+          cardAudio.setAmbientIntensity('active');
+          
+          // Agendar remoção automática do toast de saldo após 3 segundos
+          setTimeout(() => {
+            const balanceToastElement = document.querySelector('.fixed.top-24.right-6.z-\\[10000\\]') as HTMLElement;
+            if (balanceToastElement) {
+              balanceToastElement.style.transition = 'all 0.6s ease-out';
+              balanceToastElement.style.transform = 'translateX(400px)';
+              balanceToastElement.style.opacity = '0';
+              setTimeout(() => {
+                balanceToastElement.remove();
+              }, 600);
+            }
+          }, 3000);
+        }, 400);
       });
     }
   }

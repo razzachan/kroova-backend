@@ -24,15 +24,6 @@ const TIER_INFO: Record<string, { name: string; badge: string; color: string; te
   'ED01_GAMMA': { name: 'GAMMA', badge: '💎', color: 'from-orange-600 to-orange-800', textColor: 'text-orange-400' },
 };
 
-// Mapeamento de preço para tier
-const PRICE_TO_TIER: Record<number, string> = {
-  0.50: 'Básico',
-  1.00: 'Padrão',
-  2.00: 'Premium',
-  5.00: 'Elite',
-  10.00: 'Whale'
-};
-
 interface SealedPack {
   id: string;
   booster_type_id: string;
@@ -65,8 +56,6 @@ export default function MyBoostersPage() {
     try {
       const response = await api.get('/boosters/sealed');
       const data = unwrap<{ sealed_packs: SealedPack[] }>(response);
-      console.log('🔍 [MY-BOOSTERS] Sealed packs loaded:', data.sealed_packs);
-      console.log('🔍 [MY-BOOSTERS] First pack:', data.sealed_packs?.[0]);
       setSealedPacks(data.sealed_packs || []);
     } catch (error) {
       console.error('Erro ao carregar boosters:', error);
@@ -264,13 +253,6 @@ export default function MyBoostersPage() {
                   {pack.booster_type_id === 'ED01_ALPHA' ? 'ALPHA' : pack.booster_type_id === 'ED01_BETA' ? 'BETA' : 'GAMMA'}
                 </span>
               </div>
-
-              {/* Price Tier Badge (Básico/Premium/Elite...) */}
-              {pack.booster_packs?.price_brl && (
-                <div className="absolute -top-3 -left-3 z-10 px-3 py-1 rounded-lg text-xs font-bold font-mono bg-black/80 backdrop-blur-sm border border-[#00F0FF]/50 text-[#00F0FF]">
-                  {PRICE_TO_TIER[pack.booster_packs.price_brl] || `R$ ${pack.booster_packs.price_brl.toFixed(2)}`}
-                </div>
-              )}
 
               {/* Booster Card */}
               <BoosterCard3D

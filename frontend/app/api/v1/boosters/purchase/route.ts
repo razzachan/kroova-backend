@@ -147,49 +147,42 @@ export async function POST(request: NextRequest) {
         status: 'completed'
       });
 
-    // 6. Criar booster_openings (um para cada booster comprado)
-    // IMPORTANTE: booster_type_id na tabela usa pack_id (string), não UUID!
-    const openingsToInsert = Array.from({ length: quantity }, () => ({
+    // 6. Criar booster_instances (um para cada booster comprado)
+    // IMPORTANTE: Usa booster_type_id UUID, não pack_id
+    const instancesToInsert = Array.from({ length: quantity }, () => ({
       user_id: user.id,
-      booster_type_id: boosterType.pack_id, // ❗ Usa pack_id (ED01_ALPHA) não UUID
-      price_paid_brl: boosterType.price_brl, // ✅ Salva preço pra identificar tier depois
-      cards_obtained: [],
-      purchased_at: new Date().toISOString()
+      booster_type_id: booster_type_id, // ✅ UUID do booster_types
+      purchased_at: new Date().toISOString(),
+      opened_at: null // ✅ NULL = sealed (não aberto)
     }));
 
-    console.log('[PURCHASE] About to insert openings:', {
+    console.log('[PURCHASE] About to insert instances:', {
       quantity,
-      booster_type_id_uuid: booster_type_id,
-      pack_id_used: boosterType.pack_id,
+      booster_type_id: booster_type_id,
+      pack_id: boosterType.pack_id,
       price_paid_brl: boosterType.price_brl,
       user_id: user.id,
-      sample: openingsToInsert[0]
+      sample: instancesToInsert[0]
     });
 
-    const { data: openings, error: openingError } = await supabaseAdmin
-      .from('booster_openings')
-      .insert(openingsToInsert)
+    const { data: instances, error: instanceError } = await supabaseAdmin
+      .from('booster_instances')
+      .insert(instancesToInsert)
       .select();
 
-    console.log('[PURCHASE] Insert result:', { openings, openingError });
+    console.log('[PURCHASE] Insert result:', { instances, instanceError });
 
-    if (openingError || !openings) {
+    if (instanceError || !instances) {
       return NextResponse.json(
-        { ok: false, error: { code: 'DATABASE_ERROR', message: openingError?.message || 'Failed to create openings' } },
+        { ok: false, error: { code: 'DATABASE_ERROR', message: instanceError?.message || 'Failed to create instances' } },
         { status: 500 }
       );
     }
 
-    // Forçar opened_at = NULL para todos
-    await supabaseAdmin
-      .from('booster_openings')
-      .update({ opened_at: null })
-      .in('id', openings.map(o => o.id));
-
     return NextResponse.json({ 
       ok: true, 
       data: {
-        boosters: openings.map(o => ({ id: o.id })),
+        boosters: instances.map(i => ({ id: i.id })),
         total_paid: totalPrice,
         booster_type: boosterType,
         new_balance: wallet.balance_brl - totalPrice

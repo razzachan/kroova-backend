@@ -79,6 +79,11 @@ export default function InventoryPage() {
   // Confirmação de resgate de cashback
   const [showRedeemAllModal, setShowRedeemAllModal] = useState(false);
   const [redeemAllData, setRedeemAllData] = useState<{ cards: CardInstance[], total: number }>({ cards: [], total: 0 });
+  
+  // Reciclar Tudo (seleção manual)
+  const [selectedForRecycle, setSelectedForRecycle] = useState<Set<string>>(new Set());
+  const [showRecycleAllModal, setShowRecycleAllModal] = useState(false);
+  const [recyclingAll, setRecyclingAll] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -429,6 +434,96 @@ export default function InventoryPage() {
     }
   };
   
+  // Função para iniciar reciclagem em lote (com confirmação de cashback)
+  const handleRecycleAllSelected = async () => {
+    if (selectedForRecycle.size === 0) {
+      cardAudio.playErrorBuzz();
+      alert('Selecione pelo menos 1 carta para reciclar');
+      return;
+    }
+    
+    // Verificar se há cashbacks pendentes nas cartas selecionadas
+    const selectedCards = inventory.filter(c => selectedForRecycle.has(c.id));
+    const cardsWithCashback = selectedCards.filter(c => !c.prize_redeemed && (c.prize_amount_brl || 0) > 0);
+    
+    if (cardsWithCashback.length > 0) {
+      const totalCashback = cardsWithCashback.reduce((sum, c) => sum + (c.prize_amount_brl || 0), 0);
+      setRedeemAllData({ cards: cardsWithCashback, total: totalCashback });
+      setShowRedeemAllModal(true);
+    } else {
+      // Sem cashbacks pendentes, recicla direto
+      await confirmRecycleAllSelected(false);
+    }
+  };
+  
+  // Confirmar reciclagem de todas cartas selecionadas (com/sem resgate de cashback)
+  const confirmRecycleAllSelected = async (redeemCashback: boolean) => {
+    setShowRedeemAllModal(false);
+    setRecyclingAll(true);
+    
+    try {
+      // 1. Se usuário escolheu resgatar cashback, resgatar primeiro
+      if (redeemCashback && redeemAllData.cards.length > 0) {
+        const cardIdsWithCashback = redeemAllData.cards.map(c => c.id);
+        
+        const redeemResponse = await api.post('/cards/redeem-prize-bulk', {
+          card_instance_ids: cardIdsWithCashback
+        });
+        
+        const redeemData = unwrap<{ total_redeemed: number; new_balance: number }>(redeemResponse);
+        
+        // Toast de cashback resgatado
+        const toastCashback = document.createElement('div');
+        toastCashback.className = 'fixed top-24 right-4 z-50 bg-gradient-to-r from-green-900 to-emerald-900 border-2 border-green-500 rounded-lg p-4 shadow-lg animate-slide-in-right';
+        toastCashback.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-3xl">💰</span>
+            <div>
+              <div class="text-white font-bold">Cashback Resgatado!</div>
+              <div class="text-green-300 text-sm">+R$ ${redeemData.total_redeemed.toFixed(2)} (Saldo: R$ ${redeemData.new_balance.toFixed(2)})</div>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(toastCashback);
+        setTimeout(() => document.body.removeChild(toastCashback), 4000);
+      }
+      
+      // 2. Reciclar todas as cartas selecionadas
+      const response = await api.post('/cards/recycle-for-points', {
+        card_instance_ids: Array.from(selectedForRecycle)
+      });
+      
+      const data = unwrap<{ points_earned: number; total_points: number }>(response);
+      
+      cardAudio.playSuccessChime();
+      
+      // Toast de reciclagem
+      const toast = document.createElement('div');
+      toast.className = 'fixed top-32 right-4 z-50 bg-gradient-to-r from-purple-900 to-pink-900 border-2 border-purple-500 rounded-lg p-4 shadow-lg animate-slide-in-right';
+      toast.innerHTML = `
+        <div class="flex items-center gap-3">
+          <span class="text-3xl">♻️</span>
+          <div>
+            <div class="text-white font-bold">${selectedForRecycle.size} Cartas Recicladas!</div>
+            <div class="text-purple-300 text-sm">+${data.points_earned} pontos (Total: ${data.total_points})</div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(toast);
+      setTimeout(() => document.body.removeChild(toast), 3000);
+      
+      setRecyclePoints(data.total_points);
+      setSelectedForRecycle(new Set());
+      setShowRecycleAllModal(false);
+      await loadInventory();
+    } catch (error: any) {
+      cardAudio.playErrorBuzz();
+      alert(error.response?.data?.error?.message || 'Erro ao reciclar cartas');
+    } finally {
+      setRecyclingAll(false);
+    }
+  };
+  
   // 💰 FUNÇÃO PARA RESGATAR CASHBACK
   const handleRedeemCashback = async (cardInstanceId: string) => {
     try {
@@ -600,6 +695,26 @@ export default function InventoryPage() {
               <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
             )}
+            
+            {/* Botão Reciclar Tudo (seleção manual) */}
+            <button
+              onClick={() => setShowRecycleAllModal(true)}
+              disabled={selectedForRecycle.size === 0}
+              className="group relative overflow-hidden bg-gradient-to-r from-purple-900/30 to-pink-900/30 border-2 border-purple-500/40 rounded-lg px-6 py-3 hover:border-purple-400 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <div className="relative z-10">
+                <div className="text-purple-400 text-xs font-bold uppercase tracking-wider mb-1">
+                  ♻️ Reciclar Selecionadas
+                </div>
+                <div className="text-2xl font-bold text-purple-300">
+                  {selectedForRecycle.size} cartas
+                </div>
+                <div className="text-xs text-purple-400/70 mt-1">
+                  {selectedForRecycle.size === 0 ? 'Marque as cartas abaixo' : `Clique para reciclar`}
+                </div>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </button>
           </div>
           
           {/* Filter Buttons */}
@@ -710,8 +825,8 @@ export default function InventoryPage() {
           </div>
         )}
 
-        {/* Recycle Bulk Button */}
-        {inventory.length >= 5 && (
+        {/* Recycle Bulk Button - DESABILITADO (feature bugada) */}
+        {/* {inventory.length >= 5 && (
           <div className="mb-6">
             <GlitchButton
               onClick={() => setShowRecycleBulk(!showRecycleBulk)}
@@ -719,14 +834,14 @@ export default function InventoryPage() {
               size="lg"
               className="w-full flex items-center justify-between"
             >
-              <span>♻️ RECICLAR 5 CARTAS E GANHAR 1 BOOSTER (TESTE)</span>
+              <span>♻️ RECICLAR 25 CARTAS E GANHAR 1 BOOSTER (DESABILITADO)</span>
               <span className="text-2xl">{showRecycleBulk ? '▼' : '▶'}</span>
             </GlitchButton>
           </div>
-        )}
+        )} */}
 
-        {/* Recycle Bulk Component */}
-        {showRecycleBulk && inventory.length >= 5 && (
+        {/* Recycle Bulk Component - DESABILITADO */}
+        {/* {showRecycleBulk && inventory.length >= 5 && (
           <div className="mb-8">
             <RecycleBulk 
               cards={inventory.map(c => ({
@@ -740,7 +855,7 @@ export default function InventoryPage() {
               onSuccess={loadInventory}
             />
           </div>
-        )}
+        )} */}
 
         {loading ? (
           <div className="text-center text-gray-400 py-12">Carregando cartas...</div>
@@ -810,6 +925,24 @@ export default function InventoryPage() {
                   rarity={card.is_godmode ? 'godmode' : mapRarity(baseCard?.rarity || 'trash')}
                   className="p-4 relative"
                 >
+                  {/* Checkbox para seleção de reciclagem */}
+                  <div className="absolute top-2 left-2 z-10">
+                    <input
+                      type="checkbox"
+                      checked={selectedForRecycle.has(card.id)}
+                      onChange={(e) => {
+                        const newSelected = new Set(selectedForRecycle);
+                        if (e.target.checked) {
+                          newSelected.add(card.id);
+                        } else {
+                          newSelected.delete(card.id);
+                        }
+                        setSelectedForRecycle(newSelected);
+                      }}
+                      className="w-5 h-5 cursor-pointer accent-purple-500"
+                    />
+                  </div>
+                  
                   {/* Card Image */}
                   <div className="aspect-[2/3] bg-gray-700/50 rounded-lg mb-4 overflow-hidden relative">
                     {baseCard?.image_url ? (
@@ -1270,6 +1403,100 @@ export default function InventoryPage() {
           </div>
         </div>
       )}
+      
+      {/* Modal Confirmação Reciclagem em Lote (com opção de cashback) */}
+      {showRecycleAllModal && (() => {
+        const selectedCards = inventory.filter(c => selectedForRecycle.has(c.id));
+        const cardsWithCashback = selectedCards.filter(c => !c.prize_redeemed && (c.prize_amount_brl || 0) > 0);
+        const totalCashback = cardsWithCashback.reduce((sum, c) => sum + (c.prize_amount_brl || 0), 0);
+        
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 border-2 border-purple-500/50 rounded-lg p-8 max-w-md w-full mx-4 relative overflow-hidden">
+              {/* Background effects */}
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 animate-pulse"></div>
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 via-pink-400 to-purple-500"></div>
+              
+              <div className="relative z-10">
+                {/* Header */}
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold text-purple-400 mb-2">
+                    ♻️ Reciclar {selectedForRecycle.size} Cartas?
+                  </h2>
+                </div>
+
+                {/* Info Box */}
+                <div className="bg-black/40 border border-purple-500/30 rounded-lg p-5 mb-6">
+                  <div className="text-center space-y-3">
+                    <div className="text-3xl">♻️</div>
+                    <div className="text-sm text-gray-300">
+                      <span className="text-white font-bold">{selectedForRecycle.size}</span> carta{selectedForRecycle.size !== 1 ? 's' : ''} serão recicladas
+                    </div>
+                    <div className="text-xs text-purple-400">
+                      Você ganhará pontos para trocar por boosters grátis
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cashback Warning */}
+                {cardsWithCashback.length > 0 && (
+                  <div className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border border-yellow-500/30 rounded-lg p-4 mb-6">
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl">⚠️</span>
+                      <div className="text-sm">
+                        <div className="text-yellow-400 font-bold mb-1">
+                          {cardsWithCashback.length} carta{cardsWithCashback.length !== 1 ? 's' : ''} com cashback pendente!
+                        </div>
+                        <div className="text-gray-400 mb-2">
+                          Total disponível: <span className="text-green-400 font-bold">R$ {totalCashback.toFixed(2)}</span>
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          Resgatar antes de reciclar? (Recomendado)
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="space-y-3">
+                  {cardsWithCashback.length > 0 && (
+                    <GlitchButton
+                      onClick={() => confirmRecycleAllSelected(true)}
+                      disabled={recyclingAll}
+                      variant="success"
+                      size="lg"
+                      className="w-full"
+                    >
+                      {recyclingAll ? 'PROCESSANDO...' : '💰 RESGATAR CASHBACK E RECICLAR'}
+                    </GlitchButton>
+                  )}
+                  
+                  <GlitchButton
+                    onClick={() => confirmRecycleAllSelected(false)}
+                    disabled={recyclingAll}
+                    variant="primary"
+                    size="lg"
+                    className="w-full"
+                  >
+                    {recyclingAll ? 'PROCESSANDO...' : `♻️ RECICLAR SEM RESGATAR`}
+                  </GlitchButton>
+                  
+                  <GlitchButton
+                    onClick={() => setShowRecycleAllModal(false)}
+                    disabled={recyclingAll}
+                    variant="secondary"
+                    size="lg"
+                    className="w-full"
+                  >
+                    CANCELAR
+                  </GlitchButton>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Recycle Confirmation Modal */}
       {showRecycleModal && (() => {

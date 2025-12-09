@@ -1185,12 +1185,26 @@ export default function BoostersPage() {
                       } group relative`}
                     >
                       {/* Badge da variante */}
-                      <div className={`absolute top-3 left-3 z-10 px-3 py-1 rounded-lg text-xs font-bold font-mono ${
-                        booster.pack_id === 'ED01_ALPHA' ? 'bg-yellow-600/90' :
-                        booster.pack_id === 'ED01_BETA' ? 'bg-gray-500/90' :
-                        'bg-orange-600/90'
-                      } shadow-lg border border-black/50`}>
-                        {booster.pack_id.split('_')[1]}
+                      <div className={`absolute top-3 left-3 z-10 px-4 py-2 rounded-md text-sm font-bold font-mono uppercase tracking-wider border-2 backdrop-blur-md shadow-lg transition-all group-hover:scale-110 ${
+                        booster.pack_id === 'ED01_ALPHA' 
+                          ? 'bg-gradient-to-br from-yellow-500/30 to-yellow-700/30 border-yellow-400/60 text-yellow-300 shadow-yellow-400/50' :
+                        booster.pack_id === 'ED01_BETA' 
+                          ? 'bg-gradient-to-br from-gray-500/30 to-gray-700/30 border-gray-400/60 text-gray-200 shadow-gray-400/50' :
+                        'bg-gradient-to-br from-orange-500/30 to-orange-700/30 border-orange-400/60 text-orange-300 shadow-orange-400/50'
+                      }`}
+                      style={{
+                        textShadow: '0 0 10px currentColor',
+                        boxShadow: `0 0 15px ${
+                          booster.pack_id === 'ED01_ALPHA' ? 'rgba(251, 191, 36, 0.4)' :
+                          booster.pack_id === 'ED01_BETA' ? 'rgba(156, 163, 175, 0.4)' :
+                          'rgba(249, 115, 22, 0.4)'
+                        }`
+                      }}
+                      >
+                        <span className="flex items-center gap-2">
+                          <span>{booster.pack_id === 'ED01_ALPHA' ? '🏆' : booster.pack_id === 'ED01_BETA' ? '⚡' : '💎'}</span>
+                          {booster.pack_id.split('_')[1]}
+                        </span>
                       </div>
                       
                       <div className="relative h-64 bg-gray-900/50 flex items-center justify-center overflow-hidden">

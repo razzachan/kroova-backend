@@ -167,15 +167,26 @@ export default function MyBoostersPage() {
       {/* Grid de Boosters */}
       {filteredPacks.length === 0 ? (
         <div className="text-center py-20">
-          <div className="text-6xl mb-4">📦</div>
-          <div className="text-2xl text-gray-400 mb-4">
-            {filterTier ? 'Nenhum booster deste tipo' : 'Nenhum booster fechado'}
+          <div className="relative inline-block mb-8">
+            <div className="text-9xl mb-4 animate-pulse">📦</div>
+            <div className="absolute inset-0 bg-[#00F0FF]/10 blur-3xl animate-pulse" />
           </div>
+          <div className="text-3xl mb-6">
+            <TextGlitch delay={200}>
+              {filterTier ? 'NENHUM BOOSTER DESTE TIPO' : 'NENHUM BOOSTER FECHADO'}
+            </TextGlitch>
+          </div>
+          <p className="text-gray-400 mb-8 text-lg">
+            {filterTier 
+              ? 'Tente selecionar outra categoria ou compre novos boosters' 
+              : 'Compre boosters para começar sua coleção'}
+          </p>
           <GlitchButton
             variant="primary"
+            size="lg"
             onClick={() => router.push('/boosters')}
           >
-            Comprar Boosters
+            🛒 COMPRAR BOOSTERS
           </GlitchButton>
         </div>
       ) : (

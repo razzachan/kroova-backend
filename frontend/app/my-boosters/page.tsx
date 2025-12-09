@@ -50,6 +50,7 @@ export default function MyBoostersPage() {
   const [loading, setLoading] = useState(true);
   const [opening, setOpening] = useState<string | null>(null);
   const [filterTier, setFilterTier] = useState<string | null>(null);
+  const [balance, setBalance] = useState(0);
   
   // Animation states
   const [animationStage, setAnimationStage] = useState<'none' | 'pack' | 'flight' | 'reveal'>('none');
@@ -60,7 +61,18 @@ export default function MyBoostersPage() {
 
   useEffect(() => {
     loadSealedPacks();
+    loadBalance();
   }, []);
+
+  async function loadBalance() {
+    try {
+      const response = await api.get('/wallet');
+      const data = unwrap(response);
+      setBalance(data.balance_brl || 0);
+    } catch (error) {
+      console.error('Erro ao carregar saldo:', error);
+    }
+  }
 
   async function loadSealedPacks() {
     try {

@@ -83,6 +83,14 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Debug sealed boosters
+    console.log('🔍 [BOOSTERS/FULL] User ID:', user.id);
+    console.log('🔍 [BOOSTERS/FULL] Sealed boosters query result:', {
+      data: sealedBoostersRes.data,
+      error: sealedBoostersRes.error,
+      count: sealedBoostersRes.data?.length || 0
+    });
+
     // 4. Retornar dados agregados
     return NextResponse.json({
       booster_types: boosterTypesRes.data || [],

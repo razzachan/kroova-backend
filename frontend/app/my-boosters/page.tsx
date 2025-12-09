@@ -55,6 +55,7 @@ export default function MyBoostersPage() {
   const [showCards, setShowCards] = useState(false);
   const [revealedCards, setRevealedCards] = useState<any[]>([]);
   const [flipMode, setFlipMode] = useState<'interactive' | 'auto'>('interactive');
+  const [pendingPrizeData, setPendingPrizeData] = useState<any>(null);
 
   useEffect(() => {
     loadSealedPacks();
@@ -84,6 +85,11 @@ export default function MyBoostersPage() {
       // Chamar API para abrir o booster
       const response = await api.post('/boosters/open', { opening_id: openingId });
       const data = unwrap(response);
+      
+      // Armazenar prêmio para mostrar depois da animação
+      if (data.prize) {
+        setPendingPrizeData(data.prize);
+      }
       
       // Armazenar cartas reveladas
       setRevealedCards(data.cards || []);
@@ -118,12 +124,111 @@ export default function MyBoostersPage() {
   }
   
   function handleAllCardsRevealed() {
-    // Todas as cartas foram reveladas
+    // Todas as cartas foram reveladas - AGORA mostrar prêmio com animação!
+    if (pendingPrizeData) {
+      showPrizeAnimation(pendingPrizeData);
+      return; // Não limpar ainda, prêmio vai limpar
+    }
+    
+    // Se não tem prêmio, limpar tudo
     setOpening(null);
     setAnimationStage('none');
     setShowCards(false);
     setRevealedCards([]);
     cardAudio.setAmbientIntensity('active');
+  }
+
+  function showPrizeAnimation(prizeData: any) {
+    const prizeToast = document.createElement('div');
+    
+    prizeToast.className = 'fixed inset-0 z-[9999] flex items-center justify-center';
+    prizeToast.style.cssText = `
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.95) 100%);
+      backdrop-filter: blur(12px);
+      animation: overlay-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    `;
+    
+    const isJackpot = prizeData.is_jackpot;
+    const rtpColor = prizeData.rtp_percentage >= 100 ? 'text-green-400' : 'text-purple-400';
+    
+    prizeToast.innerHTML = `
+      <div class="relative w-[95vw] max-w-3xl" style="animation: overlay-fade-in 0.6s ease-out;">
+        <div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-yellow-500/20 rounded-3xl blur-3xl animate-pulse"></div>
+        
+        <div class="relative bg-gradient-to-br from-black/90 via-purple-950/70 to-black/90 backdrop-blur-2xl rounded-3xl overflow-hidden" style="
+          border: 2px solid transparent;
+          background-clip: padding-box;
+          box-shadow: 
+            0 0 0 2px #00ff41,
+            0 0 30px rgba(0, 255, 65, 0.4),
+            0 30px 90px rgba(0, 0, 0, 0.9),
+            inset 0 2px 0 rgba(255, 255, 255, 0.1);
+          animation: casino-glow 3s ease-in-out infinite;
+        ">
+          <div class="absolute inset-0 opacity-10 pointer-events-none" style="
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 65, 0.3) 2px, rgba(0, 255, 65, 0.3) 4px);
+            animation: scanline-move 10s linear infinite;
+          "></div>
+          
+          <div class="relative z-10 px-12 py-20 text-center">
+            <div class="inline-block mb-8 px-8 py-3 bg-gradient-to-r from-yellow-600/30 to-orange-600/30 border-2 border-yellow-400/60 rounded-full backdrop-blur-md">
+              <span class="text-yellow-300 font-black text-base tracking-widest uppercase" style="text-shadow: 0 0 15px rgba(255, 215, 0, 1), 0 2px 4px rgba(0,0,0,0.8);">
+                ${isJackpot ? '👑 JACKPOT ROYALE 👑' : prizeData.rtp_percentage >= 100 ? '💎 MEGA WIN 💎' : '⭐ WINNER ⭐'}
+              </span>
+            </div>
+            
+            <h2 class="text-8xl font-black tracking-tighter mb-10" style="
+              background: linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #FF69B4 50%, #00D9FF 75%, #B026FF 100%);
+              background-size: 200% 200%;
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              background-clip: text;
+              animation: rainbow-slide 3s ease-in-out infinite;
+              filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.6));
+            ">
+              ${isJackpot ? 'JACKPOT!' : prizeData.rtp_percentage >= 100 ? 'BIG WIN!' : 'GANHOU!'}
+            </h2>
+            
+            <div class="text-6xl font-black mb-10 text-white" style="text-shadow: 0 0 20px rgba(255,215,0,0.8);">
+              R$ ${prizeData.prize_amount_brl.toFixed(2)}
+            </div>
+            
+            <div class="inline-flex items-center gap-4 px-8 py-4 bg-black/60 border-2 border-white/30 rounded-full backdrop-blur-md">
+              <div class="w-3 h-3 rounded-full ${rtpColor} animate-pulse" style="box-shadow: 0 0 15px currentColor;"></div>
+              <span class="${rtpColor} font-black text-xl tracking-wide" style="text-shadow: 0 0 15px currentColor;">
+                ${prizeData.rtp_percentage.toFixed(0)}% RTP
+              </span>
+            </div>
+            
+            <div class="mt-10 text-white/50 text-sm font-medium animate-pulse tracking-wide">
+              Clique em qualquer lugar para continuar
+            </div>
+          </div>
+          
+          <div class="absolute top-6 left-6 w-16 h-16 border-l-4 border-t-4 border-cyan-400/60 rounded-tl-lg"></div>
+          <div class="absolute top-6 right-6 w-16 h-16 border-r-4 border-t-4 border-cyan-400/60 rounded-tr-lg"></div>
+          <div class="absolute bottom-6 left-6 w-16 h-16 border-l-4 border-b-4 border-purple-400/60 rounded-bl-lg"></div>
+          <div class="absolute bottom-6 right-6 w-16 h-16 border-r-4 border-b-4 border-purple-400/60 rounded-br-lg"></div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(prizeToast);
+
+    // Play prize soundtrack
+    const prizeSoundtrack = new Audio('/sfx/prize_reveal_soundtrack.mp3');
+    prizeSoundtrack.volume = 0.6;
+    prizeSoundtrack.play().catch(err => console.log('Audio autoplay blocked:', err));
+
+    // Click to dismiss
+    prizeToast.addEventListener('click', () => {
+      prizeToast.remove();
+      setPendingPrizeData(null);
+      setOpening(null);
+      setAnimationStage('none');
+      setShowCards(false);
+      setRevealedCards([]);
+      cardAudio.setAmbientIntensity('active');
+    });
   }
 
   const filteredPacks = filterTier

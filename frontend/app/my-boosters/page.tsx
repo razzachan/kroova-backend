@@ -8,6 +8,9 @@ import { cardAudio } from '@/lib/cardAudio';
 import GlitchButton from '@/components/UI/GlitchButton';
 import TextGlitch from '@/components/Effects/TextGlitch';
 import BoosterCard3D from '@/components/UI/BoosterCard3D';
+import { PackOpeningAnimation } from '@/components/PackOpeningAnimation';
+import { CardsFlightAnimation } from '@/components/CardsFlightAnimation';
+import { OpeningSession } from '@/components/OpeningSession';
 
 const PACK_IMAGES: Record<string, string> = {
   'ED01_ALPHA': '/assets/booster-packs/pack-front-ed01-alpha.png',
@@ -47,6 +50,12 @@ export default function MyBoostersPage() {
   const [loading, setLoading] = useState(true);
   const [opening, setOpening] = useState<string | null>(null);
   const [filterTier, setFilterTier] = useState<string | null>(null);
+  
+  // Animation states
+  const [animationStage, setAnimationStage] = useState<'none' | 'pack' | 'flight' | 'reveal'>('none');
+  const [showCards, setShowCards] = useState(false);
+  const [revealedCards, setRevealedCards] = useState<any[]>([]);
+  const [flipMode, setFlipMode] = useState<'interactive' | 'auto'>('interactive');
 
   useEffect(() => {
     loadSealedPacks();
@@ -69,8 +78,53 @@ export default function MyBoostersPage() {
     setOpening(openingId);
     cardAudio.setAmbientIntensity('intense');
     
-    // Redireciona para /boosters com o opening_id para abrir com animação
-    router.push(`/boosters?open=${openingId}`);
+    try {
+      // Iniciar animação do pacote
+      setAnimationStage('pack');
+      
+      // Chamar API para abrir o booster
+      const response = await api.post('/boosters/open', { opening_id: openingId });
+      const data = unwrap(response);
+      
+      // Armazenar cartas reveladas
+      setRevealedCards(data.cards || []);
+      
+      // Após animação do pack, iniciar voo das cartas
+      // (PackOpeningAnimation chama onOpenComplete após ~2s)
+      
+      cardAudio.playSuccessChime();
+      
+      // Recarregar lista de boosters selados
+      await loadSealedPacks();
+      
+    } catch (error: any) {
+      console.error('Erro ao abrir booster:', error);
+      cardAudio.playErrorBuzz();
+      alert(error.response?.data?.error?.message || 'Erro ao abrir booster');
+      setOpening(null);
+      setAnimationStage('none');
+      cardAudio.setAmbientIntensity('active');
+    }
+  }
+  
+  function handlePackOpenComplete() {
+    // Pack terminou de abrir, iniciar voo das cartas
+    setAnimationStage('flight');
+  }
+  
+  function handleCardsFlightComplete() {
+    // Cartas terminaram de voar, mostrar sessão de flip
+    setAnimationStage('reveal');
+    setShowCards(true);
+  }
+  
+  function handleAllCardsRevealed() {
+    // Todas as cartas foram reveladas
+    setOpening(null);
+    setAnimationStage('none');
+    setShowCards(false);
+    setRevealedCards([]);
+    cardAudio.setAmbientIntensity('active');
   }
 
   const filteredPacks = filterTier
@@ -277,6 +331,89 @@ export default function MyBoostersPage() {
             + Comprar Mais Boosters
           </GlitchButton>
         </div>
+      )}
+      
+      {/* Animações de Abertura */}
+      {animationStage === 'pack' && (
+        <PackOpeningAnimation
+          packImageUrl="/pack-back-ed01.png"
+          onOpenComplete={handlePackOpenComplete}
+        />
+      )}
+
+      {animationStage === 'flight' && (
+        <CardsFlightAnimation
+          cardCount={revealedCards.length}
+          onFlightComplete={handleCardsFlightComplete}
+          packImageUrl="/pack-back-ed01.png"
+        />
+      )}
+
+      {animationStage === 'reveal' && showCards && revealedCards.length > 0 && (
+        <>
+          {/* Background fixo para sessão de flip */}
+          <div 
+            className="fixed inset-0 z-[100] w-screen h-screen"
+            style={{
+              backgroundImage: 'url(/kroova-background.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              minHeight: '100vh',
+              minWidth: '100vw'
+            }}
+          >
+            <div className="absolute inset-0 bg-black/60" />
+          </div>
+
+          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[110] flex items-center gap-4">
+            <h2 className="text-3xl font-bold text-white drop-shadow-lg">✨ Suas Novas Cartas! ✨</h2>
+            <div className="flex items-center gap-2 text-sm bg-black/50 backdrop-blur-sm rounded-lg px-4 py-2 border border-gray-700">
+              <span className="text-gray-300">Modo de flip:</span>
+              <button
+                onClick={() => setFlipMode(m => (m === 'interactive' ? 'auto' : 'interactive'))}
+                className="px-3 py-1 rounded bg-gray-700 hover:bg-gray-600 border border-gray-600"
+                style={{
+                    transition: 'transform 0.1s ease-out',
+                    willChange: 'transform',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.05) translateZ(0)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1) translateZ(0)';
+                  }}
+              >
+                {flipMode === 'interactive' ? '👆 Clique' : '⚡ Auto'}
+              </button>
+            </div>
+          </div>
+
+          <OpeningSession 
+            cards={revealedCards.map(c => ({
+              id: c.id,
+              name: c.card.name,
+              rarity: c.card.rarity,
+              image_url: c.card.image_url,
+              liquidity_brl: c.liquidity_brl,
+              is_godmode: c.is_godmode,
+              skin: c.skin,
+            }))} 
+            mode={flipMode}
+            onCheckpoint={handleAllCardsRevealed}
+          />
+          
+          {/* Botão para voltar */}
+          <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[110]">
+            <GlitchButton
+              variant="success"
+              size="lg"
+              onClick={handleAllCardsRevealed}
+            >
+              ✓ CONCLUIR
+            </GlitchButton>
+          </div>
+        </>
       )}
     </div>
   );

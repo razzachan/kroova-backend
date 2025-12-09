@@ -86,9 +86,14 @@ export default function MyBoostersPage() {
       const response = await api.post('/boosters/open', { opening_id: openingId });
       const data = unwrap(response);
       
+      console.log('🎁 [MY-BOOSTERS] Booster opened:', data);
+      console.log('🎰 [MY-BOOSTERS] Prize from API:', data.prize);
+      
       // Armazenar prêmio para mostrar depois da animação
       if (data.prize) {
         setPendingPrizeData(data.prize);
+      } else {
+        console.warn('⚠️ [MY-BOOSTERS] No prize data received from API');
       }
       
       // Armazenar cartas reveladas
@@ -139,6 +144,21 @@ export default function MyBoostersPage() {
   }
 
   function showPrizeAnimation(prizeData: any) {
+    console.log('🎰 [MY-BOOSTERS] Prize data:', prizeData);
+    
+    // Validar dados do prêmio
+    if (!prizeData || typeof prizeData.prize_amount_brl !== 'number') {
+      console.error('❌ [MY-BOOSTERS] Invalid prize data:', prizeData);
+      // Limpar estado e sair
+      setPendingPrizeData(null);
+      setOpening(null);
+      setAnimationStage('none');
+      setShowCards(false);
+      setRevealedCards([]);
+      cardAudio.setAmbientIntensity('active');
+      return;
+    }
+    
     const prizeToast = document.createElement('div');
     
     prizeToast.className = 'fixed inset-0 z-[9999] flex items-center justify-center';
@@ -148,8 +168,9 @@ export default function MyBoostersPage() {
       animation: overlay-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     `;
     
-    const isJackpot = prizeData.is_jackpot;
-    const rtpColor = prizeData.rtp_percentage >= 100 ? 'text-green-400' : 'text-purple-400';
+    const isJackpot = prizeData.is_jackpot || false;
+    const rtpPercentage = prizeData.rtp_percentage || 0;
+    const rtpColor = rtpPercentage >= 100 ? 'text-green-400' : 'text-purple-400';
     
     prizeToast.innerHTML = `
       <div class="relative w-[95vw] max-w-3xl" style="animation: overlay-fade-in 0.6s ease-out;">
@@ -173,7 +194,7 @@ export default function MyBoostersPage() {
           <div class="relative z-10 px-12 py-20 text-center">
             <div class="inline-block mb-8 px-8 py-3 bg-gradient-to-r from-yellow-600/30 to-orange-600/30 border-2 border-yellow-400/60 rounded-full backdrop-blur-md">
               <span class="text-yellow-300 font-black text-base tracking-widest uppercase" style="text-shadow: 0 0 15px rgba(255, 215, 0, 1), 0 2px 4px rgba(0,0,0,0.8);">
-                ${isJackpot ? '👑 JACKPOT ROYALE 👑' : prizeData.rtp_percentage >= 100 ? '💎 MEGA WIN 💎' : '⭐ WINNER ⭐'}
+                ${isJackpot ? '👑 JACKPOT ROYALE 👑' : rtpPercentage >= 100 ? '💎 MEGA WIN 💎' : '⭐ WINNER ⭐'}
               </span>
             </div>
             
@@ -186,7 +207,7 @@ export default function MyBoostersPage() {
               animation: rainbow-slide 3s ease-in-out infinite;
               filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.6));
             ">
-              ${isJackpot ? 'JACKPOT!' : prizeData.rtp_percentage >= 100 ? 'BIG WIN!' : 'GANHOU!'}
+              ${isJackpot ? 'JACKPOT!' : rtpPercentage >= 100 ? 'BIG WIN!' : 'GANHOU!'}
             </h2>
             
             <div class="text-6xl font-black mb-10 text-white" style="text-shadow: 0 0 20px rgba(255,215,0,0.8);">
@@ -196,7 +217,7 @@ export default function MyBoostersPage() {
             <div class="inline-flex items-center gap-4 px-8 py-4 bg-black/60 border-2 border-white/30 rounded-full backdrop-blur-md">
               <div class="w-3 h-3 rounded-full ${rtpColor} animate-pulse" style="box-shadow: 0 0 15px currentColor;"></div>
               <span class="${rtpColor} font-black text-xl tracking-wide" style="text-shadow: 0 0 15px currentColor;">
-                ${prizeData.rtp_percentage.toFixed(0)}% RTP
+                ${rtpPercentage.toFixed(0)}% RTP
               </span>
             </div>
             

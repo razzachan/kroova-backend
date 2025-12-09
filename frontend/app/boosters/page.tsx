@@ -1504,8 +1504,8 @@ export default function BoostersPage() {
                   <span className="text-2xl">💰</span>
                   <div>
                     <p className="text-green-400 text-xs uppercase tracking-wider font-bold">Saldo Atualizado</p>
-                    <p className="text-white font-black text-2xl tracking-wider" style="font-family: var(--font-geist-mono), monospace;">
-                      R$ {userData?.balance.toFixed(2)}
+                    <p className="text-white font-black text-2xl tracking-wider" style={{ fontFamily: 'var(--font-geist-mono), monospace' }}>
+                      R$ {balance.toFixed(2)}
                     </p>
                   </div>
                 </div>

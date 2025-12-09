@@ -413,7 +413,7 @@ export default function BoostersPage() {
       const rtpColor = pendingPrizeData.rtp_percentage >= 100 ? 'text-green-400' : 'text-purple-400';
       
       prizeToast.innerHTML = `
-        <div class="relative w-[95vw] max-w-3xl">
+        <div class="relative w-[95vw] max-w-3xl" style="animation: overlay-fade-in 0.6s ease-out;">
           <!-- Glow effect -->
           <div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 via-pink-500/20 to-yellow-500/20 rounded-3xl blur-3xl animate-pulse"></div>
           
@@ -823,6 +823,9 @@ export default function BoostersPage() {
     setShowMultipleModal(false);
     const count = purchasedBoosters.length;
     setPurchasedBoosters([]);
+    
+    // Recarregar sealed packs após guardar
+    loadData();
     
     // Mostra toast estilizado com o mesmo estilo dos botões
     const toast = document.createElement('div');
@@ -1491,6 +1494,21 @@ export default function BoostersPage() {
                 >
                   {flipMode === 'interactive' ? '👆 Clique' : '⚡ Auto'}
                 </button>
+              </div>
+            </div>
+
+            {/* Balance Display - Top Right */}
+            <div className="fixed top-4 right-4 z-[110]">
+              <div className="bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 border-2 border-green-400 rounded-xl px-6 py-3 shadow-2xl shadow-green-400/30 backdrop-blur-sm">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">💰</span>
+                  <div>
+                    <p className="text-green-400 text-xs uppercase tracking-wider font-bold">Saldo Atualizado</p>
+                    <p className="text-white font-black text-2xl tracking-wider" style="font-family: var(--font-geist-mono), monospace;">
+                      R$ {userData?.balance.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 

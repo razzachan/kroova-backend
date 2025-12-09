@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 2. Buscar tudo em paralelo
-    const [boosterTypesRes, walletRes] = await Promise.all([
+    const [boosterTypesRes, walletRes, sealedBoostersRes] = await Promise.all([
       // Booster packs disponíveis para compra
       supabase
         .from('booster_types')
@@ -53,9 +53,17 @@ export async function GET(request: NextRequest) {
       // Saldo do usuário
       supabase
         .from('wallets')
-        .select('balance_brl')
+        .select('balance_brl, pity_legendary_counter, pity_godmode_counter')
         .eq('user_id', user.id)
-        .single()
+        .single(),
+
+      // Boosters comprados mas não abertos
+      supabase
+        .from('booster_instances')
+        .select('id, booster_type_id, purchased_at')
+        .eq('user_id', user.id)
+        .is('opened_at', null)
+        .order('purchased_at', { ascending: true })
     ]);
 
     // 3. Verificar erros
@@ -78,8 +86,8 @@ export async function GET(request: NextRequest) {
     // 4. Retornar dados agregados
     return NextResponse.json({
       booster_types: boosterTypesRes.data || [],
-      wallet: walletRes.data || { balance_brl: 0 },
-      sealed_boosters: []
+      wallet: walletRes.data || { balance_brl: 0, pity_legendary_counter: 0, pity_godmode_counter: 0 },
+      sealed_boosters: sealedBoostersRes.data || []
     });
 
   } catch (error) {

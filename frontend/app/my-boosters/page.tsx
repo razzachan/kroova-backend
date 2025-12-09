@@ -164,6 +164,9 @@ export default function MyBoostersPage() {
               animation: scanline-move 10s linear infinite;
             "></div>
             
+            <!-- Animation container for crown and coins -->
+            <div id="premium-jackpot-animation" class="absolute inset-0 pointer-events-none"></div>
+            
             <div class="relative z-10 px-12 py-20 text-center">
               <div class="inline-block mb-8 px-8 py-3 bg-gradient-to-r from-yellow-600/30 to-orange-600/30 border-2 border-yellow-400/60 rounded-full backdrop-blur-md">
                 <span class="text-yellow-300 font-black text-base tracking-widest uppercase" style="text-shadow: 0 0 15px rgba(255, 215, 0, 1), 0 2px 4px rgba(0,0,0,0.8);">
@@ -211,6 +214,157 @@ export default function MyBoostersPage() {
       const prizeSoundtrack = new Audio('/sfx/prize_reveal_soundtrack.mp3');
       prizeSoundtrack.volume = 0.6;
       prizeSoundtrack.play().catch(err => console.log('Audio autoplay blocked:', err));
+
+      // Premium animation with Imagen 4 assets (crown and coins)
+      const animContainer = document.getElementById('premium-jackpot-animation');
+      if (animContainer) {
+        // Crown (majestic entrance)
+        const crown = document.createElement('img');
+        crown.src = '/animations/jackpot-crown.png';
+        crown.className = 'absolute top-0 left-1/2 w-56 h-56 z-30';
+        crown.style.cssText = `
+          transform: translate(-50%, -25%);
+          animation: crown-epic-drop 1.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          filter: drop-shadow(0 0 40px rgba(255, 215, 0, 1)) brightness(1.4);
+        `;
+        animContainer.appendChild(crown);
+        
+        // Cascading coins (photorealistic)
+        const numCoins = 24;
+        for (let i = 0; i < numCoins; i++) {
+          const coin = document.createElement('img');
+          coin.src = '/animations/jackpot-coins.png';
+          const layer = Math.floor(i / 6);
+          const angleInLayer = (i % 6) * 60 + layer * 30;
+          
+          coin.className = 'absolute w-36 h-36';
+          coin.style.cssText = `
+            left: 50%;
+            top: -40%;
+            animation: coin-explosion-${i} 3.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${i * 0.06}s;
+            opacity: 0;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.7)) brightness(1.3) saturate(1.2);
+            z-index: ${30 - i};
+          `;
+          animContainer.appendChild(coin);
+        }
+        
+        // Premium CSS animations for crown and coins
+        const animStyle = document.createElement('style');
+        animStyle.textContent = `
+          @keyframes crown-epic-drop {
+            0% {
+              transform: translate(-50%, -300%) scale(0.3) rotate(-540deg);
+              opacity: 0;
+              filter: drop-shadow(0 0 80px rgba(255, 215, 0, 1)) brightness(5);
+            }
+            30% {
+              transform: translate(-50%, -30%) scale(1.25) rotate(15deg);
+              filter: drop-shadow(0 0 50px rgba(255, 215, 0, 1)) brightness(2.5);
+            }
+            50% {
+              transform: translate(-50%, -20%) scale(0.95) rotate(-10deg);
+            }
+            70% {
+              transform: translate(-50%, -26%) scale(1.08) rotate(5deg);
+            }
+            85% {
+              transform: translate(-50%, -23%) scale(0.98) rotate(-3deg);
+            }
+            100% {
+              transform: translate(-50%, -25%) scale(1) rotate(0deg);
+              opacity: 1;
+              filter: drop-shadow(0 0 40px rgba(255, 215, 0, 1)) brightness(1.4);
+            }
+          }
+          
+          ${Array.from({length: numCoins}).map((_, i) => {
+            const layer = Math.floor(i / 6);
+            const angleInLayer = (i % 6) * 60 + layer * 30;
+            const angle = angleInLayer * Math.PI / 180;
+            const radius = 200 + layer * 50;
+            const endX = Math.cos(angle) * radius;
+            const endY = Math.sin(angle) * radius + 350;
+            const rotations = 1440 + i * 180;
+            
+            return `
+              @keyframes coin-explosion-${i} {
+                0% {
+                  transform: translate(-50%, 0) rotate(0deg) scale(0.1);
+                  opacity: 0;
+                }
+                8% {
+                  opacity: 1;
+                }
+                25% {
+                  transform: translate(calc(-50% + ${endX * 0.3}px), ${endY * 0.3}px) rotate(${rotations * 0.3}deg) scale(0.9);
+                  opacity: 1;
+                }
+                60% {
+                  transform: translate(calc(-50% + ${endX * 0.75}px), ${endY * 0.75}px) rotate(${rotations * 0.75}deg) scale(0.6);
+                  opacity: 0.85;
+                }
+                85% {
+                  opacity: 0.4;
+                }
+                100% {
+                  transform: translate(calc(-50% + ${endX}px), ${endY}px) rotate(${rotations}deg) scale(0.15);
+                  opacity: 0;
+                }
+              }
+            `;
+          }).join('\n')}
+        `;
+        document.head.appendChild(animStyle);
+        
+        // Fade out animations after 8s (but keep overlay visible for click)
+        setTimeout(() => {
+          animContainer.style.transition = 'opacity 1.2s';
+          animContainer.style.opacity = '0';
+          setTimeout(() => animStyle.remove(), 1200);
+        }, 8000);
+      }
+      
+      // Atualizar saldo imediatamente e criar toast de saldo
+      const oldBalance = balance;
+      const newBalance = oldBalance + pendingPrizeData.amount_brl;
+      setBalance(newBalance);
+      
+      // Criar toast de saldo no canto superior direito (glitch style)
+      const balanceToast = document.createElement('div');
+      balanceToast.className = 'fixed top-24 right-6 z-[10000] backdrop-blur-xl';
+      balanceToast.style.animation = 'balance-popup 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      balanceToast.innerHTML = `
+        <div class="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border-2 border-green-500/50 rounded-lg px-6 py-4 shadow-2xl overflow-hidden transition-colors">
+          <!-- Background effects -->
+          <div class="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 animate-pulse"></div>
+          <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 via-emerald-400 to-green-500"></div>
+          
+          <!-- Content -->
+          <div class="relative z-10 flex items-center gap-3">
+            <div class="text-4xl animate-bounce">💰</div>
+            <div>
+              <div class="text-xs font-bold text-green-400 tracking-wider mb-1">SALDO ATUALIZADO</div>
+              <div class="text-2xl font-black text-white" style="text-shadow: 0 0 10px rgba(34, 197, 94, 0.3)">
+                R$ ${newBalance.toFixed(2)}
+              </div>
+              <div class="text-xs text-green-400 font-bold">+ R$ ${pendingPrizeData.amount_brl.toFixed(2)}</div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(balanceToast);
+      
+      // Adicionar keyframe do balance-popup
+      const balanceStyle = document.createElement('style');
+      balanceStyle.textContent = `
+        @keyframes balance-popup {
+          0% { transform: translateX(400px) scale(0.8); opacity: 0; }
+          60% { transform: translateX(-10px) scale(1.05); }
+          100% { transform: translateX(0) scale(1); opacity: 1; }
+        }
+      `;
+      document.head.appendChild(balanceStyle);
 
       // Animated counter
       setTimeout(() => {
@@ -307,6 +461,21 @@ export default function MyBoostersPage() {
         setShowCards(false);
         setRevealedCards([]);
         cardAudio.setAmbientIntensity('active');
+        
+        // Agendar remoção automática do toast de saldo após 3 segundos
+        setTimeout(() => {
+          const balanceToastElement = document.querySelector('.fixed.top-24.right-6.z-\\[10000\\]') as HTMLElement;
+          if (balanceToastElement) {
+            balanceToastElement.style.transition = 'all 0.6s ease-out';
+            balanceToastElement.style.transform = 'translateX(400px)';
+            balanceToastElement.style.opacity = '0';
+            setTimeout(() => {
+              balanceToastElement.remove();
+              const balanceStyleElement = document.querySelector('style:has([class*="balance-popup"])');
+              if (balanceStyleElement) balanceStyleElement.remove();
+            }, 600);
+          }
+        }, 3000);
       });
     }
   }

@@ -117,6 +117,15 @@ export default function BoostersPage() {
       claimFreeBooster();
     }
     
+    // Verificar se tem opening_id para abrir direto
+    const openingId = urlParams.get('open');
+    if (openingId) {
+      // Aguardar dados carregarem antes de abrir
+      setTimeout(() => handleOpen(openingId), 500);
+      // Limpar URL
+      window.history.replaceState({}, '', '/boosters');
+    }
+    
     // 🎵 Ambient managed globally by GlobalAmbientManager
     // No need to start/stop here anymore
   }, []);

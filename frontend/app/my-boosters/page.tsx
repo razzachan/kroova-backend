@@ -69,18 +69,8 @@ export default function MyBoostersPage() {
     setOpening(openingId);
     cardAudio.setAmbientIntensity('intense');
     
-    try {
-      await api.post('/boosters/open', { opening_id: openingId });
-      cardAudio.playSuccessChime();
-      router.push('/boosters');
-    } catch (error: any) {
-      console.error('Erro ao abrir booster:', error);
-      cardAudio.playErrorBuzz();
-      alert(error.response?.data?.error?.message || 'Erro ao abrir booster');
-    } finally {
-      setOpening(null);
-      cardAudio.setAmbientIntensity('active');
-    }
+    // Redireciona para /boosters com o opening_id para abrir com animação
+    router.push(`/boosters?open=${openingId}`);
   }
 
   const filteredPacks = filterTier

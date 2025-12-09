@@ -36,6 +36,7 @@ interface SealedPack {
   id: string;
   booster_type_id: string;
   purchased_at: string;
+  price_paid_brl: number;
   booster_packs?: {
     pack_name: string;
     edition_id: string;
@@ -417,15 +418,15 @@ export default function MyBoostersPage() {
 
               {/* Info */}
               <div className="mt-4 text-center">
-                {pack.booster_packs?.price_brl && (
+                {pack.price_paid_brl && (
                   <div className="text-lg font-bold text-[#00F0FF] mb-1" style={{
                     textShadow: '0 0 10px rgba(0, 240, 255, 0.6)'
                   }}>
-                    {PRICE_TO_TIER[pack.booster_packs.price_brl] || `Tier R$ ${pack.booster_packs.price_brl.toFixed(2)}`}
+                    {PRICE_TO_TIER[pack.price_paid_brl] || `Tier R$ ${pack.price_paid_brl.toFixed(2)}`}
                   </div>
                 )}
                 <div className="text-sm text-gray-300 font-medium">
-                  Valor: R$ {pack.booster_packs?.price_brl?.toFixed(2) || '0.00'}
+                  Valor: R$ {pack.price_paid_brl?.toFixed(2) || '0.00'}
                 </div>
                 <div className="text-xs text-gray-400 mt-1">
                   {new Date(pack.purchased_at).toLocaleDateString('pt-BR', { 

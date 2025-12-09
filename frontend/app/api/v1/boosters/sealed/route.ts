@@ -48,7 +48,8 @@ export async function GET(request: NextRequest) {
       .select(`
         id, 
         booster_type_id, 
-        purchased_at, 
+        purchased_at,
+        price_paid_brl,
         booster_packs(pack_name, edition_id, price_brl)
       `)
       .eq('user_id', user.id)

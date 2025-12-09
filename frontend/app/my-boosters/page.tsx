@@ -131,11 +131,15 @@ export default function MyBoostersPage() {
   
   function handleAllCardsRevealed() {
     // Todas as cartas foram reveladas - AGORA mostrar prêmio com animação!
+    console.log('🎯 [MY-BOOSTERS] handleAllCardsRevealed called, pendingPrizeData:', pendingPrizeData);
+    
     if (pendingPrizeData) {
+      console.log('✅ [MY-BOOSTERS] Showing prize animation...');
       showPrizeAnimation(pendingPrizeData);
       return; // Não limpar ainda, prêmio vai limpar
     }
     
+    console.warn('⚠️ [MY-BOOSTERS] No pending prize data, cleaning up...');
     // Se não tem prêmio, limpar tudo
     setOpening(null);
     setAnimationStage('none');

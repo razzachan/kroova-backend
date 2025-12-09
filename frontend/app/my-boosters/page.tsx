@@ -144,6 +144,9 @@ export default function MyBoostersPage() {
   function handleAllCardsRevealed() {
     // Todas as 5 cartas foram reveladas - AGORA mostrar prêmio com animação slot-machine!
     if (pendingPrizeData) {
+      let prizeSoundtrack: HTMLAudioElement | null = null;
+      let animationFrameId: number | null = null;
+      
       const prizeToast = document.createElement('div');
       
       // Full-screen overlay (Vegas casino style)
@@ -223,7 +226,7 @@ export default function MyBoostersPage() {
       document.body.appendChild(prizeToast);
 
       // Play prize soundtrack
-      const prizeSoundtrack = new Audio('/sfx/prize_reveal_soundtrack.mp3');
+      prizeSoundtrack = new Audio('/sfx/prize_reveal_soundtrack.mp3');
       prizeSoundtrack.volume = 0.6;
       prizeSoundtrack.play().catch(err => console.log('Audio autoplay blocked:', err));
 
@@ -424,6 +427,8 @@ export default function MyBoostersPage() {
       setTimeout(() => {
         const mountPoint = document.getElementById('prize-counter-mount');
         if (mountPoint) {
+          if (animationFrameId) cancelAnimationFrame(animationFrameId);
+          
           let currentValue = 0;
           const targetValue = pendingPrizeData.amount_brl;
           const duration = 3500;
@@ -496,18 +501,29 @@ export default function MyBoostersPage() {
             `;
 
             if (progress < 1) {
-              requestAnimationFrame(animate);
+              animationFrameId = requestAnimationFrame(animate);
             } else {
               cardAudio.playSuccessChime();
             }
           };
 
-          requestAnimationFrame(animate);
+          animationFrameId = requestAnimationFrame(animate);
         }
       }, 100);
 
       // Click to dismiss
       prizeToast.addEventListener('click', () => {
+        // Stop audio immediately
+        if (prizeSoundtrack) {
+          prizeSoundtrack.pause();
+          prizeSoundtrack.currentTime = 0;
+        }
+        
+        // Cancel animation frame
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+        }
+        
         prizeToast.style.animation = 'overlay-fade-in 0.4s cubic-bezier(0.4, 0, 1, 1) reverse';
         setTimeout(() => {
           // Remove ALL style elements (animations + balance toast)

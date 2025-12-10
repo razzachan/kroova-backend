@@ -144,6 +144,9 @@ export default function MyBoostersPage() {
   function handleAllCardsRevealed() {
     // Todas as 5 cartas foram reveladas - AGORA mostrar prêmio com animação slot-machine!
     if (pendingPrizeData) {
+      const prizeDataSnapshot = pendingPrizeData; // Capture data before clearing
+      setPendingPrizeData(null); // Clear immediately to prevent re-entrance
+      
       let prizeSoundtrack: HTMLAudioElement | null = null;
       let animationFrameId: number | null = null;
       
@@ -157,8 +160,8 @@ export default function MyBoostersPage() {
         animation: overlay-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       `;
       
-      const isJackpot = pendingPrizeData.is_jackpot;
-      const rtpColor = pendingPrizeData.rtp_percentage >= 100 ? 'text-green-400' : 'text-purple-400';
+      const isJackpot = prizeDataSnapshot.is_jackpot;
+      const rtpColor = prizeDataSnapshot.rtp_percentage >= 100 ? 'text-green-400' : 'text-purple-400';
       
       prizeToast.innerHTML = `
         <div class="relative w-[95vw] max-w-3xl" style="animation: overlay-fade-in 0.6s ease-out;">
@@ -185,7 +188,7 @@ export default function MyBoostersPage() {
             <div class="relative z-10 px-12 py-20 text-center">
               <div class="inline-block mb-8 px-8 py-3 bg-gradient-to-r from-yellow-600/30 to-orange-600/30 border-2 border-yellow-400/60 rounded-full backdrop-blur-md">
                 <span class="text-yellow-300 font-black text-base tracking-widest uppercase" style="text-shadow: 0 0 15px rgba(255, 215, 0, 1), 0 2px 4px rgba(0,0,0,0.8);">
-                  ${isJackpot ? '👑 JACKPOT ROYALE 👑' : pendingPrizeData.rtp_percentage >= 100 ? '💎 MEGA WIN 💎' : '⭐ WINNER ⭐'}
+                  ${isJackpot ? '👑 JACKPOT ROYALE 👑' : prizeDataSnapshot.rtp_percentage >= 100 ? '💎 MEGA WIN 💎' : '⭐ WINNER ⭐'}
                 </span>
               </div>
               
@@ -198,7 +201,7 @@ export default function MyBoostersPage() {
                 animation: rainbow-slide 3s ease-in-out infinite, title-glitch 4s ease-in-out infinite;
                 filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.6)) drop-shadow(0 6px 12px rgba(0, 0, 0, 0.9));
               ">
-                ${isJackpot ? 'JACKPOT!' : pendingPrizeData.rtp_percentage >= 100 ? 'BIG WIN!' : 'GANHOU!'}
+                ${isJackpot ? 'JACKPOT!' : prizeDataSnapshot.rtp_percentage >= 100 ? 'BIG WIN!' : 'GANHOU!'}
               </h2>
               
               <!-- Counter -->
@@ -207,7 +210,7 @@ export default function MyBoostersPage() {
               <div class="inline-flex items-center gap-4 px-8 py-4 bg-black/60 border-2 border-white/30 rounded-full backdrop-blur-md">
                 <div class="w-3 h-3 rounded-full ${rtpColor} animate-pulse" style="box-shadow: 0 0 15px currentColor;"></div>
                 <span class="${rtpColor} font-black text-xl tracking-wide" style="text-shadow: 0 0 15px currentColor;">
-                  ${pendingPrizeData.rtp_percentage.toFixed(0)}% RTP
+                  ${prizeDataSnapshot.rtp_percentage.toFixed(0)}% RTP
                 </span>
               </div>
               
@@ -378,13 +381,12 @@ export default function MyBoostersPage() {
         setTimeout(() => {
           animContainer.style.transition = 'opacity 1.2s';
           animContainer.style.opacity = '0';
-          setTimeout(() => style.remove(), 1200);
         }, 8000);
       }
       
       // Atualizar saldo imediatamente e criar toast de saldo
       const oldBalance = balance;
-      const newBalance = oldBalance + pendingPrizeData.amount_brl;
+      const newBalance = oldBalance + prizeDataSnapshot.amount_brl;
       setBalance(newBalance);
       
       // Criar toast de saldo no canto superior direito (glitch style)
@@ -405,7 +407,7 @@ export default function MyBoostersPage() {
               <div class="text-2xl font-black text-white" style="text-shadow: 0 0 10px rgba(34, 197, 94, 0.3)">
                 R$ ${newBalance.toFixed(2)}
               </div>
-              <div class="text-xs text-green-400 font-bold">+ R$ ${pendingPrizeData.amount_brl.toFixed(2)}</div>
+              <div class="text-xs text-green-400 font-bold">+ R$ ${prizeDataSnapshot.amount_brl.toFixed(2)}</div>
             </div>
           </div>
         </div>
@@ -472,7 +474,7 @@ export default function MyBoostersPage() {
                 filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
                 animation: jackpot-pulse 1.5s ease-in-out infinite;
               `;
-            } else if (pendingPrizeData.rtp_percentage >= 100) {
+            } else if (prizeDataSnapshot.rtp_percentage >= 100) {
               textStyle = `
                 font-size: 4.5rem;
                 font-weight: 900;
@@ -536,7 +538,6 @@ export default function MyBoostersPage() {
           });
           
           prizeToast.remove();
-          setPendingPrizeData(null);
           setOpening(null);
           setAnimationStage('none');
           setShowCards(false);

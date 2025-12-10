@@ -11,7 +11,7 @@ export const RECYCLE_POINTS_BY_RARITY: Record<string, number> = {
   'meme': 2,       // R$ 0.02 equivalent
   'viral': 5,      // R$ 0.05 equivalent
   'legendary': 10, // R$ 0.10 equivalent
-  'mythic': 20     // R$ 0.20 equivalent
+  'godmode': 20    // R$ 0.20 equivalent
 };
 
 // ============================================================================

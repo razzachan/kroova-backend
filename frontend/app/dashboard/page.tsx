@@ -40,9 +40,33 @@ export default function DashboardPage() {
       const response = await api.get('/dashboard/full');
       const data = response.data;
       
+      console.log('[DASHBOARD] Dados recebidos:', data);
+      console.log('[DASHBOARD] cards_count:', data.cards_count);
+      
+      // 🔧 HOTFIX: Se cards_count vir como 0, buscar diretamente do inventário
+      let actualCardsCount = data.cards_count || 0;
+      
+      if (actualCardsCount === 0) {
+        console.log('[DASHBOARD] cards_count = 0, verificando inventário...');
+        try {
+          const inventoryResponse = await api.get('/inventory/full');
+          const inventoryData = inventoryResponse.data;
+          actualCardsCount = inventoryData.total_cards || inventoryData.cards?.length || 0;
+          console.log('[DASHBOARD] Cartas no inventário:', actualCardsCount);
+        } catch (invError) {
+          console.error('[DASHBOARD] Erro ao buscar inventário:', invError);
+        }
+      }
+      
       setStats({
         balance: data.balance || 0,
-        cardsCount: data.cards_count || 0,
+        cardsCount: actualCardsCount,
+        listingsCount: data.listings_count || 0
+      });
+      
+      console.log('[DASHBOARD] Stats atualizadas:', {
+        balance: data.balance || 0,
+        cardsCount: actualCardsCount,
         listingsCount: data.listings_count || 0
       });
     } catch (error) {
@@ -85,8 +109,8 @@ export default function DashboardPage() {
     
     if (stats.cardsCount >= 25) {
       return {
-        title: 'RECICLE 25 CARTAS E GANHE 1 BOOSTER',
-        subtitle: 'Transforme sua coleção em novas chances',
+        title: 'RECICLE CARTAS POR PONTOS',
+        subtitle: 'Troque por boosters e novas chances',
         href: '/inventory',
         color: '#A855F7'
       };

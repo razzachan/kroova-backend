@@ -1,0 +1,316 @@
+================================================================================
+  SISTEMA DE SLOTS COMPLETO - MANUAL DE EXECUÇÃO
+  Execute no SQL Editor do Supabase Dashboard
+================================================================================
+
+INSTRUÇÕES:
+1. Acesse: https://mmcytphoeyxeylvaqjgr.supabase.co
+2. Vá em "SQL Editor"
+3. Cole e execute cada bloco abaixo EM ORDEM
+4. Verifique os resultados após cada execução
+
+================================================================================
+BLOCO 1: CRIAR TABELAS DO SISTEMA
+================================================================================
+
+-- Tabela de configuração de slots por booster
+CREATE TABLE IF NOT EXISTS booster_slot_config (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  booster_type_id UUID NOT NULL REFERENCES booster_types(id) ON DELETE CASCADE,
+  slot_position INT NOT NULL,
+  slot_name TEXT NOT NULL,
+  rarity_weights JSONB NOT NULL,
+  description TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(booster_type_id, slot_position)
+);
+
+-- Tabela de pity system (bad luck protection)
+CREATE TABLE IF NOT EXISTS booster_pity_tracker (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  booster_type_id UUID NOT NULL REFERENCES booster_types(id) ON DELETE CASCADE,
+  boosters_opened_since_last_legendary INT DEFAULT 0,
+  boosters_opened_since_last_godmode INT DEFAULT 0,
+  total_boosters_opened INT DEFAULT 0,
+  last_legendary_at TIMESTAMPTZ,
+  last_godmode_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(user_id, booster_type_id)
+);
+
+-- Índices para performance
+CREATE INDEX IF NOT EXISTS idx_slot_config_booster ON booster_slot_config(booster_type_id);
+CREATE INDEX IF NOT EXISTS idx_pity_tracker_user ON booster_pity_tracker(user_id);
+CREATE INDEX IF NOT EXISTS idx_pity_tracker_user_booster ON booster_pity_tracker(user_id, booster_type_id);
+
+================================================================================
+BLOCO 2: CONFIGURAR SLOTS - BÁSICO (R$ 0.50)
+Target RTP: 70% | 5 cartas | Valor esperado: R$ 0.35
+================================================================================
+
+-- Slots para Básico
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  1,
+  'common_guaranteed',
+  '{"trash": 0.70, "meme": 0.28, "viral": 0.02}'::jsonb,
+  'Slot 1: Common garantido com leve chance de upgrade'
+FROM booster_types WHERE name LIKE 'Básico%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  unnest(ARRAY[2, 3]),
+  'common',
+  '{"trash": 0.85, "meme": 0.15}'::jsonb,
+  'Slots 2-3: Commons puros'
+FROM booster_types WHERE name LIKE 'Básico%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  unnest(ARRAY[4, 5]),
+  'wildcard',
+  '{"trash": 0.75, "meme": 0.20, "viral": 0.04, "legendary": 0.009, "godmode": 0.001}'::jsonb,
+  'Slots 4-5: Wildcards com chance pequena de rare'
+FROM booster_types WHERE name LIKE 'Básico%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+================================================================================
+BLOCO 3: CONFIGURAR SLOTS - PADRÃO (R$ 1.00)
+Target RTP: 70% | 5 cartas | Valor esperado: R$ 0.70
+================================================================================
+
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  1,
+  'uncommon_guaranteed',
+  '{"meme": 0.50, "viral": 0.40, "legendary": 0.09, "godmode": 0.01}'::jsonb,
+  'Slot 1: Uncommon/Rare garantido'
+FROM booster_types WHERE name LIKE 'Padrão%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  unnest(ARRAY[2, 3]),
+  'common_improved',
+  '{"trash": 0.60, "meme": 0.35, "viral": 0.05}'::jsonb,
+  'Slots 2-3: Common melhorado'
+FROM booster_types WHERE name LIKE 'Padrão%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  unnest(ARRAY[4, 5]),
+  'wildcard',
+  '{"trash": 0.50, "meme": 0.35, "viral": 0.12, "legendary": 0.025, "godmode": 0.005}'::jsonb,
+  'Slots 4-5: Wildcards com chances moderadas'
+FROM booster_types WHERE name LIKE 'Padrão%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+================================================================================
+BLOCO 4: CONFIGURAR SLOTS - PREMIUM (R$ 2.00)
+Target RTP: 70% | 5 cartas | Valor esperado: R$ 1.40
+================================================================================
+
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  1,
+  'rare_guaranteed',
+  '{"viral": 0.70, "legendary": 0.25, "godmode": 0.05}'::jsonb,
+  'Slot 1: Rare/Legendary garantido'
+FROM booster_types WHERE name LIKE 'Premium%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  2,
+  'uncommon_guaranteed',
+  '{"meme": 0.40, "viral": 0.50, "legendary": 0.10}'::jsonb,
+  'Slot 2: Uncommon melhorado'
+FROM booster_types WHERE name LIKE 'Premium%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  unnest(ARRAY[3, 4, 5]),
+  'wildcard_premium',
+  '{"meme": 0.30, "viral": 0.45, "legendary": 0.20, "godmode": 0.05}'::jsonb,
+  'Slots 3-5: Wildcards premium'
+FROM booster_types WHERE name LIKE 'Premium%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+================================================================================
+BLOCO 5: CONFIGURAR SLOTS - ELITE (R$ 5.00)
+Target RTP: 70% | 6 cartas | Valor esperado: R$ 3.50
+================================================================================
+
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  1,
+  'legendary_guaranteed',
+  '{"legendary": 0.80, "godmode": 0.20}'::jsonb,
+  'Slot 1: Legendary/Godmode garantido'
+FROM booster_types WHERE name LIKE 'Elite%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  2,
+  'rare_guaranteed',
+  '{"viral": 0.60, "legendary": 0.35, "godmode": 0.05}'::jsonb,
+  'Slot 2: Rare garantido'
+FROM booster_types WHERE name LIKE 'Elite%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  unnest(ARRAY[3, 4]),
+  'uncommon_improved',
+  '{"viral": 0.30, "legendary": 0.60, "godmode": 0.10}'::jsonb,
+  'Slots 3-4: Uncommon melhorado'
+FROM booster_types WHERE name LIKE 'Elite%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  unnest(ARRAY[5, 6]),
+  'wildcard_elite',
+  '{"viral": 0.20, "legendary": 0.50, "godmode": 0.30}'::jsonb,
+  'Slots 5-6: Wildcards elite'
+FROM booster_types WHERE name LIKE 'Elite%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+================================================================================
+BLOCO 6: CONFIGURAR SLOTS - WHALE (R$ 10.00)
+Target RTP: 70% | 7 cartas | Valor esperado: R$ 7.00
+================================================================================
+
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  unnest(ARRAY[1, 2]),
+  'godmode_premium',
+  '{"legendary": 0.60, "godmode": 0.40}'::jsonb,
+  'Slots 1-2: Legendary/Godmode premium'
+FROM booster_types WHERE name LIKE 'Whale%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  unnest(ARRAY[3, 4, 5]),
+  'legendary_guaranteed',
+  '{"legendary": 0.85, "godmode": 0.15}'::jsonb,
+  'Slots 3-5: Legendary garantido'
+FROM booster_types WHERE name LIKE 'Whale%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+INSERT INTO booster_slot_config (booster_type_id, slot_position, slot_name, rarity_weights, description)
+SELECT 
+  id,
+  unnest(ARRAY[6, 7]),
+  'wildcard_whale',
+  '{"legendary": 0.50, "godmode": 0.50}'::jsonb,
+  'Slots 6-7: Wildcards whale (50/50)'
+FROM booster_types WHERE name LIKE 'Whale%'
+ON CONFLICT (booster_type_id, slot_position) DO UPDATE 
+SET rarity_weights = EXCLUDED.rarity_weights;
+
+================================================================================
+BLOCO 7: ATUALIZAR QUANTIDADE DE CARTAS POR BOOSTER
+================================================================================
+
+-- Básico, Padrão, Premium = 5 cartas
+UPDATE booster_types 
+SET cards_per_booster = 5 
+WHERE name LIKE 'Básico%' 
+   OR name LIKE 'Padrão%' 
+   OR name LIKE 'Premium%';
+
+-- Elite = 6 cartas
+UPDATE booster_types 
+SET cards_per_booster = 6 
+WHERE name LIKE 'Elite%';
+
+-- Whale = 7 cartas
+UPDATE booster_types 
+SET cards_per_booster = 7 
+WHERE name LIKE 'Whale%';
+
+================================================================================
+BLOCO 8: VERIFICAÇÃO FINAL
+================================================================================
+
+SELECT 
+  bt.name,
+  bt.price_brl,
+  bt.cards_per_booster,
+  COUNT(bsc.id) as slots_configurados,
+  ROUND((bt.cards_per_booster::numeric * 0.70), 2) as valor_esperado_rtp_70
+FROM booster_types bt
+LEFT JOIN booster_slot_config bsc ON bsc.booster_type_id = bt.id
+GROUP BY bt.id, bt.name, bt.price_brl, bt.cards_per_booster
+ORDER BY bt.price_brl;
+
+================================================================================
+BLOCO 9: DETALHES DOS SLOTS POR TIER
+================================================================================
+
+SELECT 
+  bt.name as booster,
+  bsc.slot_position,
+  bsc.slot_name,
+  bsc.rarity_weights,
+  bsc.description
+FROM booster_types bt
+JOIN booster_slot_config bsc ON bsc.booster_type_id = bt.id
+ORDER BY bt.price_brl, bsc.slot_position;
+
+================================================================================
+✅ SISTEMA CONFIGURADO!
+================================================================================
+
+Resultado esperado:
+- Básico: 5 slots configurados (R$ 0.35 retorno médio)
+- Padrão: 5 slots configurados (R$ 0.70 retorno médio)
+- Premium: 5 slots configurados (R$ 1.40 retorno médio)
+- Elite: 6 slots configurados (R$ 3.50 retorno médio)
+- Whale: 7 slots configurados (R$ 7.00 retorno médio)
+
+Próximos passos (implementar):
+1. Edge Function para abertura usando slots
+2. Pity system (bad luck protection)
+3. Foil system (10% chance de carta especial)
+4. Simulação de 10.000 aberturas para validar RTP
+
+================================================================================

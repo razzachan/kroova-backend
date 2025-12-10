@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { unwrap } from '@/lib/unwrap';
-import { PityProgressDual } from '@/components/PityProgressDual';
-import { CristalPity } from '@/components/CristalPity';
 import { PityExplosion } from '@/components/PityExplosion';
 import { OpeningSession } from '@/components/OpeningSession';
 import { SlotMachineCounter } from '@/components/SlotMachineCounter';
@@ -87,8 +85,14 @@ export default function BoostersPage() {
   const [openedCount, setOpenedCount] = useState(0);
   const [showCheckpoint, setShowCheckpoint] = useState(false);
   const [checkpointTop, setCheckpointTop] = useState<Card[]>([]);
-  const [streakActive, setStreakActive] = useState<{ until: number } | null>(null);
-  const [openTimestamps, setOpenTimestamps] = useState<number[]>([]);
+  
+  // Stats reais do usuário
+  const [stats, setStats] = useState({
+    totalBoosters: 0,
+    totalSpent: 0,
+    legendaryCount: 0,
+    godmodeCount: 0
+  });
   
   // Pack opening animation states
   const [animationStage, setAnimationStage] = useState<'none' | 'pack' | 'flight' | 'reveal'>('none');
@@ -219,15 +223,19 @@ export default function BoostersPage() {
         console.log('[boosters] Sem pontos de reciclagem ainda');
       }
       
-      // ✨ Carrega pity counters do wallet
-      setPityLegendary({
-        current: walletData.pity_legendary_counter || 0,
-        max: 20
-      });
-      setPityGodmode({
-        current: walletData.pity_godmode_counter || 0,
-        max: 150
-      });
+      // ✨ Carrega estatísticas reais do usuário
+      try {
+        const statsResponse = await api.get('/boosters/stats');
+        const statsData = unwrap(statsResponse);
+        setStats({
+          totalBoosters: statsData.total_boosters_opened || 0,
+          totalSpent: statsData.total_spent_brl || 0,
+          legendaryCount: statsData.legendary_drops || 0,
+          godmodeCount: statsData.godmode_drops || 0
+        });
+      } catch (error) {
+        console.log('[boosters] Stats endpoint não disponível:', error);
+      }
 
       // Sealed packs
       console.log('📦 [BOOSTERS] Sealed packs loaded:', data.sealed_boosters?.length || 0);
@@ -862,16 +870,6 @@ export default function BoostersPage() {
     // (card SFX will play on top)
     cardAudio.startAmbient('idle');
     
-    const now = Date.now();
-    // Track open timestamps for Lucky Streak (3 boosters < 2min)
-    setOpenTimestamps((arr) => {
-      const next = [...arr.filter((t) => now - t < 2 * 60 * 1000), now];
-      if (next.length >= 3 && !streakActive) {
-        setStreakActive({ until: now + 30 * 60 * 1000 }); // 30min
-      }
-      return next;
-    });
-    
     // Checkpoint a cada 10 boosters
     if ((openedCount + 1) % 10 === 0) {
       const top3 = [...pendingCards]
@@ -884,17 +882,6 @@ export default function BoostersPage() {
     // Recarrega pity após abrir
     loadData();
   }
-
-  // Expire Lucky Streak when time passes
-  useEffect(() => {
-    if (!streakActive) return;
-    const id = setInterval(() => {
-      if (Date.now() > streakActive.until) {
-        setStreakActive(null);
-      }
-    }, 10000);
-    return () => clearInterval(id);
-  }, [streakActive]);
 
   function getRarityColor(rarity: string) {
     const colors: Record<string, string> = {
@@ -967,38 +954,54 @@ export default function BoostersPage() {
           </div>
         </div>
 
-        {/* Dual Pity System */}
-        <div className="mb-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Crystal evolutivo */}
-          <div className="flex items-center justify-center">
-            <CristalPity 
-              averageProgress={(pityLegendary.current / pityLegendary.max * 100 + pityGodmode.current / pityGodmode.max * 100) / 2} 
-            />
-          </div>
-          
-          {/* Dual progress bars */}
-          <div className="lg:col-span-2">
-            <PityProgressDual 
-              legendary={pityLegendary}
-              godmode={pityGodmode}
-            />
+        {/* Estatísticas Reais */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-br from-gray-900/95 to-gray-800/95 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
+            <h3 className="text-lg font-bold text-gray-200 mb-4 flex items-center gap-2">
+              <span className="text-2xl">📊</span>
+              Suas Estatísticas
+            </h3>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Total Boosters */}
+              <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/30">
+                <div className="text-3xl mb-1">📦</div>
+                <div className="text-2xl font-bold text-white">{stats.totalBoosters}</div>
+                <div className="text-xs text-gray-400">Boosters Abertos</div>
+              </div>
+              
+              {/* Total Gasto */}
+              <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/30">
+                <div className="text-3xl mb-1">💰</div>
+                <div className="text-2xl font-bold text-green-400">
+                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(stats.totalSpent)}
+                </div>
+                <div className="text-xs text-gray-400">Total Investido</div>
+              </div>
+              
+              {/* Legendárias */}
+              <div className="bg-gray-800/50 rounded-lg p-4 border border-purple-500/20">
+                <div className="text-3xl mb-1">💎</div>
+                <div className="text-2xl font-bold text-purple-400">{stats.legendaryCount}</div>
+                <div className="text-xs text-gray-400">
+                  Legendárias {stats.totalBoosters > 0 && `(${((stats.legendaryCount / stats.totalBoosters) * 100).toFixed(1)}%)`}
+                </div>
+              </div>
+              
+              {/* Godmodes */}
+              <div className="bg-gray-800/50 rounded-lg p-4 border border-yellow-500/20">
+                <div className="text-3xl mb-1">👑</div>
+                <div className="text-2xl font-bold text-yellow-400">{stats.godmodeCount}</div>
+                <div className="text-xs text-gray-400">
+                  Godmodes {stats.totalBoosters > 0 && `(${((stats.godmodeCount / stats.totalBoosters) * 100).toFixed(1)}%)`}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Vault Milestones - REMOVIDO temporariamente até implementação backend */}
 
-        {/* Lucky Streak Banner - Modificado para skins apenas (custo zero) */}
-        {streakActive && (
-          <div className="mb-6 p-4 rounded-lg bg-gradient-to-r from-pink-700 to-purple-700 border border-pink-400">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">⚡</span>
-              <div>
-                <div className="font-bold">Lucky Streak ativo!</div>
-                <div className="text-sm text-pink-200">+50% de chance de SKINS raras pelos próximos 30min.</div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Lucky Streak - REMOVIDO: funcionalidade não implementada no backend */}
 
         {/* Checkpoint Modal */}
         {showCheckpoint && (

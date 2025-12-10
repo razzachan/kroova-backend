@@ -78,37 +78,32 @@ export function RarityGuide({ autoShow = false }: RarityGuideProps) {
                   <RarityRow
                     emoji="🗑️"
                     name="TRASH"
-                    value="R$ 0.01 - 0.05"
-                    color="text-gray-400"
                     description="Comum em todos os pacotes"
+                    color="text-gray-400"
                   />
                   <RarityRow
                     emoji="😎"
                     name="MEME"
-                    value="R$ 0.05 - 0.30"
-                    color="text-green-400"
                     description="Mais frequente em tiers médios"
+                    color="text-green-400"
                   />
                   <RarityRow
                     emoji="🔥"
                     name="VIRAL"
-                    value="R$ 0.20 - 1.50"
-                    color="text-blue-400"
                     description="Raro, bom valor de revenda"
+                    color="text-blue-400"
                   />
                   <RarityRow
                     emoji="⭐"
                     name="LEGENDARY"
-                    value="R$ 1.00 - 10.00"
-                    color="text-yellow-400"
                     description="Muito raro, alto valor"
+                    color="text-yellow-400"
                   />
                   <RarityRow
                     emoji="👑"
                     name="GODMODE"
-                    value="R$ 50.00 - 100.00"
-                    color="text-purple-400"
                     description="Jackpot! Ultra raro (0.1-0.5%)"
+                    color="text-purple-400"
                   />
                 </div>
               </div>
@@ -121,56 +116,70 @@ export function RarityGuide({ autoShow = false }: RarityGuideProps) {
                 <h3 className="text-xl font-bold text-[#FF006D] mb-4 flex items-center gap-2">
                   <span className="text-2xl">💎</span>
                   TIPOS DE SKIN
-                  <span className="text-sm font-normal text-gray-400">(Multiplicador de Valor)</span>
+                  <span className="text-sm font-normal text-gray-400">(Visual)</span>
                 </h3>
                 <div className="space-y-3">
                   <SkinRow
                     emoji="📄"
                     name="DEFAULT"
-                    multiplier="x1.0"
                     color="text-gray-300"
+                    description="Aparência padrão"
                   />
                   <SkinRow
                     emoji="✨"
                     name="PREMIUM"
-                    multiplier="x1.5"
                     color="text-cyan-400"
+                    description="Variante especial"
                   />
                   <SkinRow
                     emoji="🌈"
                     name="HOLO"
-                    multiplier="x2.5"
                     color="text-pink-400"
+                    description="Efeito holográfico"
                   />
                   <SkinRow
                     emoji="👻"
                     name="GHOST"
-                    multiplier="x3.0"
                     color="text-indigo-400"
+                    description="Estilo fantasmagórico"
                   />
                   <SkinRow
                     emoji="🌑"
                     name="DARK"
-                    multiplier="x4.0"
                     color="text-red-400"
+                    description="Versão sombria"
                   />
                   <SkinRow
                     emoji="💫"
                     name="GLITCH"
-                    multiplier="x6.0"
                     color="text-purple-400"
+                    description="Efeito glitch raro"
                   />
                 </div>
               </div>
 
-              {/* Dica */}
-              <div className="bg-gradient-to-r from-[#FF006D]/20 to-[#00F0FF]/20 border border-[#00F0FF]/30 rounded-lg p-4">
-                <p className="text-sm text-gray-300">
-                  <span className="font-bold text-[#00F0FF]">💡 DICA:</span> Uma carta{' '}
-                  <span className="text-yellow-400 font-bold">LEGENDARY</span> com skin{' '}
-                  <span className="text-purple-400 font-bold">GLITCH</span> pode valer até{' '}
-                  <span className="text-green-400 font-bold">R$ 60,00</span>! (R$ 10 × 6.0)
-                </p>
+              {/* Dicas */}
+              <div className="space-y-3">
+                <div className="bg-gradient-to-r from-[#FF006D]/20 to-[#00F0FF]/20 border border-[#00F0FF]/30 rounded-lg p-4">
+                  <p className="text-sm text-gray-300">
+                    <span className="font-bold text-[#00F0FF]">💡 RECICLAGEM:</span> Recicle cartas para ganhar{' '}
+                    <span className="text-purple-400 font-bold">pontos</span> e trocar por{' '}
+                    <span className="text-yellow-400 font-bold">boosters grátis</span>! Pontos variam por raridade:{' '}
+                    <span className="text-gray-400">Trash</span> = 1pt,{' '}
+                    <span className="text-green-400">Meme</span> = 2pts,{' '}
+                    <span className="text-blue-400">Viral</span> = 5pts,{' '}
+                    <span className="text-yellow-400">Legendary</span> = 10pts,{' '}
+                    <span className="text-purple-400">Godmode</span> = 20pts.
+                  </p>
+                </div>
+                
+                <div className="bg-gradient-to-r from-green-900/20 to-emerald-900/20 border border-green-500/30 rounded-lg p-4">
+                  <p className="text-sm text-gray-300">
+                    <span className="font-bold text-green-400">💰 CASHBACK:</span> Toda carta ganha{' '}
+                    <span className="text-green-400 font-bold">cashback resgatável</span> baseado no prêmio do pacote.{' '}
+                    Resgate no inventário para adicionar ao seu saldo!
+                  </p>
+                </div>
               </div>
 
               {/* Checkbox "Não mostrar novamente" */}
@@ -212,26 +221,21 @@ export function RarityGuide({ autoShow = false }: RarityGuideProps) {
 function RarityRow({
   emoji,
   name,
-  value,
   color,
   description,
 }: {
   emoji: string;
   name: string;
-  value: string;
   color: string;
   description: string;
 }) {
   return (
-    <div className="flex items-center justify-between bg-black/40 rounded-lg p-3 hover:bg-black/60 transition-colors">
-      <div className="flex items-center gap-3">
-        <span className="text-2xl">{emoji}</span>
-        <div>
-          <p className={`font-bold ${color}`}>{name}</p>
-          <p className="text-xs text-gray-400">{description}</p>
-        </div>
+    <div className="flex items-center gap-3 bg-black/40 rounded-lg p-3 hover:bg-black/60 transition-colors">
+      <span className="text-2xl">{emoji}</span>
+      <div className="flex-1">
+        <p className={`font-bold ${color}`}>{name}</p>
+        <p className="text-xs text-gray-400">{description}</p>
       </div>
-      <span className="text-green-400 font-mono font-bold">{value}</span>
     </div>
   );
 }
@@ -239,21 +243,21 @@ function RarityRow({
 function SkinRow({
   emoji,
   name,
-  multiplier,
   color,
+  description,
 }: {
   emoji: string;
   name: string;
-  multiplier: string;
   color: string;
+  description: string;
 }) {
   return (
-    <div className="flex items-center justify-between bg-black/40 rounded-lg p-3 hover:bg-black/60 transition-colors">
-      <div className="flex items-center gap-3">
-        <span className="text-2xl">{emoji}</span>
+    <div className="flex items-center gap-3 bg-black/40 rounded-lg p-3 hover:bg-black/60 transition-colors">
+      <span className="text-2xl">{emoji}</span>
+      <div className="flex-1">
         <p className={`font-bold ${color}`}>{name}</p>
+        <p className="text-xs text-gray-400">{description}</p>
       </div>
-      <span className="text-[#00F0FF] font-mono font-bold text-lg">{multiplier}</span>
     </div>
   );
 }

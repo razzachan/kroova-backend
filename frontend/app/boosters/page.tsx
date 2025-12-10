@@ -1216,15 +1216,15 @@ export default function BoostersPage() {
                               <>
                                 <div className="flex justify-between items-center">
                                   <span className="text-pink-400">👑 Godmode</span>
-                                  <span className="text-gray-400">0.02% (1/5000)</span>
+                                  <span className="text-gray-400">0.001% (1/100k) 🔥</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                   <span className="text-yellow-400">💎 Legendary</span>
-                                  <span className="text-gray-400">0.3% (1/333)</span>
+                                  <span className="text-gray-400">0.7% (1/143)</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                   <span className="text-purple-400">⭐ Viral</span>
-                                  <span className="text-gray-400">~5%</span>
+                                  <span className="text-gray-400">~10%</span>
                                 </div>
                               </>
                             )}
@@ -1232,11 +1232,11 @@ export default function BoostersPage() {
                               <>
                                 <div className="flex justify-between items-center">
                                   <span className="text-pink-400">👑 Godmode</span>
-                                  <span className="text-gray-400">0.1% (1/1000)</span>
+                                  <span className="text-gray-400">0.01% (1/10k) 🔥</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                   <span className="text-yellow-400">💎 Legendary</span>
-                                  <span className="text-gray-400">1% (1/100)</span>
+                                  <span className="text-gray-400">5% (1/20)</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                   <span className="text-purple-400">⭐ Viral</span>
@@ -1248,11 +1248,11 @@ export default function BoostersPage() {
                               <>
                                 <div className="flex justify-between items-center">
                                   <span className="text-pink-400">👑 Godmode</span>
-                                  <span className="text-gray-400">0.5% (1/200)</span>
+                                  <span className="text-gray-400">0.5% (1/200) 💎</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                   <span className="text-yellow-400">💎 Legendary</span>
-                                  <span className="text-gray-400">3% (1/33)</span>
+                                  <span className="text-gray-400">35% (1/3)</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                   <span className="text-purple-400">⭐ Viral</span>
@@ -1264,15 +1264,15 @@ export default function BoostersPage() {
                               <>
                                 <div className="flex justify-between items-center">
                                   <span className="text-pink-400">👑 Godmode</span>
-                                  <span className="text-gray-400">2% (1/50)</span>
+                                  <span className="text-gray-400">5% (1/20) ⚡</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                   <span className="text-yellow-400">💎 Legendary</span>
-                                  <span className="text-gray-400">68% (quase certo!)</span>
+                                  <span className="text-gray-400">130% (1-2 cards)</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-cyan-400">🎴 6 cartas</span>
-                                  <span className="text-gray-400">por pack</span>
+                                  <span className="text-purple-400">⭐ Viral</span>
+                                  <span className="text-gray-400">Garantido 3x</span>
                                 </div>
                               </>
                             )}
@@ -1280,15 +1280,15 @@ export default function BoostersPage() {
                               <>
                                 <div className="flex justify-between items-center">
                                   <span className="text-pink-400">👑 Godmode</span>
-                                  <span className="text-gray-400">8% (1/13)</span>
+                                  <span className="text-gray-400">15% (1/7) 👑</span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                   <span className="text-yellow-400">💎 Legendary</span>
-                                  <span className="text-gray-400">92% (garantido!)</span>
+                                  <span className="text-gray-400">165% (1-2 cards)</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-cyan-400">🎴 7 cartas</span>
-                                  <span className="text-gray-400">por pack</span>
+                                  <span className="text-purple-400">⭐ Viral</span>
+                                  <span className="text-gray-400">Garantido 3x</span>
                                 </div>
                               </>
                             )}

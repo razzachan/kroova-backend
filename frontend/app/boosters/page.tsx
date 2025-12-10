@@ -1010,8 +1010,8 @@ export default function BoostersPage() {
                 {checkpointTop.map((c, i) => (
                   <div key={i} className="bg-gray-900 rounded-lg p-2">
                     <img src={c.card?.image_url || (c as any).image_url} alt={c.card?.name || (c as any).name} className="rounded object-contain mix-blend-lighten" />
-                    <div className="text-xs mt-1">{c.card?.name || (c as any).name}</div>
-                    <div className="text-[11px] text-gray-500">R$ {(c.liquidity_brl || 0).toFixed(2)}</div>
+                    <div className="text-xs mt-1 font-semibold">{c.card?.name || (c as any).name}</div>
+                    <div className={`text-[11px] font-bold ${getRarityColor(c.card?.rarity || (c as any).rarity)}`}>{c.card?.rarity || (c as any).rarity}</div>
                   </div>
                 ))}
               </div>
@@ -1215,16 +1215,16 @@ export default function BoostersPage() {
                             {booster.price_brl === 0.50 && (
                               <>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-pink-400">👑 Godmode</span>
-                                  <span className="text-gray-400">0.001% (1/100k) 🔥</span>
+                                  <span className="text-pink-400 font-semibold">👑 Godmode</span>
+                                  <span className="text-gray-200 font-medium">0.001% (1/100k) 🔥</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-yellow-400">💎 Legendary</span>
-                                  <span className="text-gray-400">0.7% (1/143)</span>
+                                  <span className="text-yellow-400 font-semibold">💎 Legendary</span>
+                                  <span className="text-gray-200 font-medium">0.7% (1/143)</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-purple-400">⭐ Viral</span>
-                                  <span className="text-gray-400">~10%</span>
+                                  <span className="text-purple-400 font-semibold">⭐ Viral</span>
+                                  <span className="text-gray-200 font-medium">~10%</span>
                                 </div>
                                 <div className="mt-2 text-[10px] text-gray-500">
                                   Estrutura: 3 slots NUNCA legendary + 2 wildcards (máx. 2 legendary) • 5 cartas • RTP 70%
@@ -1234,16 +1234,16 @@ export default function BoostersPage() {
                             {booster.price_brl === 1.00 && (
                               <>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-pink-400">👑 Godmode</span>
-                                  <span className="text-gray-400">0.01% (1/10k) 🔥</span>
+                                  <span className="text-pink-400 font-semibold">👑 Godmode</span>
+                                  <span className="text-gray-200 font-medium">0.01% (1/10k) 🔥</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-yellow-400">💎 Legendary</span>
-                                  <span className="text-gray-400">5% (1/20)</span>
+                                  <span className="text-yellow-400 font-semibold">💎 Legendary</span>
+                                  <span className="text-gray-200 font-medium">5% (1/20)</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-purple-400">⭐ Viral</span>
-                                  <span className="text-gray-400">~20%</span>
+                                  <span className="text-purple-400 font-semibold">⭐ Viral</span>
+                                  <span className="text-gray-200 font-medium">~20%</span>
                                 </div>
                                 <div className="mt-2 text-[10px] text-gray-500">
                                   Estrutura: 3 slots NUNCA legendary + 2 wildcards (máx. 2 legendary) • 5 cartas • RTP 70%
@@ -1253,16 +1253,16 @@ export default function BoostersPage() {
                             {booster.price_brl === 2.00 && (
                               <>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-pink-400">👑 Godmode</span>
-                                  <span className="text-gray-400">0.5% (1/200) 💎</span>
+                                  <span className="text-pink-400 font-semibold">👑 Godmode</span>
+                                  <span className="text-gray-200 font-medium">0.5% (1/200) 💎</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-yellow-400">💎 Legendary</span>
-                                  <span className="text-gray-400">35% (1/3)</span>
+                                  <span className="text-yellow-400 font-semibold">💎 Legendary</span>
+                                  <span className="text-gray-200 font-medium">35% (1/3)</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-purple-400">⭐ Viral</span>
-                                  <span className="text-gray-400">Garantido</span>
+                                  <span className="text-purple-400 font-semibold">⭐ Viral</span>
+                                  <span className="text-gray-200 font-medium">Garantido</span>
                                 </div>
                                 <div className="mt-2 text-[10px] text-gray-500">
                                   Estrutura: 3 slots NUNCA legendary + 2 wildcards (máx. 2 legendary) • 5 cartas • RTP 70%
@@ -1272,16 +1272,16 @@ export default function BoostersPage() {
                             {booster.price_brl === 5.00 && (
                               <>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-pink-400">👑 Godmode</span>
-                                  <span className="text-gray-400">5% (1/20) ⚡</span>
+                                  <span className="text-pink-400 font-semibold">👑 Godmode</span>
+                                  <span className="text-gray-200 font-medium">5% (1/20) ⚡</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-yellow-400">💎 Legendary</span>
-                                  <span className="text-gray-400">130% (1-2 cards)</span>
+                                  <span className="text-yellow-400 font-semibold">💎 Legendary</span>
+                                  <span className="text-gray-200 font-medium">130% (1-2 cards)</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-purple-400">⭐ Viral</span>
-                                  <span className="text-gray-400">Garantido 3x</span>
+                                  <span className="text-purple-400 font-semibold">⭐ Viral</span>
+                                  <span className="text-gray-200 font-medium">Garantido 3x</span>
                                 </div>
                                 <div className="mt-2 text-[10px] text-gray-500">
                                   Estrutura: 3 slots NUNCA legendary + 2 wildcards (máx. 2 legendary) • 5 cartas • RTP 70%
@@ -1291,16 +1291,16 @@ export default function BoostersPage() {
                             {booster.price_brl === 10.00 && (
                               <>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-pink-400">👑 Godmode</span>
-                                  <span className="text-gray-400">15% (1/7) 👑</span>
+                                  <span className="text-pink-400 font-semibold">👑 Godmode</span>
+                                  <span className="text-gray-200 font-medium">15% (1/7) 👑</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-yellow-400">💎 Legendary</span>
-                                  <span className="text-gray-400">165% (1-2 cards)</span>
+                                  <span className="text-yellow-400 font-semibold">💎 Legendary</span>
+                                  <span className="text-gray-200 font-medium">165% (1-2 cards)</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                  <span className="text-purple-400">⭐ Viral</span>
-                                  <span className="text-gray-400">Garantido 3x</span>
+                                  <span className="text-purple-400 font-semibold">⭐ Viral</span>
+                                  <span className="text-gray-200 font-medium">Garantido 3x</span>
                                 </div>
                                 <div className="mt-2 text-[10px] text-gray-500">
                                   Estrutura: 3 slots NUNCA legendary + 2 wildcards (máx. 2 legendary) • 5 cartas • RTP 70%
@@ -1313,30 +1313,30 @@ export default function BoostersPage() {
                           {booster.skin_boost && (
                             <>
                               <div className="mt-3 pt-2 border-t border-gray-700/50">
-                                <p className="text-xs text-gray-500 font-mono mb-1">✨ Skins Especiais (visual + valor):</p>
+                                <p className="text-xs text-gray-300 font-mono mb-1 font-semibold">✨ Skins Especiais (visual + valor):</p>
                                 <div className="space-y-0.5 text-xs font-mono">
                                   {booster.skin_boost.premium > 0 && (
                                     <div className="flex justify-between items-center">
-                                      <span className="text-blue-400">💠 Premium (1.5x)</span>
-                                      <span className="text-gray-400">{booster.skin_boost.premium}%</span>
+                                      <span className="text-blue-400 font-semibold">💠 Premium (1.5x)</span>
+                                      <span className="text-gray-200 font-medium">{booster.skin_boost.premium}%</span>
                                     </div>
                                   )}
                                   {booster.skin_boost.holo > 0 && (
                                     <div className="flex justify-between items-center">
-                                      <span className="text-cyan-400">🌟 Holo (2.5x)</span>
-                                      <span className="text-gray-400">{booster.skin_boost.holo}%</span>
+                                      <span className="text-cyan-400 font-semibold">🌟 Holo (2.5x)</span>
+                                      <span className="text-gray-200 font-medium">{booster.skin_boost.holo}%</span>
                                     </div>
                                   )}
                                   {booster.skin_boost.ghost > 0 && (
                                     <div className="flex justify-between items-center">
-                                      <span className="text-purple-400">👻 Ghost (3x)</span>
-                                      <span className="text-gray-400">{booster.skin_boost.ghost}%</span>
+                                      <span className="text-purple-400 font-semibold">👻 Ghost (3x)</span>
+                                      <span className="text-gray-200 font-medium">{booster.skin_boost.ghost}%</span>
                                     </div>
                                   )}
                                   {booster.skin_boost.dark > 0 && (
                                     <div className="flex justify-between items-center">
-                                      <span className="text-red-400">🔥 Dark (4x)</span>
-                                      <span className="text-gray-400">{booster.skin_boost.dark}%</span>
+                                      <span className="text-red-400 font-semibold">🔥 Dark (4x)</span>
+                                      <span className="text-gray-200 font-medium">{booster.skin_boost.dark}%</span>
                                     </div>
                                   )}
                                   {booster.skin_boost.glitch > 0 && (

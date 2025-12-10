@@ -639,7 +639,7 @@ export default function BoostersPage() {
             
             // Agendar remoção automática do toast de saldo após 3 segundos
             setTimeout(() => {
-              const balanceToastElement = document.querySelector('.fixed.top-24.right-6.z-\\[10000\\]') as HTMLElement;
+              const balanceToastElement = document.querySelector('.fixed.top-24.right-6.z-\\[45\\]') as HTMLElement;
               if (balanceToastElement) {
                 balanceToastElement.style.transition = 'all 0.6s ease-out';
                 balanceToastElement.style.transform = 'translateX(400px)';
@@ -669,7 +669,7 @@ export default function BoostersPage() {
       
       // Criar toast de saldo no canto superior direito (glitch style)
       const balanceToast = document.createElement('div');
-      balanceToast.className = 'fixed top-24 right-6 z-[10000] backdrop-blur-xl';
+      balanceToast.className = 'fixed top-24 right-6 z-[45] backdrop-blur-xl';
       balanceToast.style.animation = 'balance-popup 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
       balanceToast.innerHTML = `
         <div class="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border-2 border-green-500/50 rounded-lg px-6 py-4 shadow-2xl overflow-hidden transition-colors">
@@ -954,47 +954,61 @@ export default function BoostersPage() {
           </div>
         </div>
 
-        {/* Estatísticas Reais */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-br from-gray-900/95 to-gray-800/95 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
-            <h3 className="text-lg font-bold text-gray-200 mb-4 flex items-center gap-2">
-              <span className="text-2xl">📊</span>
-              Suas Estatísticas
+        {/* Estatísticas Reais - Cyber Style */}
+        <div className="mb-8 relative">
+          {/* Cyber scanlines background */}
+          <div className="absolute inset-0 bg-[linear-gradient(0deg,transparent_24%,rgba(0,240,255,0.03)_25%,rgba(0,240,255,0.03)_26%,transparent_27%,transparent_74%,rgba(0,240,255,0.03)_75%,rgba(0,240,255,0.03)_76%,transparent_77%,transparent)] bg-[length:100%_4px] pointer-events-none"></div>
+          
+          <div className="relative bg-black/80 backdrop-blur-sm rounded-lg border-2 border-[#00F0FF]/30 p-6 shadow-[0_0_30px_rgba(0,240,255,0.15)]">
+            {/* Cyber corners */}
+            <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#FF006D]"></div>
+            <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#FF006D]"></div>
+            <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#00F0FF]"></div>
+            <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#00F0FF]"></div>
+            
+            <h3 className="text-lg font-bold text-[#00F0FF] mb-4 flex items-center gap-2 font-mono tracking-wider">
+              <span className="text-2xl animate-pulse">📊</span>
+              <TextGlitch delay={100}>SUAS ESTATÍSTICAS</TextGlitch>
             </h3>
+            
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Total Boosters */}
-              <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/30">
-                <div className="text-3xl mb-1">📦</div>
-                <div className="text-2xl font-bold text-white">{stats.totalBoosters}</div>
-                <div className="text-xs text-gray-400">Boosters Abertos</div>
-              </div>
+              <HolographicCard className="bg-gradient-to-br from-gray-900/90 to-black/90 p-4 border border-[#00F0FF]/20 hover:border-[#00F0FF]/60 transition-all duration-300">
+                <div className="text-3xl mb-2 animate-pulse">📦</div>
+                <div className="text-3xl font-bold text-[#00F0FF] font-mono">{stats.totalBoosters}</div>
+                <div className="text-xs text-gray-400 font-mono mt-1">BOOSTERS ABERTOS</div>
+              </HolographicCard>
               
               {/* Total Gasto */}
-              <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700/30">
-                <div className="text-3xl mb-1">💰</div>
-                <div className="text-2xl font-bold text-green-400">
+              <HolographicCard className="bg-gradient-to-br from-gray-900/90 to-black/90 p-4 border border-emerald-500/20 hover:border-emerald-500/60 transition-all duration-300">
+                <div className="text-3xl mb-2 animate-pulse">💰</div>
+                <div className="text-2xl font-bold text-emerald-400 font-mono">
                   {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(stats.totalSpent)}
                 </div>
-                <div className="text-xs text-gray-400">Total Investido</div>
-              </div>
+                <div className="text-xs text-gray-400 font-mono mt-1">TOTAL INVESTIDO</div>
+              </HolographicCard>
               
               {/* Legendárias */}
-              <div className="bg-gray-800/50 rounded-lg p-4 border border-purple-500/20">
-                <div className="text-3xl mb-1">💎</div>
-                <div className="text-2xl font-bold text-purple-400">{stats.legendaryCount}</div>
-                <div className="text-xs text-gray-400">
-                  Legendárias {stats.totalBoosters > 0 && `(${((stats.legendaryCount / stats.totalBoosters) * 100).toFixed(1)}%)`}
+              <HolographicCard className="bg-gradient-to-br from-gray-900/90 to-black/90 p-4 border border-purple-500/20 hover:border-purple-500/60 transition-all duration-300">
+                <div className="text-3xl mb-2 animate-pulse">💎</div>
+                <div className="text-3xl font-bold text-purple-400 font-mono">{stats.legendaryCount}</div>
+                <div className="text-xs text-gray-400 font-mono mt-1">
+                  LEGENDÁRIAS {stats.totalBoosters > 0 && (
+                    <span className="text-purple-300">({((stats.legendaryCount / stats.totalBoosters) * 100).toFixed(1)}%)</span>
+                  )}
                 </div>
-              </div>
+              </HolographicCard>
               
               {/* Godmodes */}
-              <div className="bg-gray-800/50 rounded-lg p-4 border border-yellow-500/20">
-                <div className="text-3xl mb-1">👑</div>
-                <div className="text-2xl font-bold text-yellow-400">{stats.godmodeCount}</div>
-                <div className="text-xs text-gray-400">
-                  Godmodes {stats.totalBoosters > 0 && `(${((stats.godmodeCount / stats.totalBoosters) * 100).toFixed(1)}%)`}
+              <HolographicCard className="bg-gradient-to-br from-gray-900/90 to-black/90 p-4 border border-[#FF006D]/20 hover:border-[#FF006D]/60 transition-all duration-300">
+                <div className="text-3xl mb-2 animate-pulse">👑</div>
+                <div className="text-3xl font-bold text-[#FF006D] font-mono">{stats.godmodeCount}</div>
+                <div className="text-xs text-gray-400 font-mono mt-1">
+                  GODMODES {stats.totalBoosters > 0 && (
+                    <span className="text-pink-300">({((stats.godmodeCount / stats.totalBoosters) * 100).toFixed(1)}%)</span>
+                  )}
                 </div>
-              </div>
+              </HolographicCard>
             </div>
           </div>
         </div>

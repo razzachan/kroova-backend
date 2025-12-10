@@ -1243,55 +1243,131 @@ export default function BoostersPage() {
                             </div>
                           )}
                           
-                          <p className="text-xs text-gray-500 font-mono">Distribuição:</p>
-                          <div className="grid grid-cols-2 gap-1 text-xs mt-1 font-mono">{Object.entries(booster.rarity_distribution || {})
-                              .sort(([rarityA], [rarityB]) => {
-                                const order: Record<string, number> = { 'meme': 0, 'trash': 1, 'viral': 2, 'epic': 3, 'legendary': 4, 'godmode': 5 };
-                                return (order[rarityA.toLowerCase()] || 999) - (order[rarityB.toLowerCase()] || 999);
-                              })
-                              .map(([rarity, percent]) => (
-                                <div key={rarity} className="flex justify-between">
-                                  <span className={getRarityColor(rarity)}>{rarity}</span>
-                                  <span className="text-gray-400">{percent}%</span>
+                          <p className="text-xs text-gray-500 font-mono mb-1">Chances por Booster:</p>
+                          <div className="space-y-0.5 text-xs font-mono">
+                            {/* Mostrar chances REAIS baseadas no sistema de slots */}
+                            {booster.price_brl === 0.50 && (
+                              <>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-pink-400">👑 Godmode</span>
+                                  <span className="text-gray-400">0.02% (1/5000)</span>
                                 </div>
-                              ))}
+                                <div className="flex justify-between items-center">
+                                  <span className="text-yellow-400">💎 Legendary</span>
+                                  <span className="text-gray-400">0.3% (1/333)</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-purple-400">⭐ Viral</span>
+                                  <span className="text-gray-400">~5%</span>
+                                </div>
+                              </>
+                            )}
+                            {booster.price_brl === 1.00 && (
+                              <>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-pink-400">👑 Godmode</span>
+                                  <span className="text-gray-400">0.1% (1/1000)</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-yellow-400">💎 Legendary</span>
+                                  <span className="text-gray-400">1% (1/100)</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-purple-400">⭐ Viral</span>
+                                  <span className="text-gray-400">~20%</span>
+                                </div>
+                              </>
+                            )}
+                            {booster.price_brl === 2.00 && (
+                              <>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-pink-400">👑 Godmode</span>
+                                  <span className="text-gray-400">0.5% (1/200)</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-yellow-400">💎 Legendary</span>
+                                  <span className="text-gray-400">3% (1/33)</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-purple-400">⭐ Viral</span>
+                                  <span className="text-gray-400">Garantido</span>
+                                </div>
+                              </>
+                            )}
+                            {booster.price_brl === 5.00 && (
+                              <>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-pink-400">👑 Godmode</span>
+                                  <span className="text-gray-400">2% (1/50)</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-yellow-400">💎 Legendary</span>
+                                  <span className="text-gray-400">68% (quase certo!)</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-cyan-400">🎴 6 cartas</span>
+                                  <span className="text-gray-400">por pack</span>
+                                </div>
+                              </>
+                            )}
+                            {booster.price_brl === 10.00 && (
+                              <>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-pink-400">👑 Godmode</span>
+                                  <span className="text-gray-400">8% (1/13)</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-yellow-400">💎 Legendary</span>
+                                  <span className="text-gray-400">92% (garantido!)</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                  <span className="text-cyan-400">🎴 7 cartas</span>
+                                  <span className="text-gray-400">por pack</span>
+                                </div>
+                              </>
+                            )}
                           </div>
                           
                           {/* Skin Boost Info */}
                           {booster.skin_boost && (
                             <>
-                              <p className="text-xs text-gray-500 font-mono mt-2">Skins Especiais:</p>
-                              <div className="grid grid-cols-2 gap-1 text-xs mt-1 font-mono">
-                                {booster.skin_boost.premium > 0 && (
-                                  <div className="flex justify-between">
-                                    <span className="text-blue-400">premium (1.5x)</span>
-                                    <span className="text-gray-400">{booster.skin_boost.premium}%</span>
-                                  </div>
-                                )}
-                                {booster.skin_boost.ghost > 0 && (
-                                  <div className="flex justify-between">
-                                    <span className="text-purple-400">ghost (3x)</span>
-                                    <span className="text-gray-400">{booster.skin_boost.ghost}%</span>
-                                  </div>
-                                )}
-                                {booster.skin_boost.holo > 0 && (
-                                  <div className="flex justify-between">
-                                    <span className="text-cyan-400">holo (2.5x)</span>
-                                    <span className="text-gray-400">{booster.skin_boost.holo}%</span>
-                                  </div>
-                                )}
-                                {booster.skin_boost.dark > 0 && (
-                                  <div className="flex justify-between">
-                                    <span className="text-red-400">dark (4x)</span>
-                                    <span className="text-gray-400">{booster.skin_boost.dark}%</span>
-                                  </div>
-                                )}
-                                {booster.skin_boost.glitch > 0 && (
-                                  <div className="flex justify-between">
-                                    <span className="text-pink-400">glitch (6x)</span>
-                                    <span className="text-gray-400">{booster.skin_boost.glitch}%</span>
-                                  </div>
-                                )}
+                              <div className="mt-3 pt-2 border-t border-gray-700/50">
+                                <p className="text-xs text-gray-500 font-mono mb-1">✨ Skins Especiais (visual + valor):</p>
+                                <div className="space-y-0.5 text-xs font-mono">
+                                  {booster.skin_boost.premium > 0 && (
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-blue-400">💠 Premium (1.5x)</span>
+                                      <span className="text-gray-400">{booster.skin_boost.premium}%</span>
+                                    </div>
+                                  )}
+                                  {booster.skin_boost.holo > 0 && (
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-cyan-400">🌟 Holo (2.5x)</span>
+                                      <span className="text-gray-400">{booster.skin_boost.holo}%</span>
+                                    </div>
+                                  )}
+                                  {booster.skin_boost.ghost > 0 && (
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-purple-400">👻 Ghost (3x)</span>
+                                      <span className="text-gray-400">{booster.skin_boost.ghost}%</span>
+                                    </div>
+                                  )}
+                                  {booster.skin_boost.dark > 0 && (
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-red-400">🔥 Dark (4x)</span>
+                                      <span className="text-gray-400">{booster.skin_boost.dark}%</span>
+                                    </div>
+                                  )}
+                                  {booster.skin_boost.glitch > 0 && (
+                                    <div className="flex justify-between items-center">
+                                      <span className="text-pink-400">⚡ Glitch (6x)</span>
+                                      <span className="text-gray-400">{booster.skin_boost.glitch}%</span>
+                                    </div>
+                                  )}
+                                </div>
+                                <p className="text-[10px] text-gray-600 mt-1.5 leading-tight">
+                                  💡 Skins multiplicam o valor base. Ex: Godmode Glitch = Ultra Raro!
+                                </p>
                               </div>
                             </>
                           )}

@@ -216,37 +216,50 @@ export async function POST(request: NextRequest) {
     }
     console.log('[OPEN-V3-PRIZE] 8. Not opened yet, OK');
     
-    // Usar distribuição de raridade do booster_type
-    const rarityDist = boosterType.rarity_distribution || {
-      trash: 50.0,
-      meme: 30.0,
-      viral: 15.0,
-      legendary: 4.0,
-      godmode: 1.0
-    };
+    // ============================================================================
+    // NOVO: BUSCAR SLOTS DO BOOSTER TYPE
+    // ============================================================================
+    console.log('[OPEN-V3-PRIZE] 9. Buscando slots do booster_type...');
     
-    console.log('[OPEN-V3-PRIZE] 9. Gerando 5 cartas');
+    const { data: slots, error: slotsError } = await supabaseAdmin
+      .from('booster_slot_config')
+      .select('slot_position, slot_name, rarity_weights, description')
+      .eq('booster_type_id', boosterType.id)
+      .order('slot_position');
     
-    // Gerar 5 cartas baseado na distribuição de raridade
+    if (slotsError || !slots || slots.length === 0) {
+      console.error('[OPEN-V3-PRIZE] ERRO: Slots não configurados para este booster!', slotsError);
+      return NextResponse.json({
+        ok: false,
+        error: { code: 'SLOTS_NOT_CONFIGURED', message: 'Sistema de slots não configurado para este booster' }
+      }, { status: 500 });
+    }
+    
+    console.log(`[OPEN-V3-PRIZE] ✅ ${slots.length} slots encontrados`);
+    
+    // Gerar cartas baseado nos SLOTS
     const generatedCards = [];
-    const rarityOrder = ['trash', 'meme', 'viral', 'legendary', 'godmode'];
     
-    for (let i = 0; i < 5; i++) {
-      // Selecionar raridade baseado na distribuição
-      const rand = Math.random() * 100;
+    for (const slot of slots) {
+      console.log(`[OPEN-V3-PRIZE] Processando Slot ${slot.slot_position}: ${slot.slot_name}`);
+      
+      // Weighted random selection
+      const weights = slot.rarity_weights as Record<string, number>;
+      const totalWeight = Object.values(weights).reduce((sum, w) => sum + w, 0);
+      const rand = Math.random() * totalWeight;
+      
       let cumulative = 0;
       let selectedRarity = 'trash';
       
-      for (const rarity of rarityOrder) {
-        const prob = rarityDist[rarity] || 0;
-        cumulative += prob;
+      for (const [rarity, weight] of Object.entries(weights)) {
+        cumulative += weight;
         if (rand < cumulative) {
           selectedRarity = rarity;
           break;
         }
       }
       
-      console.log(`[OPEN-V3-PRIZE] Carta ${i + 1}: raridade ${selectedRarity}`);
+      console.log(`[OPEN-V3-PRIZE] Slot ${slot.slot_position} → Raridade: ${selectedRarity} (weights: ${JSON.stringify(weights)})`);
       
       // Buscar cartas
       const marketTierFilter = boosterType.market_tier_filter || { min: 1, max: 5 };

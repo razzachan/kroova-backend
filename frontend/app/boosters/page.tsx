@@ -1226,6 +1226,9 @@ export default function BoostersPage() {
                                   <span className="text-purple-400">⭐ Viral</span>
                                   <span className="text-gray-400">~10%</span>
                                 </div>
+                                <div className="mt-2 text-[10px] text-gray-500">
+                                  Estrutura: 3 slots NUNCA legendary + 2 wildcards (máx. 2 legendary) • 5 cartas • RTP 70%
+                                </div>
                               </>
                             )}
                             {booster.price_brl === 1.00 && (
@@ -1241,6 +1244,9 @@ export default function BoostersPage() {
                                 <div className="flex justify-between items-center">
                                   <span className="text-purple-400">⭐ Viral</span>
                                   <span className="text-gray-400">~20%</span>
+                                </div>
+                                <div className="mt-2 text-[10px] text-gray-500">
+                                  Estrutura: 3 slots NUNCA legendary + 2 wildcards (máx. 2 legendary) • 5 cartas • RTP 70%
                                 </div>
                               </>
                             )}
@@ -1258,6 +1264,9 @@ export default function BoostersPage() {
                                   <span className="text-purple-400">⭐ Viral</span>
                                   <span className="text-gray-400">Garantido</span>
                                 </div>
+                                <div className="mt-2 text-[10px] text-gray-500">
+                                  Estrutura: 3 slots NUNCA legendary + 2 wildcards (máx. 2 legendary) • 5 cartas • RTP 70%
+                                </div>
                               </>
                             )}
                             {booster.price_brl === 5.00 && (
@@ -1274,6 +1283,9 @@ export default function BoostersPage() {
                                   <span className="text-purple-400">⭐ Viral</span>
                                   <span className="text-gray-400">Garantido 3x</span>
                                 </div>
+                                <div className="mt-2 text-[10px] text-gray-500">
+                                  Estrutura: 3 slots NUNCA legendary + 2 wildcards (máx. 2 legendary) • 5 cartas • RTP 70%
+                                </div>
                               </>
                             )}
                             {booster.price_brl === 10.00 && (
@@ -1289,6 +1301,9 @@ export default function BoostersPage() {
                                 <div className="flex justify-between items-center">
                                   <span className="text-purple-400">⭐ Viral</span>
                                   <span className="text-gray-400">Garantido 3x</span>
+                                </div>
+                                <div className="mt-2 text-[10px] text-gray-500">
+                                  Estrutura: 3 slots NUNCA legendary + 2 wildcards (máx. 2 legendary) • 5 cartas • RTP 70%
                                 </div>
                               </>
                             )}

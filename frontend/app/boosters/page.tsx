@@ -364,29 +364,6 @@ export default function BoostersPage() {
       setAnimationStage('pack');
       setOpening(null); // Hide loading spinner
       
-      // 🎁 MYSTERY BOX BONUS - Show notification if received
-      if (data.bonus_mystery_box) {
-        const bonusToast = document.createElement('div');
-        bonusToast.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[999]';
-        bonusToast.innerHTML = `
-          <div class="bg-gradient-to-br from-amber-900 via-orange-900 to-amber-900 border-4 border-amber-400 rounded-2xl px-12 py-8 shadow-2xl shadow-amber-500/50 backdrop-blur-sm animate-bounce">
-            <div class="text-center">
-              <div class="text-6xl mb-4">🎁</div>
-              <div class="text-3xl font-black text-amber-300 mb-2 font-mono tracking-wider">BONUS SURPRISE!</div>
-              <div class="text-xl text-amber-200 font-bold">${data.bonus_mystery_box.name}</div>
-              <div class="text-sm text-amber-400 mt-2">Ganhou uma Mystery Box grátis!</div>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(bonusToast);
-        
-        // Remove após 4 segundos
-        setTimeout(() => {
-          bonusToast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
-          setTimeout(() => document.body.removeChild(bonusToast), 500);
-        }, 4000);
-      }
-      
       // Recarrega wallet para atualizar counters (após backend resetar)
       await loadData();
       
@@ -967,7 +944,6 @@ export default function BoostersPage() {
             <a href="/dashboard" className="text-gray-300 hover:text-[#FFC700] transition">Dashboard</a>
             <a href="/marketplace" className="text-gray-300 hover:text-[#FFC700] transition">Marketplace</a>
             <a href="/boosters" className="text-[#FFC700] font-semibold">Boosters</a>
-            <a href="/mystery-box" className="text-gray-300 hover:text-cyan-400 transition">🎰 Mystery Box</a>
             <a href="/inventory" className="text-gray-300 hover:text-[#FFC700] transition">Inventário</a>
             <a href="/wallet" className="text-gray-300 hover:text-[#FFC700] transition">Wallet</a>
           </div>
@@ -1232,16 +1208,6 @@ export default function BoostersPage() {
                         <h3 className="text-xl font-bold mb-2 font-mono tracking-wide">{booster.pack_name || booster.name}</h3>
                         <div className="text-sm text-gray-400 mb-3">
                           <p className="mb-1 font-mono">5 cartas • {booster.edition_id}</p>
-                          
-                          {/* 🎁 MYSTERY BOX BONUS BADGE */}
-                          {booster.mystery_box_bonus_chance && booster.mystery_box_bonus_chance > 0 && (
-                            <div className="mb-2 mt-2 px-2 py-1 rounded bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/50">
-                              <div className="flex items-center gap-1 text-xs font-bold text-amber-400">
-                                <span>🎁</span>
-                                <span>{booster.mystery_box_bonus_chance}% chance Mystery Box grátis!</span>
-                              </div>
-                            </div>
-                          )}
                           
                           <p className="text-xs text-gray-500 font-mono mb-1">Chances por Booster:</p>
                           <div className="space-y-0.5 text-xs font-mono">

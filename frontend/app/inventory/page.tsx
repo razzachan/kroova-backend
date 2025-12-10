@@ -489,9 +489,14 @@ export default function InventoryPage() {
       }
       
       // 2. Reciclar todas as cartas selecionadas
+      console.log('[RECYCLE] Iniciando reciclagem de', selectedForRecycle.size, 'cartas');
+      console.log('[RECYCLE] IDs:', Array.from(selectedForRecycle));
+      
       const response = await api.post('/cards/recycle-for-points', {
         card_instance_ids: Array.from(selectedForRecycle)
       });
+      
+      console.log('[RECYCLE] Resposta:', response);
       
       const data = unwrap<{ points_earned: number; total_points: number }>(response);
       
@@ -517,8 +522,18 @@ export default function InventoryPage() {
       setShowRecycleAllModal(false);
       await loadInventory();
     } catch (error: any) {
+      console.error('[RECYCLE] Erro completo:', error);
+      console.error('[RECYCLE] Response data:', error.response?.data);
+      console.error('[RECYCLE] Status:', error.response?.status);
+      
       cardAudio.playErrorBuzz();
-      alert(error.response?.data?.error?.message || 'Erro ao reciclar cartas');
+      
+      const errorMsg = error.response?.data?.error?.message 
+        || error.response?.data?.message
+        || error.message 
+        || 'Erro ao reciclar cartas';
+      
+      alert('Erro ao reciclar cartas:\n\n' + errorMsg);
     } finally {
       setRecyclingAll(false);
     }
@@ -641,7 +656,6 @@ export default function InventoryPage() {
             <a href="/dashboard" className="text-gray-300 hover:text-[#FF006D] transition">Dashboard</a>
             <a href="/marketplace" className="text-gray-300 hover:text-[#FF006D] transition">Marketplace</a>
             <a href="/boosters" className="text-gray-300 hover:text-[#FF006D] transition">Boosters</a>
-            <a href="/mystery-box" className="text-gray-300 hover:text-cyan-400 transition">🎰 Mystery Box</a>
             <a href="/inventory" className="text-[#FF006D] font-semibold">Inventário</a>
             <a href="/wallet" className="text-gray-300 hover:text-[#FF006D] transition">Wallet</a>
           </div>
@@ -716,6 +730,47 @@ export default function InventoryPage() {
               <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
           </div>
+          
+          {/* Botões de seleção rápida */}
+          {inventory.length > 0 && (
+            <div className="flex gap-3 mb-4">
+              <GlitchButton
+                onClick={() => {
+                  const visibleCards = inventory
+                    .filter(card => {
+                      const isListed = listedCards.includes(card.id);
+                      if (showListedFilter === 'owned' && isListed) return false;
+                      if (showListedFilter === 'listed' && !isListed) return false;
+                      if (rarityFilter !== 'all' && card.cards_base?.rarity !== rarityFilter) return false;
+                      if (searchFilter) {
+                        const searchLower = searchFilter.toLowerCase();
+                        const name = card.cards_base?.name?.toLowerCase() || '';
+                        const displayId = card.cards_base?.display_id?.toLowerCase() || '';
+                        if (!name.includes(searchLower) && !displayId.includes(searchLower)) return false;
+                      }
+                      return true;
+                    })
+                    .slice(0, displayCount);
+                  const allIds = visibleCards.map(c => c.id);
+                  setSelectedForRecycle(new Set(allIds));
+                }}
+                variant="primary"
+                size="sm"
+                glitchIntensity="subtle"
+              >
+                ✅ Selecionar Todas Visíveis
+              </GlitchButton>
+              <GlitchButton
+                onClick={() => setSelectedForRecycle(new Set())}
+                disabled={selectedForRecycle.size === 0}
+                variant="secondary"
+                size="sm"
+                glitchIntensity="subtle"
+              >
+                ❌ Limpar Seleção
+              </GlitchButton>
+            </div>
+          )}
           
           {/* Filter Buttons */}
           {inventory.length > 0 && (
